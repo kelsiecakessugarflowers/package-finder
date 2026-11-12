@@ -5,7 +5,7 @@
  "gtmId": "GTM-5ZMBM3M",
  "inquiry": {
   "mode": "fillout",
-  "turnstileSiteKey": "",
+  "turnstileSiteKey": "0x4AAAAAAF-pNX8CVXv8MzKN",
   "maxPhotos": 5,
   "referralOptions": [
    "Google",
@@ -160,7 +160,17 @@
   "footerTerms": "Terms",
   "footerPrivacy": "Privacy",
   "labelPalette": "Color palette",
-  "confirmDate": "Please confirm your event date."
+  "confirmDate": "Please confirm your event date.",
+  "barSend": "Send my inquiry",
+  "cardSummary": "Your estimate",
+  "editAnswers": "Edit my answers",
+  "sumRole": "Role",
+  "sumDate": "Event date",
+  "sumSize": "Cake size",
+  "sumStyle": "Style",
+  "sumBudget": "Budget",
+  "sumPackage": "Package",
+  "othersHeadingBudget": "Other packages I recommend for a {size} cake that align closer to your budget"
  },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",

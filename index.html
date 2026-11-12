@@ -14,14 +14,21 @@ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 var(--kc-fon
 header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
 header{display:flex;justify-content:center}
 header .logo{height:58px;width:auto;display:block}
-h1.title{font-family:var(--kc-font-heading);font-weight:500;color:var(--ink);font-size:24px;line-height:1.2;margin:8px 2px 6px;text-align:center}
+h1.title{font-weight:600;color:var(--ink);font-size:22px;line-height:1.25;margin:8px 2px 6px;text-align:center}
 footer{text-align:center;padding:8px 16px 24px;color:var(--muted);font-size:12px}
 footer img{width:220px;height:auto;display:block;margin:0 auto 10px}
 footer a{color:var(--muted)}
 input.bad,select.bad,textarea.bad,.check.bad{border-color:var(--kc-berry);background:#fff7f8}
 .err{color:var(--kc-berry);font-size:13px;margin:8px 0 0}
 textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--text);min-height:110px;resize:vertical}
-.row{display:flex;gap:8px}.row>.field{flex:1;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.grid2>.full{grid-column:1/-1}
+.grid2 .field{min-width:0}
+.sum{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px;margin:0}
+.sum dt{color:var(--muted);font-size:13px;padding-top:2px}
+.sum dd{margin:0}
+.sum img{width:22px;aspect-ratio:2/3;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--line)}
+.back{border:none;background:none;color:var(--accent);font-weight:600;padding:0;margin-top:12px;text-decoration:underline}
 .check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);padding:10px;margin-top:6px;color:var(--text);font-size:15px}
 .check input{width:20px;height:20px;margin:2px 0 0;flex:0 0 auto}
 .allergen{font-size:14px;margin:4px 0 0}
@@ -30,7 +37,7 @@ textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid va
 .thumbs img{width:64px;height:64px;object-fit:cover;border:1px solid var(--line);display:block}
 .thumbs button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;padding:0;border-radius:50%;font-size:13px;line-height:1;background:var(--ink);color:var(--kc-white);border:none}
 .thanks{text-align:center;padding:28px 16px}
-.thanks h2{background:none;border:none;margin:0 0 10px;padding:0;text-transform:none;letter-spacing:0;font-family:var(--kc-font-heading);font-weight:500;font-size:26px;display:block}
+.thanks h2{background:none;border:none;margin:0 0 10px;padding:0;text-transform:none;letter-spacing:0;font-weight:600;font-size:24px;display:block}
 main{max-width:640px;margin:0 auto;padding:12px}
 .intro{margin:4px 2px 14px;color:var(--muted);font-size:15px;text-align:center}
 section{background:var(--card);border:1px solid var(--line);padding:14px;margin-bottom:12px}
@@ -61,7 +68,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .tag.star{background:var(--accent);color:var(--kc-white)}
 .tag.sel{background:var(--ink);color:var(--kc-white)}
 .tag.info{background:var(--soft);color:var(--accent);border:1px solid var(--accent)}
-.pkgname{font-family:var(--kc-font-heading);font-size:24px;font-weight:500;color:var(--ink);margin:6px 0 0;line-height:1.15}
+.pkgname{font-size:22px;font-weight:600;color:var(--ink);margin:6px 0 0;line-height:1.15}
 .price{font-size:18px;font-weight:700;margin:4px 0 2px;color:var(--ink)}
 .inc{margin:8px 0 0;padding-left:20px;font-size:15px}
 .inc li{margin:2px 0}
@@ -80,6 +87,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 <body>
 <header><img class="logo" src="logo-main.svg" alt="Sugar Flowers by Kelsie Cakes"></header>
 <main>
+ <div id="viewEstimate">
   <h1 class="title" id="t-title"></h1>
   <p class="intro" id="t-intro"></p>
 
@@ -89,6 +97,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <select id="role"></select>
     <label for="date" id="t-labelDate"></label>
     <input type="date" id="date">
+    <p class="err" id="dateErr" hidden></p>
     <label for="size" id="t-labelSize"></label>
     <select id="size"></select>
     <label for="styleBtn" id="t-labelStyle"></label>
@@ -102,28 +111,36 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <h2 id="t-cardEstimate"></h2>
     <div id="estimate"></div>
   </section>
+ </div>
 
-  <section id="details" hidden>
+ <div id="viewDetails" hidden>
+  <section>
+    <h2 id="t-cardSummary"></h2>
+    <dl class="sum" id="summary"></dl>
+    <button type="button" class="back" id="editAnswers"></button>
+  </section>
+  <section id="details">
     <h2 id="t-cardDetails"></h2>
     <p class="muted" id="t-detailsIntro" style="margin-top:0"></p>
-    <div class="row">
-      <div class="field" data-f="first"><label for="first" id="t-labelFirst"></label><input id="first" autocomplete="given-name"></div>
-      <div class="field" data-f="last"><label for="last" id="t-labelLast"></label><input id="last" autocomplete="family-name"></div>
+    <div class="grid2">
+      <div class="field"><label for="first" id="t-labelFirst"></label><input id="first" autocomplete="given-name"></div>
+      <div class="field"><label for="last" id="t-labelLast"></label><input id="last" autocomplete="family-name"></div>
+      <div class="field"><label for="email" id="t-labelEmail"></label><input id="email" type="email" autocomplete="email"></div>
+      <div class="field"><label for="phone" id="t-labelPhone"></label><input id="phone" type="tel" autocomplete="tel"></div>
+      <div class="field"><label for="pronouns" id="t-labelPronouns"></label><input id="pronouns"></div>
+      <div class="field"><label for="palette" id="t-labelPalette"></label><input id="palette"></div>
+      <div class="field full"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
+      <div class="field full"><label for="vision" id="t-labelVision"></label><textarea id="vision"></textarea></div>
+      <div class="field full"><label for="photos" id="t-labelPhotos"></label>
+        <input id="photos" type="file" accept="image/*" multiple><p class="muted" id="photosHint" style="margin:4px 0 0"></p><div class="thumbs" id="thumbs"></div></div>
     </div>
-    <div class="field" data-f="pronouns"><label for="pronouns" id="t-labelPronouns"></label><input id="pronouns"></div>
-    <div class="field" data-f="email"><label for="email" id="t-labelEmail"></label><input id="email" type="email" autocomplete="email"></div>
-    <div class="field" data-f="phone"><label for="phone" id="t-labelPhone"></label><input id="phone" type="tel" autocomplete="tel"></div>
-    <div class="field" data-f="referral"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
-    <div class="field" data-f="palette"><label for="palette" id="t-labelPalette"></label><input id="palette"></div>
-    <div class="field" data-f="vision"><label for="vision" id="t-labelVision"></label><textarea id="vision"></textarea></div>
-    <div class="field" data-f="photos"><label for="photos" id="t-labelPhotos"></label>
-      <input id="photos" type="file" accept="image/*" multiple><p class="muted" id="photosHint" style="margin:4px 0 0"></p><div class="thumbs" id="thumbs"></div></div>
     <p class="sub" id="t-allergenHeading"></p>
     <p class="allergen" id="t-allergenText"></p>
     <label class="check" data-f="allergen"><input type="checkbox" id="allergen"><span id="t-allergenCheck"></span></label>
     <div id="turnstile" style="margin-top:12px"></div>
     <p class="err" id="formErr" hidden></p>
   </section>
+ </div>
 </main>
 <footer id="footer"></footer>
 <dialog id="styleDlg" aria-labelledby="styleDlgTitle">
@@ -144,7 +161,7 @@ const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, 
 // style: null = not chosen yet, '' = "Not sure yet"
 const st = {role: '', date: '', size: '', style: null, budget: '', pkg: ''};
 let dateTouched = false;   // the date starts on a suggested Saturday; it has to be confirmed before sending an inquiry
-let D, T, direct = false, tsToken = '';
+let D, T, direct = false, tsToken = '', view = 'estimate';
 const photos = [];   // {name, type, data (base64), url (preview)}
 // Copy lives in data.json "copy"; {placeholders} are filled here
 const t = (k, vars = {}) => String(T[k] ?? '').replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? '');
@@ -202,6 +219,7 @@ function renderStatic() {
   $('#role').innerHTML = opts(D.roles, r => r.key, r => r.label);
   $('#size').innerHTML = opts(D.tierOptions);
   $('#styleDlgTitle').textContent = t('labelStyle');
+  $('#dateErr').textContent = t('confirmDate');
   $('#tiles').innerHTML = D.styles.map(x => `<button type="button" class="tile" data-style="${esc(x)}"><img src="photos/${slug(x)}.jpg" alt="" loading="lazy"><span>${esc(x)}</span></button>`).join('')
     + `<button type="button" class="tile" data-style=""><div class="none">?</div><span>${esc(t('styleNotSure'))}</span></button>`;
   $('#budget').innerHTML = opts(D.budgets);
@@ -219,6 +237,14 @@ function inquiryUrl(p) {
     budget: st.budget, package: p?.name, estimate: p ? priceFor(p) : '', source: 'estimator'};
   for (const [k, v] of Object.entries(set)) if (v !== '' && v != null) u.searchParams.set(k, v);
   return u.toString();
+}
+
+// Top of the chosen budget range: "Under $350" -> 350, "$500-$1,000" -> 1000, "$2,500+" -> none, "Not sure yet" -> none
+function budgetMax() {
+  const b = st.budget || '', n = x => +x.replace(/,/g, '');
+  let m = b.match(/under \$([\d,]+)/i); if (m) return n(m[1]);
+  m = b.match(/\$[\d,]+\s*-\s*\$([\d,]+)/); if (m) return n(m[1]);
+  return null;
 }
 
 function render() {
@@ -239,7 +265,10 @@ function render() {
   } else {
     const size1 = st.size.replace(/s$/, '').replace(/^(\d) /, '$1-');   // "3 tiers" -> "3-tier", "6+ tiers" -> "6+ tier"
     const cake = `${size1} cake${st.style ? ' with a ' + ({Bundles: 'bundled'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
-    const others = f.filter(x => x !== p);
+    // If their budget is below this package, list the packages that fit the budget first and say so
+    const cap = budgetMax(), overBudget = cap !== null && priceFor(p) > cap;
+    const others = f.filter(x => x !== p).sort((a, b) => (overBudget ? (priceFor(a) > cap) - (priceFor(b) > cap) : 0) || a.price - b.price);
+    const othersKey = overBudget && others.some(o => priceFor(o) <= cap) ? 'othersHeadingBudget' : 'othersHeading';
     el.innerHTML = `
       <span class="tag ${p === sug ? 'star' : 'sel'}">${esc(t(p === sug ? 'tagRecommended' : 'tagSelected'))}</span>${isPro() ? ` <span class="tag info">${esc(t('tagPro'))}</span>` : ''}
       <p class="pkgname">${esc(p.name)}</p>
@@ -252,7 +281,7 @@ function render() {
         <li>${esc(t('includeCustom'))}</li>
         <li>${esc(t('includeShipping'))}</li>
       </ul>
-      ${others.length ? `<p class="sub">${esc(t('othersHeading', {size: size1}))}</p>` + others.map(o => `<button type="button" class="pkg" data-pkg="${esc(o.name)}"><span>${esc(o.name)}</span><span>${esc(t('startingAt'))} ${money(priceFor(o))}</span></button>`).join('') : ''}
+      ${others.length ? `<p class="sub">${esc(t(othersKey, {size: size1}))}</p>` + others.map(o => `<button type="button" class="pkg" data-pkg="${esc(o.name)}"><span>${esc(o.name)}</span><span>${esc(t('startingAt'))} ${money(priceFor(o))}</span></button>`).join('') : ''}
       ${notes.join('')}
       <p class="note">${esc(t('noteRetainer'))}</p>
       <p class="muted">${esc(t('noteFinal'))}</p>
@@ -262,7 +291,8 @@ function render() {
   if (!p && !shop) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; return; }
   cta.removeAttribute('aria-disabled');
   if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; }
-  else { cta.textContent = t('barCta'); cta.href = direct ? '#details' : inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
+  else if (view === 'details') { cta.textContent = t('barSend'); cta.href = '#'; cta.dataset.cta = 'send'; }
+  else { cta.textContent = t('barCta'); cta.href = direct ? '#' : inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
 }
 
 let lastResult = '';
@@ -276,7 +306,7 @@ function trackResult() {
 document.addEventListener('change', e => {
   const id = e.target.id; if (!['role', 'date', 'size', 'budget'].includes(id)) return;
   st[id] = e.target.value;
-  if (id === 'date') dateTouched = true;
+  if (id === 'date') { dateTouched = true; $('#dateErr').hidden = true; }
   if (id === 'size' || id === 'style') st.pkg = '';
   if (id !== 'date') track('estimator_change', {field: id, value: st[id] || (id === 'style' && st.style === '' ? 'not sure' : '')});
   render(); trackResult();
@@ -289,8 +319,10 @@ document.addEventListener('click', e => {
     track('estimator_change', {field: 'style', value: st.style || 'not sure'}); render(); trackResult(); }
   if (pkg) { st.pkg = pkg.dataset.pkg; track('estimator_change', {field: 'package', value: st.pkg}); render(); trackResult(); }
   if (link) track('estimator_cta', {action: link.dataset.cta});
-  if (direct && link && link.dataset.cta === 'inquiry') { e.preventDefault(); submitInquiry(); }
-  else if (direct && link && link.dataset.cta === 'inquiry_anyway') { e.preventDefault(); $('#details').scrollIntoView({behavior: 'smooth'}); }
+  const action = link && link.dataset.cta;   // read once: going to the details page changes the button
+  if (direct && ['inquiry', 'inquiry_anyway'].includes(action)) { e.preventDefault(); goDetails(); }
+  else if (action === 'send') { e.preventDefault(); submitInquiry(); }
+  if (e.target.id === 'editAnswers') history.back();
   const rm = e.target.closest('[data-rm]'); if (rm) { photos.splice(+rm.dataset.rm, 1); renderThumbs(); }
 });
 
@@ -327,22 +359,52 @@ function loadTurnstile() {
   window.onTurnstileLoad = () => window.turnstile.render('#turnstile', {sitekey: D.inquiry.turnstileSiteKey, callback: tok => { tsToken = tok; }, 'expired-callback': () => { tsToken = ''; }});
   const sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit'; sc.async = true; document.head.appendChild(sc);
 }
+// ---- Second page: their answers at the top, then the details form ----
+function showView(v) {
+  view = v; $('#viewEstimate').hidden = v !== 'estimate'; $('#viewDetails').hidden = v !== 'details';
+  render(); window.scrollTo(0, 0);
+}
+function goDetails() {
+  document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
+  const need = [['role', !st.role], ['size', !st.size], ['date', !dateTouched]].filter(x => x[1]).map(x => x[0]);
+  if (need.length) {
+    need.forEach(k => $('#' + k).classList.add('bad'));
+    $('#' + need[0]).scrollIntoView({behavior: 'smooth', block: 'center'});
+    $('#dateErr').hidden = !need.includes('date');
+    return;
+  }
+  renderSummary(); history.pushState({view: 'details'}, ''); showView('details');
+  if (!window.__ts) { window.__ts = true; loadTurnstile(); }
+  track('estimator_details_view');
+}
+addEventListener('popstate', () => { if (view === 'details') showView('estimate'); });
+function renderSummary() {
+  const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
+  const dateLong = new Date(st.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+  const rows = [
+    ['sumRole', role()?.label], ['sumDate', dateLong], ['sumSize', st.size],
+    ['sumStyle', st.style ? `<img src="photos/${slug(st.style)}.jpg" alt="">${esc(st.style)}` : esc(t('styleNotSure')), true],
+    ['sumBudget', st.budget], ['sumPackage', pkg ? `${esc(pkg.name)} · ${esc(t('startingAt'))} ${money(priceFor(pkg))}${isPro() ? ' · ' + esc(t('tagPro')) : ''}` : '', true],
+  ].filter(r => r[1]);
+  $('#summary').innerHTML = rows.map(([k, v, html]) => `<dt>${esc(t(k))}</dt><dd>${html ? v : esc(v)}</dd>`).join('');
+  $('#editAnswers').textContent = t('editAnswers');
+}
+
 async function submitInquiry() {
-  const req = {role: st.role, date: st.date, size: st.size, first: val('first'), last: val('last'), email: val('email'), phone: val('phone'), referral: val('referral')};
+  const req = {first: val('first'), last: val('last'), email: val('email'), phone: val('phone'), referral: val('referral')};
   const bad = Object.keys(req).filter(k => !req[k]);
   if (req.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.email)) bad.push('email');
   document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
   bad.forEach(k => $('#' + k).classList.add('bad'));
   if (!$('#allergen').checked) { bad.push('allergen'); $('.check').classList.add('bad'); }
-  if (!dateTouched) { bad.push('dateConfirm'); $('#date').classList.add('bad'); }
   const err = $('#formErr');
-  if (bad.length) { err.textContent = bad.includes('dateConfirm') && bad.length === 1 ? t('confirmDate') : t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  if (bad.length) { err.textContent = t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   if (D.inquiry.turnstileSiteKey && !tsToken) { err.textContent = t('missing'); err.hidden = false; $('#turnstile').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), r = role();
   const cta = $('#barCta'); cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true'); err.hidden = true;
   try {
     const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-      ...req, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
+      ...req, role: st.role, size: st.size, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
       clientType: r.clientType, roleLabel: r.label, packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
       utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, turnstile: tsToken,
       photos: photos.map(({name, type, data}) => ({name, type, data}))})});
@@ -363,7 +425,7 @@ fetch('data.json').then(r => r.json()).then(d => {
     st.date = `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; }
   direct = d.inquiry.mode === 'direct' || new URLSearchParams(location.search).has('direct');
   renderStatic(); $('#date').value = st.date;
-  if (direct) { $('#details').hidden = false; loadTurnstile(); }
+
   // ?for=couple|family|baker|vendor preselects the role (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');
   if (D.roles.some(r => r.key === f)) { st.role = f; $('#role').value = f; }
