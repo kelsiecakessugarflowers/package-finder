@@ -5,20 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Find Your Sugar Flower Package | Sugar Flowers by Kelsie Cakes</title>
 <meta name="description" content="Answer a few quick questions to see which custom sugar flower package fits your cake, with a starting price.">
+<link rel="stylesheet" href="brand.css">
 <style>
-:root{--bg:#f7f2ee;--card:#fff;--ink:#492C38;--muted:#6B4A5E;--line:#D0BCC5;--accent:#6B4A5E;--accent-soft:#efe5ea}
+:root{--bg:var(--kc-bg);--card:var(--kc-card);--ink:var(--kc-text);--head:var(--kc-heading);--muted:var(--kc-muted);--line:var(--kc-line);--accent:var(--kc-accent);--accent-soft:var(--kc-accent-soft)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--kc-font-body)}
 main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
-h1,h2,.price,.pkgname{font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;font-weight:500}
-h1{font-size:34px;line-height:1.15;margin:0 0 6px;text-align:center}
+h1,h2,.price,.pkgname{font-family:var(--kc-font-heading);font-weight:500;color:var(--head)}
+h1{font-size:32px;line-height:1.15;margin:0 0 6px;text-align:center}
 .lead{text-align:center;color:var(--muted);margin:0 0 24px}
 section{background:var(--card);border:1px solid var(--line);padding:18px 16px;margin-bottom:14px}
 section[hidden]{display:none}
-h2{font-size:24px;margin:0 0 4px}
+h2{font-size:22px;margin:0 0 4px}
 .step{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
 .hint{color:var(--muted);font-size:14px;margin:0 0 12px}
-button{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);cursor:pointer;border-radius:0}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);cursor:pointer;border-radius:0}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 button[aria-pressed=true]{border:2px solid var(--accent);background:var(--accent-soft)}
 .who{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -38,16 +39,16 @@ button[aria-pressed=true]{border:2px solid var(--accent);background:var(--accent
 .sw i{flex:1}
 .pals .none{display:flex;align-items:center;justify-content:center;color:var(--muted)}
 .result{border:2px solid var(--accent)}
-.pkgname{font-size:30px;margin:2px 0 0;line-height:1.1}
-.price{font-size:26px;margin:4px 0 2px}
-.tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:999px;background:var(--ink);color:#fff}
+.pkgname{font-size:28px;margin:2px 0 0;line-height:1.1}
+.price{font-size:22px;margin:4px 0 2px}
+.tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:999px;background:var(--kc-plum);color:var(--kc-white)}
 .tag.soft{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
 ul.inc{margin:10px 0 0;padding-left:20px}
 ul.inc li{margin:2px 0}
 .others{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
 .others p{margin:0 0 8px;font-size:14px;color:var(--muted)}
 .others button{display:flex;justify-content:space-between;width:100%;padding:10px 12px;margin-bottom:6px;font-size:15px}
-.cta{display:block;width:100%;margin-top:16px;padding:16px;font-size:17px;letter-spacing:.04em;background:var(--accent);border:1px solid var(--accent);color:#fff;text-align:center;text-decoration:none}
+.cta{display:block;width:100%;margin-top:16px;padding:16px;font-size:17px;letter-spacing:.04em;background:var(--accent);border:1px solid var(--accent);color:var(--kc-accent-text);text-align:center;text-decoration:none;font-weight:600}
 .fine{font-size:13px;color:var(--muted);margin:10px 0 0}
 @media (max-width:480px){.who,.pals{grid-template-columns:1fr}.tiers{grid-template-columns:repeat(3,1fr)}.styles{grid-template-columns:1fr 1fr}h1{font-size:28px}}
 </style>
@@ -177,7 +178,12 @@ document.addEventListener('click', e => {
   renderResult();
 });
 
-fetch('data.json').then(r => r.json()).then(d => { D = d; renderStatic(); });
+fetch('data.json').then(r => r.json()).then(d => {
+  D = d; renderStatic();
+  // ?for=pro or ?for=consumer skips step 1 (links from the packages embed, trade pages, emails)
+  const f = new URLSearchParams(location.search).get('for');
+  if (f === 'pro' || f === 'consumer') { st.who = f; press($('#who'), 'who', f); show('#s-tiers'); }
+});
 </script>
 </body>
 </html>

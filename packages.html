@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Custom Sugar Flower Packages | Sugar Flowers by Kelsie Cakes</title>
+<link rel="stylesheet" href="brand.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:transparent;color:var(--kc-text);font:15px/1.55 var(--kc-font-body)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:4px}
+.card{background:var(--kc-card);border:1px solid var(--kc-line);display:flex;flex-direction:column}
+.card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--kc-accent-soft)}
+.body{padding:16px;display:flex;flex-direction:column;flex:1}
+h3{font-family:var(--kc-font-heading);font-weight:500;color:var(--kc-heading);font-size:22px;margin:0 0 4px}
+.for{color:var(--kc-muted);font-size:14px;margin:0 0 10px}
+ul{margin:0 0 12px;padding-left:18px}
+li{margin:1px 0}
+.price{margin-top:auto;font-family:var(--kc-font-heading);color:var(--kc-heading);font-size:19px}
+.price small{font-family:var(--kc-font-body);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--kc-muted);margin-right:6px}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 4px 4px}
+.ctas a{padding:14px 22px;text-decoration:none;font-weight:600;letter-spacing:.04em;border:1px solid var(--kc-accent)}
+.ctas .primary{background:var(--kc-accent);color:var(--kc-accent-text)}
+.ctas .secondary{background:var(--kc-card);color:var(--kc-accent)}
+.note{text-align:center;font-size:13px;color:var(--kc-muted);margin:10px 4px 0}
+</style>
+</head>
+<body>
+<div class="grid" id="grid" aria-live="polite"></div>
+<div class="ctas">
+  <a class="primary" id="finder" target="_top" href="index.html">Find your package</a>
+  <a class="secondary" id="inquire" target="_top" href="#">Start your inquiry</a>
+</div>
+<p class="note">Every design is custom colored. Your final quote is based on your exact design.</p>
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+// Same wording rules as the finder, so both pages describe packages identically
+function aim(t, noun) {
+  const s = String(t || '');
+  if (/dozens/i.test(s)) return 'Dozens of ' + noun;
+  const m = s.match(/(\d+)\s*[-–]\s*(\d+)/), one = s.match(/(\d+)/);
+  if (m) return +m[1] === 0 ? 'Up to ' + m[2] + ' ' + (+m[2] === 1 ? noun.replace(/s$/, '') : noun) : m[1] + '-' + m[2] + ' ' + noun;
+  if (one) return one[1] + ' ' + noun;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+const pro = new URLSearchParams(location.search).get('for') === 'pro';
+// Tell a parent page (Showit embed) how tall this is, so the iframe can fit without scrollbars
+const report = () => parent !== window && parent.postMessage({kcEmbedHeight: document.documentElement.scrollHeight}, '*');
+new ResizeObserver(report).observe(document.body);
+
+fetch('data.json').then(r => r.json()).then(D => {
+  const price = p => pro ? Math.round(p.price * (1 - D.proDiscount) / D.proRoundTo) * D.proRoundTo : p.price;
+  const img = D.packageImages || {};
+  document.getElementById('grid').innerHTML = D.packages.map(p => `<article class="card">
+    ${img[p.name] ? `<img src="${esc(img[p.name])}" alt="${esc(p.name)} sugar flower package" loading="lazy">` : ''}
+    <div class="body">
+      <h3>${esc(p.name)}</h3>
+      <p class="for">${esc(p.description || p.suitableFor)}</p>
+      <ul>
+        <li>${esc(aim(p.statement, 'statement flowers'))}</li>
+        <li>${esc(aim(p.supporting, 'supporting blooms'))}</li>
+        <li>${esc(aim(p.greenery, 'filler and greenery pieces'))}</li>
+      </ul>
+      <div class="price"><small>${pro ? 'Pro, starting at' : 'Starting at'}</small>${money(price(p))}</div>
+    </div></article>`).join('');
+  document.getElementById('finder').href = D.finderUrl + (pro ? '?for=pro' : '');
+  document.getElementById('inquire').href = D.filloutUrl + '?source=packages';
+  report();
+});
+</script>
+</body>
+</html>

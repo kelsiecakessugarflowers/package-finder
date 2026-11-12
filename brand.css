@@ -1,0 +1,41 @@
+/* Sugar Flowers by Kelsie Cakes: shared brand tokens.
+   Load this in any page (finder, packages embed, quiz, quote builder) so colors and fonts stay in one place.
+   Fonts: Raleway (body), Source Serif 4 (headings). No Georgia. Cormorant Garamond only for rare accents.
+   Text/background pairs below come from the approved brand combinations. */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap');
+
+:root{
+  /* Core */
+  --kc-plum:#492C38;        /* primary dark; headings, dark backgrounds */
+  --kc-plum-mid:#6B4A5E;    /* buttons, selected states */
+  --kc-mauve:#9F748A;
+  --kc-teal:#03373E;        /* dark background only, light text on top */
+  --kc-sage:#819379;
+  --kc-sage-deep:#6B7A64;
+  --kc-gold:#EFC866;        /* accents; on dark plum or teal only */
+  --kc-berry:#A93248;
+  /* Lights */
+  --kc-blush-line:#D0BCC5;  /* borders */
+  --kc-blush-soft:#efe5ea;  /* tinted panels */
+  --kc-mauve-soft:#E5D5DF;
+  --kc-sand:#E9D8CD;
+  --kc-cream:#F9F4F1;       /* page background */
+  --kc-white:#FEFDFD;       /* cards */
+  --kc-mist:#E8F0F1;
+  --kc-butter:#FAF0C5;
+  --kc-ink:#1a1819;         /* body text */
+
+  /* Roles */
+  --kc-bg:var(--kc-cream);
+  --kc-card:var(--kc-white);
+  --kc-text:var(--kc-ink);
+  --kc-heading:var(--kc-plum);
+  --kc-muted:var(--kc-plum-mid);
+  --kc-line:var(--kc-blush-line);
+  --kc-accent:var(--kc-plum-mid);
+  --kc-accent-text:var(--kc-white);
+  --kc-accent-soft:var(--kc-blush-soft);
+
+  --kc-font-body:'Raleway',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --kc-font-heading:'Source Serif 4',ui-serif,serif;
+}

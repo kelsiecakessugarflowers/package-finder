@@ -215,5 +215,14 @@
    "supporting": "~30–40 supporting blooms",
    "greenery": "~20–28 filler/greenery"
   }
- ]
+ ],
+ "packageImages": {
+  "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
+  "The Bryony": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/86abda08-cff3-447d-887d-25a9cee653f8.png",
+  "The Thaleia": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/351ee506-8d87-4469-b4cd-67a7ee49113a.png",
+  "The Florian": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/e05c4ca9-4169-49a1-a3d7-1d0d1e7a17e2.png",
+  "The Aster": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/63a3dae8-6d3c-4d0e-8e35-adee5968d47e.png",
+  "The Hortensia": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/38e3c27e-7407-44c0-bea7-63b20a30be12.png"
+ },
+ "finderUrl": "index.html"
 }
