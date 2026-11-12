@@ -249,18 +249,19 @@ document.addEventListener('change', async e => {
   e.target.value = ''; renderThumbs();
 });
 // Turnstile spam check: on the first page (for the email), and on the last page only if saving the email failed
-const tsWidgets = {}, tsQueue = [];
+const tsWidgets = {}, tsQueue = []; let tsScriptAdded = false;
 function loadTurnstile(sel, set) {
   if (!D.inquiry.turnstileSiteKey || tsWidgets[sel] !== undefined) return;
   tsWidgets[sel] = null;
   const draw = () => { tsWidgets[sel] = window.turnstile.render(sel, {sitekey: D.inquiry.turnstileSiteKey, callback: set, 'expired-callback': () => set('')}); };
-  if (window.turnstile) return draw();
+  // (check .render: an element with id="turnstile" would also show up as window.turnstile)
+  if (window.turnstile?.render) return draw();
   tsQueue.push(draw);
-  if (window.__tsScript) return; window.__tsScript = true;
+  if (tsScriptAdded) return; tsScriptAdded = true;
   window.onTurnstileLoad = () => tsQueue.splice(0).forEach(f => f());
   const sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit'; sc.async = true; document.head.appendChild(sc);
 }
-const resetTurnstile = sel => { if (window.turnstile && tsWidgets[sel]) window.turnstile.reset(tsWidgets[sel]); };
+const resetTurnstile = sel => { if (window.turnstile?.reset && tsWidgets[sel]) window.turnstile.reset(tsWidgets[sel]); };
 // ---- Pages ----
 function showView(v) {
   view = v; $('#proFields').hidden = !isPro();
@@ -282,7 +283,7 @@ function goNext() {
     return;
   }
   if (email === leadEmail) return goDetails();   // came back to edit answers; email already saved
-  if (D.inquiry.turnstileSiteKey && !tsLeadToken) { err.textContent = t('missing'); err.hidden = false; $('#tsLead').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  if (D.inquiry.turnstileSiteKey && !tsLeadToken) { err.textContent = t('verifyHuman') || t('missing'); err.hidden = false; $('#tsLead').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   submitLead(email);
 }
 async function submitLead(email) {
@@ -306,7 +307,7 @@ async function submitLead(email) {
 }
 function goDetails() {
   go('details');
-  if (direct && !leadToken) loadTurnstile('#turnstile', tok => { tsToken = tok; });
+  if (direct && !leadToken) loadTurnstile('#tsInquiry', tok => { tsToken = tok; });
   track('estimator_details_view');
 }
 // Opening or tapping the date field counts as confirming it, so a real date that matches the suggested Saturday still works
@@ -337,7 +338,7 @@ async function submitInquiry() {
   }
   const err = $('#formErr');
   if (bad.length) { err.textContent = t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
-  if (D.inquiry.turnstileSiteKey && !leadToken && !tsToken) { err.textContent = t('missing'); err.hidden = false; $('#turnstile').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  if (D.inquiry.turnstileSiteKey && !leadToken && !tsToken) { err.textContent = t('verifyHuman') || t('missing'); err.hidden = false; $('#tsInquiry').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), r = role();
   const cta = $('#barCta'); cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true'); err.hidden = true;
   try {
@@ -358,7 +359,7 @@ async function submitInquiry() {
     document.querySelector('.bar').remove(); document.body.style.paddingBottom = '0'; window.scrollTo(0, 0);
   } catch (e2) {
     err.textContent = t('sendError'); err.hidden = false; render();
-    resetTurnstile('#turnstile'); tsToken = '';
+    resetTurnstile('#tsInquiry'); tsToken = '';
   }
 }
 
