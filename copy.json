@@ -92,7 +92,7 @@
  "hintBudget": "Custom designs start at {minPrice}",
  "barNext": "Review your estimate",
  "labelLeadEmail": "Your Email",
- "emailNote": "",
+ "emailNote": "We’ll send you a copy of this estimate to your email.",
  "cardIncluded": "What's included",
  "includedExpect": "What you can expect",
  "includedAlways": "Always included",
@@ -115,5 +115,9 @@
  "unitStatement": "statement flowers",
  "unitSupporting": "supporting blooms",
  "unitFiller": "filler flowers and foliage",
- "verifyHuman": "Almost there! Please complete the “Verify you are human” check."
+ "verifyHuman": "Almost there! Please complete the “Verify you are human” check.",
+ "tierPremium": "Premier",
+ "tierLuxe": "Luxe",
+ "tierFlowers": "{tier}: {flowers}",
+ "notePremiumFlowers": "Your budget leaves room for a few showstopping premier or luxe blooms, which are perfect for a {style} design."
 }

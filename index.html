@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Price Estimator | Sugar Flowers by Kelsie Cakes</title>
 <meta name="description" content="See which custom sugar flower package fits your cake and where pricing starts.">
+<link rel="icon" href="favicon.png" type="image/png">
 <link rel="stylesheet" href="brand.css">
 <style>
 /* Layout and hierarchy follow the quote builder: sticky header and bar, banded card headings, everything on one page */
@@ -29,7 +30,7 @@ textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid va
 .radios label{display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:15px}
 .radios input{width:auto}
 /* Little notes under the questions (copy keys hint*; blank ones are hidden) */
-.hint{margin:5px 0 0;font-size:13px;color:var(--accent);display:flex;gap:6px;align-items:baseline}
+.hint{margin:5px 0 0;font-size:13px;color:var(--accent);display:flex;gap:6px;align-items:baseline;font-style:italic}
 .hint::before{content:"✿";font-size:12px;color:var(--kc-mauve,#9F748A)}
 .hint:empty{display:none}
 /* Estimate: package photo beside the name */
@@ -103,7 +104,10 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .guide dt{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:2px}
 .guide dd{margin:0}
 .inc.addons{list-style:"+ "}
-.retainer{margin:0 0 12px}
+.tierline{display:block;font-size:13px;color:var(--muted);margin:3px 0 0}
+.note.premium p{margin:0}
+.note.premium .tierline{margin-top:4px}
+#details .note{margin:0 0 4px}
 .note{background:var(--soft);border-left:3px solid var(--accent);padding:10px 12px;margin:12px 0 0;font-size:14px}
 .note.shop{border-left-color:var(--kc-berry)}
 .note a,.muted a{color:var(--accent);font-weight:600}
@@ -167,15 +171,17 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <h2 id="t-cardIncluded"></h2>
     <div id="includedBody"></div>
   </section>
-  <p class="note retainer" id="retainerNote"></p>
   <section id="details">
     <h2 id="t-cardDetails"></h2>
-    <p class="muted" id="t-detailsIntro" style="margin-top:0"></p>
+    <p class="note" id="retainerNote"></p>
+    <p class="muted" id="t-detailsIntro"></p>
     <div class="grid2">
       <div class="field"><label for="first" id="t-labelFirst"></label><input id="first" autocomplete="given-name"></div>
       <div class="field"><label for="last" id="t-labelLast"></label><input id="last" autocomplete="family-name"></div>
       <div class="field"><label for="email" id="t-labelEmail"></label><input id="email" type="email" autocomplete="email"></div>
       <div class="field"><label for="phone" id="t-labelPhone"></label><input id="phone" type="tel" autocomplete="tel"></div>
+      <div class="field"><label for="pronouns" id="t-labelPronouns"></label><input id="pronouns"></div>
+      <div class="field"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
       <div class="full grid2" id="proFields" hidden>
         <p class="sub full" id="t-proHeading"></p>
         <div class="field full"><label for="bizLink" id="t-labelBizLink"></label><input id="bizLink" placeholder="@yourbakery or yourbakery.com"></div>
@@ -188,8 +194,6 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
           <div id="resaleFileBox" hidden><label for="resaleFile" id="t-labelResaleFile"></label><input id="resaleFile" type="file" accept="image/*,application/pdf"></div>
         </div>
       </div>
-      <div class="field"><label for="pronouns" id="t-labelPronouns"></label><input id="pronouns"></div>
-      <div class="field"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
       <div class="field full"><label for="palette" id="t-labelPalette"></label><input id="palette"></div>
       <div class="field full"><label for="vision" id="t-labelVision"></label><textarea id="vision"></textarea></div>
       <div class="field full"><label for="photos" id="t-labelPhotos"></label>
