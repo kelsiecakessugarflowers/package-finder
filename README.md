@@ -12,7 +12,10 @@ Flower costs and pricing formulas stay in the private quote builder (nevermore-b
 
 | File | What it is |
 |---|---|
-| `index.html` | Price Estimator |
+| `index.html` | Price Estimator (and the built-in inquiry form) |
+| `worker.js`, `wrangler.jsonc` | The Cloudflare Worker: serves the site and handles `/api/inquiry` |
+| `scripts/google-drive-bridge.gs` | Google Apps Script that creates lead folders in Drive |
+| `logo-main.svg`, `logo-alt.svg` | Logos (alt in headers, main in the footer) |
 | `packages.html` | Packages embed for the website (replaces the BlockBuilder block) |
 | `data.json` → `copy` | Every customer-facing line on both pages. Edit text here (or in the copy Google Sheet, then paste). `{braces}` are filled in by the page. |
 | `brand.css` | Shared brand colors and fonts. Other pages (quiz, quote builder) can load this too. |
@@ -86,6 +89,34 @@ Add `?for=pro` to the iframe address on a trade page to show pro pricing. The fi
 
 `utm_source`, `ck_subscriber_id`, `first_name`, `last_name`, `email`, `phone` and `event_date`
 are passed along if the visitor arrived with them in the link (for example from a Kit email).
+
+## Built-in inquiry form (replaces Fillout)
+
+"Request final quote" can either open Fillout (`inquiry.mode: "fillout"`, the current setting) or send the
+inquiry straight to Airtable (`"direct"`). Add `?direct=1` to the estimator link to try the built-in form
+before switching. Fillout stays untouched until you flip the setting.
+
+What happens on submit (`worker.js`):
+
+| Step | Detail |
+|---|---|
+| Spam check | Cloudflare Turnstile (free) |
+| Google Drive | Creates `First Last \| Month D, YYYY \| Sugar Flowers` in 💐 Current Leads (Shared Drive), sets anyone-with-link view, saves the photos and an inquiry summary Google Doc |
+| Airtable Projects | Creates the record: names, email, phone, pronouns, event date, referral source, budget, notes (vision plus the estimator summary), Cake Size, Cake Style, Requested Color Palette, Client Type, Preferred Package, Project Title, Data Origin "Price Estimator", Submission ID, Google Drive link, "Files sent to folder?" |
+| Photos | Attached to Inspiration Photos |
+| After that | Airtable's "New Project - Add/Link Client + Quote" automation runs as it does for Fillout leads |
+
+One-time setup:
+
+| # | Where | What |
+|---|---|---|
+| 1 | Cloudflare > Turnstile | Add widget for `package-finder.kelsie-a54.workers.dev` (and your own domain if you add one). Put the **site key** in `data.json` > `inquiry.turnstileSiteKey`; the **secret key** becomes Worker secret `TURNSTILE_SECRET` |
+| 2 | airtable.com/create/tokens | New token, scope `data.records:write`, base Custom Orders. Worker secret `AIRTABLE_TOKEN` |
+| 3 | script.google.com | Follow the steps at the top of `scripts/google-drive-bridge.gs`. Worker secrets `DRIVE_SCRIPT_URL`, `DRIVE_SCRIPT_KEY` |
+| 4 | Zapier "New lead" zap | Remove the steps that create the Drive folder, set its sharing, write the Drive link back to Airtable, and find/move the inquiry PDF and photos. Use Airtable's Google Drive field instead. Add "Price Estimator" wherever a filter checks where the lead came from |
+| 5 | Test | Submit with `?direct=1`, check Airtable, Drive and the zap, then set `inquiry.mode` to `"direct"` |
+
+Worker secrets live in Cloudflare > Workers & Pages > package-finder > Settings > Variables and secrets.
 
 ## Hosting
 

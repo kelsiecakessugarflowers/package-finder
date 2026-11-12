@@ -26,6 +26,7 @@ async function all(byId) {
 // Optional "Website Description" field, read by name (customer-facing blurb; falls back to Suitable For)
 const desc = Object.fromEntries((await all(false)).map(r => [r.id, r.fields['Website Description'] || '']));
 const packages = (await all(true)).filter(r => r.fields[F.live]).map(r => ({
+  id: r.id,
   name: r.fields[F.name],
   price: r.fields[F.price] || 0,
   tiers: (r.fields[F.tiers] || []).map(o => parseInt(String(o.name || o).match(/\d+/)?.[0])).filter(Boolean).sort((a, b) => a - b),

@@ -3,6 +3,26 @@
  "shopUrl": "https://shop.kelsiecakes.com",
  "finderUrl": "index.html",
  "gtmId": "GTM-5ZMBM3M",
+ "inquiry": {
+  "mode": "fillout",
+  "turnstileSiteKey": "",
+  "maxPhotos": 5,
+  "referralOptions": [
+   "Google",
+   "Pinterest",
+   "Facebook",
+   "Etsy",
+   "Referral / Word of Mouth",
+   "Referral from a past client",
+   "Repeat Client",
+   "Other"
+  ]
+ },
+ "legal": {
+  "owner": "Kelsie Cakes LLC",
+  "termsUrl": "https://kelsiecakes.com/terms",
+  "privacyUrl": "https://kelsiecakes.com/privacy"
+ },
  "proDiscount": 0.3,
  "proRoundTo": 10,
  "roles": [
@@ -10,21 +30,21 @@
    "key": "couple",
    "label": "I’m getting married",
    "sub": "Planning flowers for my own wedding cake",
-   "clientType": "Couple",
+   "clientType": "Engaged Couple",
    "group": "consumer"
   },
   {
    "key": "family",
    "label": "Family or friend",
    "sub": "Helping the wedding couple",
-   "clientType": "Family/Friend",
+   "clientType": "Family Friend",
    "group": "consumer"
   },
   {
    "key": "baker",
    "label": "Baker or cake decorator",
    "sub": "I’m placing the flowers on the cake",
-   "clientType": "Baker/Cake Decorator",
+   "clientType": "Baker",
    "group": "pro"
   },
   {
@@ -232,7 +252,30 @@
   "embedEstimatorButton": "Get a price estimate",
   "embedInquiryButton": "Start your inquiry",
   "embedNote": "Every design is custom colored. Custom designs need at least {minWeeks} weeks’ notice; dates under {rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design.",
-  "embedProStartingAt": "Pro, starting at"
+  "embedProStartingAt": "Pro, starting at",
+  "cardDetails": "Your details",
+  "detailsIntro": "After you’ve submitted your inquiry, I’ll check my calendar for availability and send you a more detailed questionnaire about your cake design via email.",
+  "labelFirst": "First Name",
+  "labelLast": "Last Name",
+  "labelPronouns": "Pronouns",
+  "labelEmail": "Email",
+  "labelPhone": "Phone",
+  "labelReferral": "How did you find out about Sugar Flowers by Kelsie Cakes?",
+  "labelVision": "What are you looking for? Tell me about your cake vision and what sugar flowers you’re interested in!",
+  "labelPhotos": "Do you have any inspiration photos you’d like to share?",
+  "photosHint": "Up to {max} photos.",
+  "allergenHeading": "Allergen Information",
+  "allergenText": "Sugar Flowers contain egg whites and are not created in an allergen-free facility. They may contain inedible material, such as floral wire, and are not for consumption.",
+  "allergenCheck": "I Understand.",
+  "required": "Required",
+  "missing": "Please fill in the highlighted fields.",
+  "sending": "Sending…",
+  "sendError": "Something went wrong sending your inquiry. Please try again, or email hello@sugarflowersonline.com.",
+  "thanksHeading": "Thank you so much for your inquiry!",
+  "thanksText": "I’ll check my calendar for availability and send you a more detailed questionnaire about your cake design via email. I look forward to meeting with you!",
+  "thanksSignoff": "xoxo, Kelsie",
+  "footerTerms": "Terms",
+  "footerPrivacy": "Privacy"
  },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
@@ -244,6 +287,7 @@
  },
  "packages": [
   {
+   "id": "rec8tDl1HXGsRbipT",
    "name": "The Marguerite",
    "price": 500,
    "tiers": [
@@ -256,6 +300,7 @@
    "greenery": "a touch of greenery and filler"
   },
   {
+   "id": "rec5peH1R9mBD9OjA",
    "name": "The Bryony",
    "price": 700,
    "tiers": [
@@ -268,6 +313,7 @@
    "greenery": "5–7 filler/greenery pieces"
   },
   {
+   "id": "recY9AzzlOTGoItSd",
    "name": "The Thaleia",
    "price": 1000,
    "tiers": [
@@ -280,6 +326,7 @@
    "greenery": "7–10 filler/greenery pieces"
   },
   {
+   "id": "recak2NCPtcfHTAYV",
    "name": "The Florian",
    "price": 1500,
    "tiers": [
@@ -293,6 +340,7 @@
    "greenery": "10–14 filler/greenery pieces"
   },
   {
+   "id": "recEd9AzDKIOuG01H",
    "name": "The Aster",
    "price": 2500,
    "tiers": [
@@ -306,6 +354,7 @@
    "greenery": "~15–20 filler/greenery"
   },
   {
+   "id": "rec0EfqMNRyJhkIDg",
    "name": "The Hortensia",
    "price": 4000,
    "tiers": [

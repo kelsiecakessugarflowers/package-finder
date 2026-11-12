@@ -12,8 +12,25 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 var(--kc-font-body);padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
-header h1{font-size:16px;line-height:1.2;margin:0;font-weight:700;color:var(--ink)}
-header p{margin:2px 0 0;font-size:12px;color:var(--muted);letter-spacing:.04em}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+header .logo{height:46px;width:auto;display:block}
+header h1{font-size:12px;line-height:1.2;margin:0;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;text-align:right}
+footer{text-align:center;padding:8px 16px 24px;color:var(--muted);font-size:12px}
+footer img{width:150px;height:auto;display:block;margin:0 auto 10px}
+footer a{color:var(--muted)}
+input.bad,select.bad,textarea.bad,.check.bad{border-color:var(--kc-berry);background:#fff7f8}
+.err{color:var(--kc-berry);font-size:13px;margin:8px 0 0}
+textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--text);min-height:110px;resize:vertical}
+.row{display:flex;gap:8px}.row>.field{flex:1;min-width:0}
+.check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);padding:10px;margin-top:6px;color:var(--text);font-size:15px}
+.check input{width:20px;height:20px;margin:2px 0 0;flex:0 0 auto}
+.allergen{font-size:14px;margin:4px 0 0}
+.thumbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.thumbs span{position:relative}
+.thumbs img{width:64px;height:64px;object-fit:cover;border:1px solid var(--line);display:block}
+.thumbs button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;padding:0;border-radius:50%;font-size:13px;line-height:1;background:var(--ink);color:var(--kc-white);border:none}
+.thanks{text-align:center;padding:28px 16px}
+.thanks h2{background:none;border:none;margin:0 0 10px;padding:0;text-transform:none;letter-spacing:0;font-family:var(--kc-font-heading);font-weight:500;font-size:26px;display:block}
 main{max-width:640px;margin:0 auto;padding:12px}
 .intro{margin:4px 2px 12px;color:var(--muted);font-size:15px}
 section{background:var(--card);border:1px solid var(--line);padding:14px;margin-bottom:12px}
@@ -53,7 +70,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 </style>
 </head>
 <body>
-<header><h1 id="t-title"></h1><p id="t-brand"></p></header>
+<header><img class="logo" src="logo-alt.svg" alt="Sugar Flowers by Kelsie Cakes"><h1 id="t-title"></h1></header>
 <main>
   <p class="intro" id="t-intro"></p>
 
@@ -86,7 +103,29 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <h2 id="t-cardEstimate"></h2>
     <div id="estimate"></div>
   </section>
+
+  <section id="details" hidden>
+    <h2 id="t-cardDetails"></h2>
+    <p class="muted" id="t-detailsIntro" style="margin-top:0"></p>
+    <div class="row">
+      <div class="field" data-f="first"><label for="first" id="t-labelFirst"></label><input id="first" autocomplete="given-name"></div>
+      <div class="field" data-f="last"><label for="last" id="t-labelLast"></label><input id="last" autocomplete="family-name"></div>
+    </div>
+    <div class="field" data-f="pronouns"><label for="pronouns" id="t-labelPronouns"></label><input id="pronouns"></div>
+    <div class="field" data-f="email"><label for="email" id="t-labelEmail"></label><input id="email" type="email" autocomplete="email"></div>
+    <div class="field" data-f="phone"><label for="phone" id="t-labelPhone"></label><input id="phone" type="tel" autocomplete="tel"></div>
+    <div class="field" data-f="referral"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
+    <div class="field" data-f="vision"><label for="vision" id="t-labelVision"></label><textarea id="vision"></textarea></div>
+    <div class="field" data-f="photos"><label for="photos" id="t-labelPhotos"></label>
+      <input id="photos" type="file" accept="image/*" multiple><p class="muted" id="photosHint" style="margin:4px 0 0"></p><div class="thumbs" id="thumbs"></div></div>
+    <p class="sub" id="t-allergenHeading"></p>
+    <p class="allergen" id="t-allergenText"></p>
+    <label class="check" data-f="allergen"><input type="checkbox" id="allergen"><span id="t-allergenCheck"></span></label>
+    <div id="turnstile" style="margin-top:12px"></div>
+    <p class="err" id="formErr" hidden></p>
+  </section>
 </main>
+<footer id="footer"></footer>
 
 <div class="bar">
   <div class="big" id="barPrice"></div>
@@ -100,7 +139,8 @@ const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // style: null = not chosen yet, '' = "Not sure yet"
 const st = {role: '', date: '', size: '', style: null, budget: '', palette: '', pkg: ''};
-let D, T;
+let D, T, direct = false, tsToken = '';
+const photos = [];   // {name, type, data (base64), url (preview)}
 // Copy lives in data.json "copy"; {placeholders} are filled here
 const t = (k, vars = {}) => String(T[k] ?? '').replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? '');
 
@@ -158,6 +198,10 @@ function renderStatic() {
   $('#size').innerHTML = opts(D.tierOptions);
   $('#style').innerHTML = opts(D.styles) + `<option value="-">${esc(t('styleNotSure'))}</option>`;
   $('#budget').innerHTML = opts(D.budgets);
+  $('#referral').innerHTML = opts(D.inquiry.referralOptions);
+  $('#photosHint').textContent = t('photosHint', {max: D.inquiry.maxPhotos});
+  // Footer: logo, copyright and legal links on the full page; none of it inside an embed (the header logo is enough there)
+  if (!framed) $('#footer').innerHTML = `<img src="logo-main.svg" alt="Sugar Flowers by Kelsie Cakes">© ${new Date().getFullYear()} ${esc(D.legal.owner)} · <a href="${esc(D.legal.termsUrl)}" target="_top">${esc(t('footerTerms'))}</a> · <a href="${esc(D.legal.privacyUrl)}" target="_top">${esc(t('footerPrivacy'))}</a>`;
   $('#pals').innerHTML = D.palettes.map(p => `<button type="button" class="pal" data-pal="${esc(p.name)}" aria-pressed="false">
     <span class="sw">${p.colors.map(c => `<i style="background:${c[1]}" title="${esc(c[0])}"></i>`).join('')}</span>${esc(p.name)}</button>`).join('');
 }
@@ -206,13 +250,13 @@ function render() {
       ${notes.join('')}
       <p class="note">${esc(t('noteRetainer'))}</p>
       <p class="muted">${esc(t('noteFinal'))}</p>
-      ${shop ? `<p class="muted"><a target="_top" href="${esc(inquiryUrl(p))}" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>` : ''}`;
+      ${shop ? `<p class="muted"><a target="_top" href="${direct ? '#details' : esc(inquiryUrl(p))}" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>` : ''}`;
     bar.innerHTML = `<small>${esc(t('startingAt'))}</small>${money(priceFor(p))}<small>${esc(p.name)}${isPro() ? ' · ' + esc(t('tagPro')) : ''}</small>`;
   }
   if (!p && !shop) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; return; }
   cta.removeAttribute('aria-disabled');
   if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; }
-  else { cta.textContent = t('barCta'); cta.href = inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
+  else { cta.textContent = t('barCta'); cta.href = direct ? '#details' : inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
 }
 
 let lastResult = '';
@@ -235,10 +279,78 @@ document.addEventListener('click', e => {
   if (pal) { st.palette = st.palette === pal.dataset.pal ? '' : pal.dataset.pal; track('estimator_change', {field: 'palette', value: st.palette}); render(); }
   if (pkg) { st.pkg = pkg.dataset.pkg; track('estimator_change', {field: 'package', value: st.pkg}); render(); trackResult(); }
   if (link) track('estimator_cta', {action: link.dataset.cta});
+  if (direct && link && link.dataset.cta === 'inquiry') { e.preventDefault(); submitInquiry(); }
+  else if (direct && link && link.dataset.cta === 'inquiry_anyway') { e.preventDefault(); $('#details').scrollIntoView({behavior: 'smooth'}); }
+  const rm = e.target.closest('[data-rm]'); if (rm) { photos.splice(+rm.dataset.rm, 1); renderThumbs(); }
 });
 
+// Clear a highlight as soon as the field is filled in
+['input', 'change'].forEach(ev => document.addEventListener(ev, e => { e.target.classList?.remove('bad'); if (e.target.id === 'allergen') $('.check').classList.remove('bad'); }));
+
+// ---- Built-in inquiry form (inquiry.mode "direct", or ?direct=1 to preview) ----
+const val = id => $('#' + id).value.trim();
+function renderThumbs() {
+  $('#thumbs').innerHTML = photos.map((p, i) => `<span><img src="${p.url}" alt=""><button type="button" data-rm="${i}" aria-label="Remove photo">×</button></span>`).join('');
+}
+// Shrink photos in the browser (longest side 2000px, JPEG) so uploads stay small and fast
+function readPhoto(file) {
+  return new Promise(resolve => {
+    const done = (blob, type, name) => { const r = new FileReader(); r.onload = () => resolve({name, type, data: String(r.result).split(',')[1], url: URL.createObjectURL(blob)}); r.readAsDataURL(blob); };
+    const img = new Image(), src = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => done(b, 'image/jpeg', file.name.replace(/\.\w+$/, '') + '.jpg'), 'image/jpeg', 0.85);
+    };
+    img.onerror = () => done(file, file.type || 'image/jpeg', file.name);   // e.g. HEIC on browsers that can't preview it: send as is
+    img.src = src;
+  });
+}
+document.addEventListener('change', async e => {
+  if (e.target.id !== 'photos') return;
+  for (const f of [...e.target.files]) { if (photos.length >= D.inquiry.maxPhotos) break; const p = await readPhoto(f); if (p.data.length * 0.75 <= 5 * 1024 * 1024) photos.push(p); }
+  e.target.value = ''; renderThumbs();
+});
+function loadTurnstile() {
+  if (!D.inquiry.turnstileSiteKey) return;
+  window.onTurnstileLoad = () => window.turnstile.render('#turnstile', {sitekey: D.inquiry.turnstileSiteKey, callback: tok => { tsToken = tok; }, 'expired-callback': () => { tsToken = ''; }});
+  const sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit'; sc.async = true; document.head.appendChild(sc);
+}
+async function submitInquiry() {
+  const req = {role: st.role, date: st.date, size: st.size, first: val('first'), last: val('last'), email: val('email'), phone: val('phone'), referral: val('referral')};
+  const bad = Object.keys(req).filter(k => !req[k]);
+  if (req.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.email)) bad.push('email');
+  document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
+  bad.forEach(k => $('#' + k).classList.add('bad'));
+  if (!$('#allergen').checked) { bad.push('allergen'); $('.check').classList.add('bad'); }
+  const err = $('#formErr');
+  if (bad.length) { err.textContent = t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  if (D.inquiry.turnstileSiteKey && !tsToken) { err.textContent = t('missing'); err.hidden = false; $('#turnstile').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), r = role();
+  const cta = $('#barCta'); cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true'); err.hidden = true;
+  try {
+    const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+      ...req, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: st.palette,
+      clientType: r.clientType, roleLabel: r.label, packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
+      utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, turnstile: tsToken,
+      photos: photos.map(({name, type, data}) => ({name, type, data}))})});
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || !out.ok) throw new Error(out.error || res.status);
+    track('estimator_submit', {package: name, pricing: isPro() ? 'pro' : 'standard', photos: photos.length});
+    $('main').innerHTML = `<section class="thanks"><h2>${esc(t('thanksHeading'))}</h2><p>${esc(t('thanksText'))}</p><p>${esc(t('thanksSignoff'))}</p></section>`;
+    document.querySelector('.bar').remove(); document.body.style.paddingBottom = '0'; window.scrollTo(0, 0);
+  } catch (e2) {
+    err.textContent = t('sendError'); err.hidden = false; render();
+    if (window.turnstile) { window.turnstile.reset(); tsToken = ''; }
+  }
+}
+
 fetch('data.json').then(r => r.json()).then(d => {
-  D = d; T = d.copy; loadGtm(d.gtmId); renderStatic();
+  D = d; T = d.copy; loadGtm(d.gtmId);
+  direct = d.inquiry.mode === 'direct' || new URLSearchParams(location.search).has('direct');
+  renderStatic();
+  if (direct) { $('#details').hidden = false; loadTurnstile(); }
   // ?for=couple|family|baker|vendor preselects the role (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');
   if (D.roles.some(r => r.key === f)) { st.role = f; $('#role').value = f; }
