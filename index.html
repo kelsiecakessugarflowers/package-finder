@@ -60,12 +60,9 @@ ul.inc li{margin:2px 0}
 
   <section id="s-who">
     <p class="step">Step 1</p>
-    <h2>Who are the flowers for?</h2>
-    <p class="hint">Pricing and timelines are a little different for professionals.</p>
-    <div class="who" id="who">
-      <button type="button" data-who="consumer" aria-pressed="false"><strong>My own celebration</strong><span>I’m getting married or planning the event</span></button>
-      <button type="button" data-who="pro" aria-pressed="false"><strong>I’m a professional</strong><span>Cake artist, baker, venue or planner</span></button>
-    </div>
+    <h2>What role best describes you?</h2>
+    <p class="hint">Pricing is a little different for bakers and wedding vendors.</p>
+    <div class="who" id="who"></div>
   </section>
 
   <section id="s-tiers" hidden>
@@ -97,11 +94,13 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const st = {who: '', tiers: 0, style: null, palette: null, pkg: ''};
+const st = {who: '', tiers: 0, style: null, palette: null, pkg: ''};   // who = role key from data.json roles
 let D;
 
 // Pro price: discount, rounded to the nearest proRoundTo (30% off $700 = $490)
-const priceFor = p => st.who === 'pro' ? Math.round(p.price * (1 - D.proDiscount) / D.proRoundTo) * D.proRoundTo : p.price;
+const role = () => D.roles.find(r => r.key === st.who);
+const isPro = () => role()?.group === 'pro';
+const priceFor = p => isPro() ? Math.round(p.price * (1 - D.proDiscount) / D.proRoundTo) * D.proRoundTo : p.price;
 const fits = () => D.packages.filter(p => (p.tiers || []).includes(st.tiers)).sort((a, b) => a.price - b.price);
 function suggested() {
   const f = fits(); if (!f.length) return null;
@@ -121,6 +120,7 @@ const show = id => { const el = $(id); if (el.hidden) { el.hidden = false; retur
 const press = (box, attr, val) => box.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset[attr] === String(val)));
 
 function renderStatic() {
+  $('#who').innerHTML = D.roles.map(r => `<button type="button" data-who="${esc(r.key)}" aria-pressed="false"><strong>${esc(r.label)}</strong><span>${esc(r.sub)}</span></button>`).join('');
   $('#tiers').innerHTML = [1, 2, 3, 4, 5, 6].map(n => `<button type="button" data-tier="${n}" aria-pressed="false">${n === 6 ? '6+' : n}</button>`).join('');
   $('#styles').innerHTML = D.styles.map(s => `<button type="button" data-style="${esc(s)}" aria-pressed="false">
     <span class="ph"><img src="photos/${slug(s)}.jpg" alt="${esc(s)} sugar flower cake" loading="lazy" onerror="this.remove()"></span><span class="lbl">${esc(s)}</span></button>`).join('')
@@ -134,7 +134,7 @@ function inquiryUrl(p) {
   const u = new URL(D.filloutUrl), here = new URLSearchParams(location.search);
   // Pass along anything the visitor arrived with (email links, ads)
   ['utm_source', 'ck_subscriber_id', 'first_name', 'last_name', 'email', 'phone', 'event_date'].forEach(k => { if (here.get(k)) u.searchParams.set(k, here.get(k)); });
-  const set = {client_type: D.clientTypes[st.who], tiers: st.tiers === 6 ? '6+ tiers' : st.tiers + (st.tiers === 1 ? ' tier' : ' tiers'), style: st.style || '', palette: st.palette || '', package: p.name, estimate: priceFor(p), source: 'estimator'};
+  const set = {client_type: role().clientType, tiers: st.tiers === 6 ? '6+ tiers' : st.tiers + (st.tiers === 1 ? ' tier' : ' tiers'), style: st.style || '', palette: st.palette || '', package: p.name, estimate: priceFor(p), source: 'estimator'};
   for (const [k, v] of Object.entries(set)) if (v !== '' && v != null) u.searchParams.set(k, v);
   return u.toString();
 }
@@ -148,7 +148,7 @@ function renderResult() {
   const cake = `${st.tiers === 6 ? '6+' : st.tiers}-tier cake${st.style ? ' with a ' + ({Bundles: 'bundled'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
   const others = f.filter(x => x !== p);
   el.innerHTML = `
-    <span class="tag">${p === sug ? '🌟 Recommended for you' : 'Your pick'}</span>${st.who === 'pro' ? ' <span class="tag soft">Pro pricing</span>' : ''}
+    <span class="tag">${p === sug ? '🌟 Recommended for you' : 'Your pick'}</span>${isPro() ? ' <span class="tag soft">Pro pricing</span>' : ''}
     <p class="pkgname">${esc(p.name)}</p>
     <p class="hint" style="margin:2px 0 0">For your ${esc(cake)}${st.palette ? ' in ' + esc(st.palette) : ''}</p>
     <p class="price">Starting at ${money(priceFor(p))}</p>
@@ -180,9 +180,9 @@ document.addEventListener('click', e => {
 
 fetch('data.json').then(r => r.json()).then(d => {
   D = d; renderStatic();
-  // ?for=pro or ?for=consumer skips step 1 (links from the packages embed, trade pages, emails)
+  // ?for=couple|family|baker|vendor skips step 1 (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');
-  if (f === 'pro' || f === 'consumer') { st.who = f; press($('#who'), 'who', f); show('#s-tiers'); }
+  if (D.roles.some(r => r.key === f)) { st.who = f; press($('#who'), 'who', f); show('#s-tiers'); }
 });
 </script>
 </body>

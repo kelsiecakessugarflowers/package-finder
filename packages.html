@@ -64,7 +64,7 @@ fetch('data.json').then(r => r.json()).then(D => {
       </ul>
       <div class="price"><small>${pro ? 'Pro, starting at' : 'Starting at'}</small>${money(price(p))}</div>
     </div></article>`).join('');
-  document.getElementById('finder').href = D.finderUrl + (pro ? '?for=pro' : '');
+  document.getElementById('finder').href = D.finderUrl;
   document.getElementById('inquire').href = D.filloutUrl + '?source=packages';
   document.getElementById('note').textContent = `Every design is custom colored. Custom designs need at least ${D.leadTime.minimumWeeks} weeks’ notice; dates under ${D.leadTime.rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design.`;
   report();

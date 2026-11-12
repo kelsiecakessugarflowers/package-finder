@@ -51,7 +51,7 @@ Add an Embed Code element with this, using your live site address:
 <script>addEventListener('message',e=>{if(e.data&&e.data.kcEmbedHeight)document.getElementById('kc-packages').style.height=e.data.kcEmbedHeight+'px'})</script>
 ```
 
-Add `?for=pro` to the iframe address on a trade page to show pro pricing. The finder also accepts `?for=pro` or `?for=consumer` to skip step 1.
+Add `?for=pro` to the iframe address on a trade page to show pro pricing. The finder accepts `?for=couple`, `?for=family`, `?for=baker` or `?for=vendor` to skip step 1.
 
 ## Settings (data.json)
 
@@ -62,7 +62,7 @@ Add `?for=pro` to the iframe address on a trade page to show pro pricing. The fi
 | `proDiscount` | `0.30` = 30% off for professionals |
 | `proRoundTo` | Pro price rounds to the nearest this (10 → $700 becomes $490) |
 | `styleLean` | 0 = suggest the smallest package for the tier count, 1 = the largest |
-| `clientTypes` | Text sent to Fillout as `client_type` |
+| `roles` | Step 1 choices (from the quiz). `clientType` is sent to Fillout; `group` pro gets pro pricing |
 | `filloutUrl` | Inquiry form link |
 | `leadTime` | Minimum notice and rush cutoff in weeks, shown on both pages |
 
@@ -70,7 +70,7 @@ Add `?for=pro` to the iframe address on a trade page to show pro pricing. The fi
 
 | URL parameter | Example |
 |---|---|
-| `client_type` | Bride/Couple or Pro |
+| `client_type` | Couple, Family/Friend, Baker/Cake Decorator or Wedding Vendor |
 | `tiers` | 3 tiers (matches Airtable Cake Size: 1 tier, 2 tiers ... 6+ tiers) |
 | `style` | Cascading (matches Airtable Cake Style; blank if "Not sure yet") |
 | `palette` | Vintage Glam (blank if skipped) |
