@@ -1,6 +1,8 @@
 {
  "filloutUrl": "https://kelsiecakes.fillout.com/t/6sqeBeZ6Xaus",
+ "shopUrl": "https://shop.kelsiecakes.com",
  "finderUrl": "index.html",
+ "gtmId": "GTM-5ZMBM3M",
  "proDiscount": 0.3,
  "proRoundTo": 10,
  "roles": [
@@ -33,7 +35,26 @@
    "group": "pro"
   }
  ],
+ "tierOptions": [
+  "1 tier",
+  "2 tiers",
+  "3 tiers",
+  "4 tiers",
+  "5 tiers",
+  "6+ tiers"
+ ],
+ "budgets": [
+  "Under $350",
+  "$350-$500",
+  "$500-$1,000",
+  "$1,000-$1,500",
+  "$1,500-$2,500",
+  "$2,500+",
+  "Not sure yet"
+ ],
+ "shopBudget": "Under $350",
  "leadTime": {
+  "shopUnderDays": 21,
   "minimumWeeks": 6,
   "rushWeeks": 8
  },
@@ -170,6 +191,49 @@
    ]
   }
  ],
+ "copy": {
+  "title": "Price Estimator",
+  "brand": "Sugar Flowers by Kelsie Cakes",
+  "intro": "Tell me about your cake to see which package fits and where pricing starts.",
+  "cardCake": "Your cake",
+  "labelRole": "I am",
+  "labelDate": "Event date",
+  "labelSize": "Cake size",
+  "labelStyle": "Cake style",
+  "labelBudget": "Budget for sugar flowers",
+  "choose": "Choose…",
+  "styleNotSure": "Not sure yet",
+  "cardPalette": "Color palette (optional)",
+  "paletteHint": "Everything is custom colored, so these are starting points.",
+  "cardEstimate": "Your estimate",
+  "estimateEmpty": "Choose your cake size and style to see your estimate.",
+  "tagRecommended": "🌟 Recommended",
+  "tagSelected": "✓ Selected",
+  "tagPro": "Pro pricing",
+  "startingAt": "Starting at",
+  "forYour": "For your {cake}",
+  "includes": "Includes",
+  "unitStatement": "statement flowers",
+  "unitSupporting": "supporting blooms",
+  "unitFiller": "filler and greenery pieces",
+  "includeCustom": "Custom design, colors matched to your palette",
+  "includeShipping": "Insured shipping with the Delicate but Durable Promise",
+  "othersHeading": "Other packages for a {size} cake",
+  "noteFinal": "Your final quote is based on your exact design.",
+  "noteRetainer": "You can hold your date with a $150 retainer.",
+  "noteRush": "Your date is less than {rushWeeks} weeks away, so a rush fee may apply.",
+  "noteShort": "Custom designs need at least {minWeeks} weeks’ notice. Send an inquiry and I’ll let you know what’s possible.",
+  "shopBudget": "For budgets under $350, my ready-to-ship sugar flowers are the best fit.",
+  "shopDate": "Your date is less than 3 weeks away, which is too soon for a custom design. My ready-to-ship sugar flowers are made for this.",
+  "inquiryAnyway": "Still want a custom design? Send an inquiry",
+  "barEmpty": "Your estimate shows here",
+  "barCta": "Request final quote",
+  "barShop": "Shop ready-to-ship",
+  "embedEstimatorButton": "Get a price estimate",
+  "embedInquiryButton": "Start your inquiry",
+  "embedNote": "Every design is custom colored. Custom designs need at least {minWeeks} weeks’ notice; dates under {rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design.",
+  "embedProStartingAt": "Pro, starting at"
+ },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
   "The Bryony": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/86abda08-cff3-447d-887d-25a9cee653f8.png",

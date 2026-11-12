@@ -3,186 +3,246 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Find Your Sugar Flower Package | Sugar Flowers by Kelsie Cakes</title>
-<meta name="description" content="Answer a few quick questions to see which custom sugar flower package fits your cake, with a starting price.">
+<title>Price Estimator | Sugar Flowers by Kelsie Cakes</title>
+<meta name="description" content="See which custom sugar flower package fits your cake and where pricing starts.">
 <link rel="stylesheet" href="brand.css">
 <style>
-:root{--bg:var(--kc-bg);--card:var(--kc-card);--ink:var(--kc-text);--head:var(--kc-heading);--muted:var(--kc-muted);--line:var(--kc-line);--accent:var(--kc-accent);--accent-soft:var(--kc-accent-soft)}
+/* Layout and hierarchy follow the quote builder: sticky header and bar, banded card headings, everything on one page */
+:root{--bg:var(--kc-bg);--card:var(--kc-card);--ink:var(--kc-plum);--text:var(--kc-text);--muted:var(--kc-muted);--line:var(--kc-line);--accent:var(--kc-accent);--soft:var(--kc-accent-soft)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--kc-font-body)}
-main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
-h1,h2,.price,.pkgname{font-family:var(--kc-font-heading);font-weight:500;color:var(--head)}
-h1{font-size:32px;line-height:1.15;margin:0 0 6px;text-align:center}
-.lead{text-align:center;color:var(--muted);margin:0 0 24px}
-section{background:var(--card);border:1px solid var(--line);padding:18px 16px;margin-bottom:14px}
-section[hidden]{display:none}
-h2{font-size:22px;margin:0 0 4px}
-.step{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
-.hint{color:var(--muted);font-size:14px;margin:0 0 12px}
-button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);cursor:pointer;border-radius:0}
-button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-button[aria-pressed=true]{border:2px solid var(--accent);background:var(--accent-soft)}
-.who{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.who button{padding:16px 12px;text-align:left}
-.who strong{display:block;font-size:17px}
-.who span{font-size:14px;color:var(--muted)}
-.tiers{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-.tiers button{padding:14px 0;font-size:18px}
-.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.styles button{padding:0;text-align:left;display:flex;flex-direction:column}
-.styles .ph{aspect-ratio:2/3;width:100%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;overflow:hidden}
-.styles img{width:100%;height:100%;object-fit:cover;display:block}
-.styles .lbl{padding:8px 10px;font-size:15px}
-.pals{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pals button{padding:10px;text-align:left;font-size:15px}
-.sw{display:flex;height:22px;margin-bottom:6px;outline:1px solid var(--line)}
-.sw i{flex:1}
-.pals .none{display:flex;align-items:center;justify-content:center;color:var(--muted)}
-.result{border:2px solid var(--accent)}
-.pkgname{font-size:28px;margin:2px 0 0;line-height:1.1}
-.price{font-size:22px;margin:4px 0 2px}
-.tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:999px;background:var(--kc-plum);color:var(--kc-white)}
-.tag.soft{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
-ul.inc{margin:10px 0 0;padding-left:20px}
-ul.inc li{margin:2px 0}
-.others{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
-.others p{margin:0 0 8px;font-size:14px;color:var(--muted)}
-.others button{display:flex;justify-content:space-between;width:100%;padding:10px 12px;margin-bottom:6px;font-size:15px}
-.cta{display:block;width:100%;margin-top:16px;padding:16px;font-size:17px;letter-spacing:.04em;background:var(--accent);border:1px solid var(--accent);color:var(--kc-accent-text);text-align:center;text-decoration:none;font-weight:600}
-.fine{font-size:13px;color:var(--muted);margin:10px 0 0}
-@media (max-width:480px){.who,.pals{grid-template-columns:1fr}.tiers{grid-template-columns:repeat(3,1fr)}.styles{grid-template-columns:1fr 1fr}h1{font-size:28px}}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 var(--kc-font-body);padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
+header h1{font-size:16px;line-height:1.2;margin:0;font-weight:700;color:var(--ink)}
+header p{margin:2px 0 0;font-size:12px;color:var(--muted);letter-spacing:.04em}
+main{max-width:640px;margin:0 auto;padding:12px}
+.intro{margin:4px 2px 12px;color:var(--muted);font-size:15px}
+section{background:var(--card);border:1px solid var(--line);padding:14px;margin-bottom:12px}
+h2{font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);margin:-14px -14px 12px;padding:12px 14px;background:var(--soft);border-bottom:1px solid var(--line);font-weight:700}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+section>label:first-of-type{margin-top:0}
+input,select{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--text)}
+input[type=date]{-webkit-appearance:none;appearance:none;min-height:46px;text-align:left;display:block}
+.stylepick{display:flex;gap:10px;align-items:flex-start}
+.stylepick>div{flex:1;min-width:0}
+.stylepick img{width:76px;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);margin-top:10px}
+button{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:0;padding:10px 12px;cursor:pointer}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted);font-size:13px}
+.pals{display:flex;flex-wrap:wrap;gap:6px}
+.pal{display:flex;flex-direction:column;gap:4px;padding:6px;flex:1 1 calc(50% - 6px);font-size:13px;text-align:left}
+.pal.on{border:2px solid var(--accent);background:var(--soft)}
+.sw{display:flex;height:16px;outline:1px solid var(--line)}.sw i{flex:1}
+.tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:999px;vertical-align:2px;white-space:nowrap}
+.tag.star{background:var(--accent);color:var(--kc-white)}
+.tag.sel{background:var(--ink);color:var(--kc-white)}
+.tag.info{background:var(--soft);color:var(--accent);border:1px solid var(--accent)}
+.pkgname{font-family:var(--kc-font-heading);font-size:24px;font-weight:500;color:var(--ink);margin:6px 0 0;line-height:1.15}
+.price{font-size:18px;font-weight:700;margin:4px 0 2px;color:var(--ink)}
+.inc{margin:8px 0 0;padding-left:20px;font-size:15px}
+.inc li{margin:2px 0}
+.sub{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+.pkg{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px;margin-bottom:6px;text-align:left}
+.note{background:var(--soft);border-left:3px solid var(--accent);padding:10px 12px;margin:12px 0 0;font-size:14px}
+.note.shop{border-left-color:var(--kc-berry)}
+.note a,.muted a{color:var(--accent);font-weight:600}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;z-index:5}
+.bar .big{font-size:20px;font-weight:700;flex:1;color:var(--ink);min-width:0}
+.bar .big small{display:block;font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar a{background:var(--accent);color:var(--kc-white);text-decoration:none;font-weight:600;padding:12px 16px;white-space:nowrap}
+.bar a[aria-disabled=true]{background:var(--line);color:var(--muted);pointer-events:none}
 </style>
 </head>
 <body>
+<header><h1 id="t-title"></h1><p id="t-brand"></p></header>
 <main>
-  <h1>Find your sugar flower package</h1>
-  <p class="lead">A few quick questions, then you’ll see the package that fits your cake and where pricing starts.</p>
+  <p class="intro" id="t-intro"></p>
 
-  <section id="s-who">
-    <p class="step">Step 1</p>
-    <h2>What role best describes you?</h2>
-    <p class="hint">Pricing is a little different for bakers and wedding vendors.</p>
-    <div class="who" id="who"></div>
+  <section>
+    <h2 id="t-cardCake"></h2>
+    <label for="role" id="t-labelRole"></label>
+    <select id="role"></select>
+    <label for="date" id="t-labelDate"></label>
+    <input type="date" id="date">
+    <label for="size" id="t-labelSize"></label>
+    <select id="size"></select>
+    <div class="stylepick">
+      <div>
+        <label for="style" id="t-labelStyle"></label>
+        <select id="style"></select>
+      </div>
+      <img id="stylePhoto" alt="" hidden>
+    </div>
+    <label for="budget" id="t-labelBudget"></label>
+    <select id="budget"></select>
   </section>
 
-  <section id="s-tiers" hidden>
-    <p class="step">Step 2</p>
-    <h2>How many tiers?</h2>
-    <p class="hint">Your best guess is perfect.</p>
-    <div class="tiers" id="tiers"></div>
-  </section>
-
-  <section id="s-style" hidden>
-    <p class="step">Step 3</p>
-    <h2>Which style do you love?</h2>
-    <p class="hint">Pick the one closest to your vision.</p>
-    <div class="styles" id="styles"></div>
-  </section>
-
-  <section id="s-pal" hidden>
-    <p class="step">Step 4 · optional</p>
-    <h2>Any colors in mind?</h2>
-    <p class="hint">Everything is custom colored, so these are just starting points.</p>
+  <section>
+    <h2 id="t-cardPalette"></h2>
+    <p class="muted" id="t-paletteHint" style="margin-top:0"></p>
     <div class="pals" id="pals"></div>
   </section>
 
-  <section id="s-result" class="result" hidden aria-live="polite"></section>
+  <section aria-live="polite">
+    <h2 id="t-cardEstimate"></h2>
+    <div id="estimate"></div>
+  </section>
 </main>
+
+<div class="bar">
+  <div class="big" id="barPrice"></div>
+  <a id="barCta" target="_top" href="#" aria-disabled="true"></a>
+</div>
 
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const st = {who: '', tiers: 0, style: null, palette: null, pkg: ''};   // who = role key from data.json roles
-let D;
+// style: null = not chosen yet, '' = "Not sure yet"
+const st = {role: '', date: '', size: '', style: null, budget: '', palette: '', pkg: ''};
+let D, T;
+// Copy lives in data.json "copy"; {placeholders} are filled here
+const t = (k, vars = {}) => String(T[k] ?? '').replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? '');
 
-// Pro price: discount, rounded to the nearest proRoundTo (30% off $700 = $490)
-const role = () => D.roles.find(r => r.key === st.who);
+// ---- Analytics: anonymous events only (no names, emails or dates) ----
+// Opened directly: pushed to this page's GTM. Inside a Showit iframe: posted to the parent page,
+// where the quiz's gtm-iframe-bridge.js forwards them to the site's GTM.
+const framed = window !== window.parent;
+function track(event, data = {}) {
+  const payload = {event, tool: 'price_estimator', ...data};
+  if (framed) { try { parent.postMessage({type: 'quiz_analytics', ...payload}, '*'); } catch (e) {} }
+  else { (window.dataLayer = window.dataLayer || []).push(payload); }
+}
+function loadGtm(id) {
+  if (framed || !id) return;
+  window.dataLayer = window.dataLayer || []; window.dataLayer.push({'gtm.start': Date.now(), event: 'gtm.js'});
+  const s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtm.js?id=' + id; document.head.appendChild(s);
+}
+
+const role = () => D.roles.find(r => r.key === st.role);
 const isPro = () => role()?.group === 'pro';
+const tiersNum = () => st.size ? parseInt(st.size) : 0;   // "6+ tiers" -> 6
 const priceFor = p => isPro() ? Math.round(p.price * (1 - D.proDiscount) / D.proRoundTo) * D.proRoundTo : p.price;
-const fits = () => D.packages.filter(p => (p.tiers || []).includes(st.tiers)).sort((a, b) => a.price - b.price);
+const fits = () => D.packages.filter(p => (p.tiers || []).includes(tiersNum())).sort((a, b) => a.price - b.price);
 function suggested() {
   const f = fits(); if (!f.length) return null;
-  const lean = st.style ? (D.styleLean[st.style] ?? 0.5) : 0; // "Not sure yet" starts at the smallest fit
+  const lean = st.style ? (D.styleLean[st.style] ?? 0.5) : 0;   // "Not sure yet" starts at the smallest fit
   return f[Math.round(lean * (f.length - 1))];
 }
-// "6–8 supporting blooms" -> "6-8 supporting blooms", "0-1" -> "Up to 1", "a touch of…" stays as written
-function aim(t, noun) {
-  const s = String(t || '');
+function daysUntil() {
+  if (!st.date) return null;
+  const [y, m, d] = st.date.split('-').map(Number), today = new Date(); today.setHours(0, 0, 0, 0);
+  return Math.round((new Date(y, m - 1, d) - today) / 86400000);
+}
+// Why this visitor goes to the shop instead ('date' or 'budget'), or '' for a custom inquiry
+function shopReason() {
+  const n = daysUntil();
+  if (n !== null && n >= 0 && n < D.leadTime.shopUnderDays) return 'date';
+  if (st.budget === D.shopBudget) return 'budget';
+  return '';
+}
+function aim(txt, noun) {
+  const s = String(txt || '');
   if (/dozens/i.test(s)) return 'Dozens of ' + noun;
   const m = s.match(/(\d+)\s*[-–]\s*(\d+)/), one = s.match(/(\d+)/);
   if (m) return +m[1] === 0 ? 'Up to ' + m[2] + ' ' + (+m[2] === 1 ? noun.replace(/s$/, '') : noun) : m[1] + '-' + m[2] + ' ' + noun;
-  if (one) return one[1] + ' ' + noun;
+  if (one) return (s.trim().startsWith('~') ? 'About ' : '') + one[1] + ' ' + noun;
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
-const show = id => { const el = $(id); if (el.hidden) { el.hidden = false; return true; } return false; };
-const press = (box, attr, val) => box.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset[attr] === String(val)));
 
 function renderStatic() {
-  $('#who').innerHTML = D.roles.map(r => `<button type="button" data-who="${esc(r.key)}" aria-pressed="false"><strong>${esc(r.label)}</strong><span>${esc(r.sub)}</span></button>`).join('');
-  $('#tiers').innerHTML = [1, 2, 3, 4, 5, 6].map(n => `<button type="button" data-tier="${n}" aria-pressed="false">${n === 6 ? '6+' : n}</button>`).join('');
-  $('#styles').innerHTML = D.styles.map(s => `<button type="button" data-style="${esc(s)}" aria-pressed="false">
-    <span class="ph"><img src="photos/${slug(s)}.jpg" alt="${esc(s)} sugar flower cake" loading="lazy" onerror="this.remove()"></span><span class="lbl">${esc(s)}</span></button>`).join('')
-    + `<button type="button" data-style="" aria-pressed="false"><span class="ph">Help me decide</span><span class="lbl">Not sure yet</span></button>`;
-  $('#pals').innerHTML = D.palettes.map(p => `<button type="button" data-pal="${esc(p.name)}" aria-pressed="false">
-    <span class="sw">${p.colors.map(c => `<i style="background:${c[1]}" title="${esc(c[0])}"></i>`).join('')}</span>${esc(p.name)}</button>`).join('')
-    + `<button type="button" class="none" data-pal="" aria-pressed="false">Not sure yet</button>`;
+  document.querySelectorAll('[id^="t-"]').forEach(el => { el.textContent = t(el.id.slice(2)); });
+  document.title = `${t('title')} | ${t('brand')}`;
+  const opts = (list, val = x => x, lbl = x => x) => `<option value="">${esc(t('choose'))}</option>` + list.map(x => `<option value="${esc(val(x))}">${esc(lbl(x))}</option>`).join('');
+  $('#role').innerHTML = opts(D.roles, r => r.key, r => r.label);
+  $('#size').innerHTML = opts(D.tierOptions);
+  $('#style').innerHTML = opts(D.styles) + `<option value="-">${esc(t('styleNotSure'))}</option>`;
+  $('#budget').innerHTML = opts(D.budgets);
+  $('#pals').innerHTML = D.palettes.map(p => `<button type="button" class="pal" data-pal="${esc(p.name)}" aria-pressed="false">
+    <span class="sw">${p.colors.map(c => `<i style="background:${c[1]}" title="${esc(c[0])}"></i>`).join('')}</span>${esc(p.name)}</button>`).join('');
 }
 
 function inquiryUrl(p) {
   const u = new URL(D.filloutUrl), here = new URLSearchParams(location.search);
-  // Pass along anything the visitor arrived with (email links, ads)
-  ['utm_source', 'ck_subscriber_id', 'first_name', 'last_name', 'email', 'phone', 'event_date'].forEach(k => { if (here.get(k)) u.searchParams.set(k, here.get(k)); });
-  const set = {client_type: role().clientType, tiers: st.tiers === 6 ? '6+ tiers' : st.tiers + (st.tiers === 1 ? ' tier' : ' tiers'), style: st.style || '', palette: st.palette || '', package: p.name, estimate: priceFor(p), source: 'estimator'};
+  ['utm_source', 'ck_subscriber_id', 'first_name', 'last_name', 'email', 'phone'].forEach(k => { if (here.get(k)) u.searchParams.set(k, here.get(k)); });
+  const set = {client_type: role()?.clientType, event_date: st.date, tiers: st.size, style: st.style, palette: st.palette,
+    budget: st.budget, package: p?.name, estimate: p ? priceFor(p) : '', source: 'estimator'};
   for (const [k, v] of Object.entries(set)) if (v !== '' && v != null) u.searchParams.set(k, v);
   return u.toString();
 }
 
-function renderResult() {
-  const el = $('#s-result'), f = fits();
-  if (!st.who || !st.tiers || st.style === null) { el.hidden = true; return; }
-  const sug = suggested();
-  let p = f.find(x => x.name === st.pkg) || sug;
-  if (!p) { el.hidden = false; el.innerHTML = `<h2>Let’s talk</h2><p>This one is best quoted personally.</p><a class="cta" target="_top" href="${esc(D.filloutUrl)}">Start my inquiry</a>`; return; }
-  const cake = `${st.tiers === 6 ? '6+' : st.tiers}-tier cake${st.style ? ' with a ' + ({Bundles: 'bundled'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
-  const others = f.filter(x => x !== p);
-  el.innerHTML = `
-    <span class="tag">${p === sug ? '🌟 Recommended for you' : 'Your pick'}</span>${isPro() ? ' <span class="tag soft">Pro pricing</span>' : ''}
-    <p class="pkgname">${esc(p.name)}</p>
-    <p class="hint" style="margin:2px 0 0">For your ${esc(cake)}${st.palette ? ' in ' + esc(st.palette) : ''}</p>
-    <p class="price">Starting at ${money(priceFor(p))}</p>
-    <ul class="inc">
-      <li>${esc(aim(p.statement, 'statement flowers'))}</li>
-      <li>${esc(aim(p.supporting, 'supporting blooms'))}</li>
-      <li>${esc(aim(p.greenery, 'filler and greenery pieces'))}</li>
-      <li>Custom design, colors matched to your palette</li>
-      <li>Insured shipping with the Delicate but Durable Promise</li>
-    </ul>
-    ${others.length ? `<div class="others"><p>Other packages for a ${st.tiers === 6 ? '6+' : st.tiers}-tier cake</p>${others.map(o => `<button type="button" data-pkg="${esc(o.name)}"><span>${esc(o.name)}</span><span>from ${money(priceFor(o))}</span></button>`).join('')}</div>` : ''}
-    <a class="cta" target="_top" href="${esc(inquiryUrl(p))}">Start my inquiry</a>
-    <p class="fine">Custom designs need at least ${D.leadTime.minimumWeeks} weeks’ notice, and dates under ${D.leadTime.rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design. Your choices here carry over to the inquiry form so you won’t have to answer them twice.</p>`;
-  show('#s-result');
+function render() {
+  const ph = $('#stylePhoto');
+  if (st.style) { ph.onerror = () => { ph.hidden = true; }; ph.src = `photos/${slug(st.style)}.jpg`; ph.alt = st.style + ' style example'; ph.hidden = false; } else ph.hidden = true;
+  document.querySelectorAll('.pal').forEach(b => { const on = b.dataset.pal === st.palette; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+
+  const el = $('#estimate'), cta = $('#barCta'), bar = $('#barPrice'), shop = shopReason(), n = daysUntil();
+  const f = fits(), sug = st.size && st.style !== null ? suggested() : null, p = sug && (f.find(x => x.name === st.pkg) || sug);
+  const notes = [];
+  if (shop) notes.push(`<p class="note shop">${esc(t(shop === 'date' ? 'shopDate' : 'shopBudget'))}<br><a target="_top" href="${esc(D.shopUrl)}" data-cta="shop">${esc(t('barShop'))}</a></p>`);
+  else if (n !== null && n >= 0 && n < D.leadTime.minimumWeeks * 7) notes.push(`<p class="note">${esc(t('noteShort', {minWeeks: D.leadTime.minimumWeeks}))}</p>`);
+  else if (n !== null && n >= 0 && n < D.leadTime.rushWeeks * 7) notes.push(`<p class="note">${esc(t('noteRush', {rushWeeks: D.leadTime.rushWeeks}))}</p>`);
+
+  if (!p) {
+    el.innerHTML = `<p class="muted" style="margin:0">${esc(t('estimateEmpty'))}</p>` + notes.join('');
+    bar.innerHTML = `<small>${esc(t('barEmpty'))}</small>`;
+  } else {
+    const size1 = st.size.replace(/s$/, '').replace(/^(\d) /, '$1-');   // "3 tiers" -> "3-tier", "6+ tiers" -> "6+ tier"
+    const cake = `${size1} cake${st.style ? ' with a ' + ({Bundles: 'bundled'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
+    const others = f.filter(x => x !== p);
+    el.innerHTML = `
+      <span class="tag ${p === sug ? 'star' : 'sel'}">${esc(t(p === sug ? 'tagRecommended' : 'tagSelected'))}</span>${isPro() ? ` <span class="tag info">${esc(t('tagPro'))}</span>` : ''}
+      <p class="pkgname">${esc(p.name)}</p>
+      <p class="muted" style="margin:2px 0 0">${esc(t('forYour', {cake}))}${st.palette ? ' · ' + esc(st.palette) : ''}</p>
+      <p class="price">${esc(t('startingAt'))} ${money(priceFor(p))}</p>
+      <ul class="inc">
+        <li>${esc(aim(p.statement, t('unitStatement')))}</li>
+        <li>${esc(aim(p.supporting, t('unitSupporting')))}</li>
+        <li>${esc(aim(p.greenery, t('unitFiller')))}</li>
+        <li>${esc(t('includeCustom'))}</li>
+        <li>${esc(t('includeShipping'))}</li>
+      </ul>
+      ${others.length ? `<p class="sub">${esc(t('othersHeading', {size: size1}))}</p>` + others.map(o => `<button type="button" class="pkg" data-pkg="${esc(o.name)}"><span>${esc(o.name)}</span><span>${esc(t('startingAt'))} ${money(priceFor(o))}</span></button>`).join('') : ''}
+      ${notes.join('')}
+      <p class="note">${esc(t('noteRetainer'))}</p>
+      <p class="muted">${esc(t('noteFinal'))}</p>
+      ${shop ? `<p class="muted"><a target="_top" href="${esc(inquiryUrl(p))}" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>` : ''}`;
+    bar.innerHTML = `<small>${esc(t('startingAt'))}</small>${money(priceFor(p))}<small>${esc(p.name)}${isPro() ? ' · ' + esc(t('tagPro')) : ''}</small>`;
+  }
+  if (!p && !shop) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; return; }
+  cta.removeAttribute('aria-disabled');
+  if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; }
+  else { cta.textContent = t('barCta'); cta.href = inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
 }
 
-function next(id) { if (show(id)) $(id).scrollIntoView({behavior: 'smooth', block: 'start'}); }
+let lastResult = '';
+function trackResult() {
+  const name = $('.pkgname')?.textContent || '', key = [name, shopReason(), isPro()].join('|');
+  if (!name || key === lastResult) return; lastResult = key;
+  const pkg = D.packages.find(x => x.name === name);
+  track('estimator_result', {package: name, price: pkg ? priceFor(pkg) : '', route: shopReason() || 'inquiry', pricing: isPro() ? 'pro' : 'standard'});
+}
 
+document.addEventListener('change', e => {
+  const id = e.target.id; if (!['role', 'date', 'size', 'style', 'budget'].includes(id)) return;
+  st[id] = id === 'style' ? (e.target.value === '-' ? '' : e.target.value || null) : e.target.value;
+  if (id === 'size' || id === 'style') st.pkg = '';
+  if (id !== 'date') track('estimator_change', {field: id, value: st[id] || (id === 'style' && st.style === '' ? 'not sure' : '')});
+  render(); trackResult();
+});
 document.addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  const d = b.dataset;
-  if ('who' in d) { st.who = d.who; press($('#who'), 'who', d.who); next('#s-tiers'); }
-  else if ('tier' in d) { st.tiers = +d.tier; st.pkg = ''; press($('#tiers'), 'tier', d.tier); next('#s-style'); }
-  else if ('style' in d) { st.style = d.style; st.pkg = ''; press($('#styles'), 'style', d.style); next('#s-pal'); }
-  else if ('pal' in d) { st.palette = d.pal || null; press($('#pals'), 'pal', d.pal); }
-  else if ('pkg' in d) { st.pkg = d.pkg; }
-  renderResult();
+  const pal = e.target.closest('.pal'), pkg = e.target.closest('.pkg'), link = e.target.closest('[data-cta]');
+  if (pal) { st.palette = st.palette === pal.dataset.pal ? '' : pal.dataset.pal; track('estimator_change', {field: 'palette', value: st.palette}); render(); }
+  if (pkg) { st.pkg = pkg.dataset.pkg; track('estimator_change', {field: 'package', value: st.pkg}); render(); trackResult(); }
+  if (link) track('estimator_cta', {action: link.dataset.cta});
 });
 
 fetch('data.json').then(r => r.json()).then(d => {
-  D = d; renderStatic();
-  // ?for=couple|family|baker|vendor skips step 1 (links from emails, trade pages)
+  D = d; T = d.copy; loadGtm(d.gtmId); renderStatic();
+  // ?for=couple|family|baker|vendor preselects the role (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');
-  if (D.roles.some(r => r.key === f)) { st.who = f; press($('#who'), 'who', f); show('#s-tiers'); }
+  if (D.roles.some(r => r.key === f)) { st.role = f; $('#role').value = f; }
+  render(); track('estimator_view');
 });
 </script>
 </body>
