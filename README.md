@@ -26,13 +26,13 @@ Names must match exactly:
 
 | Style | File |
 |---|---|
-| Cascade | `cascade.jpg` |
+| Cascading | `cascading.jpg` |
 | Scattered | `scattered.jpg` |
-| Focal arrangement | `focal-arrangement.jpg` |
+| Focal Point | `focal-point.jpg` |
 | Bundles | `bundles.jpg` |
 | Crown | `crown.jpg` |
 | Minimal | `minimal.jpg` |
-| Maximalism | `maximalism.jpg` |
+| Maximalist | `maximalist.jpg` |
 
 A style with no photo shows a plain tile.
 
@@ -64,14 +64,15 @@ Add `?for=pro` to the iframe address on a trade page to show pro pricing. The fi
 | `styleLean` | 0 = suggest the smallest package for the tier count, 1 = the largest |
 | `clientTypes` | Text sent to Fillout as `client_type` |
 | `filloutUrl` | Inquiry form link |
+| `leadTime` | Minimum notice and rush cutoff in weeks, shown on both pages |
 
 ## What gets sent to Fillout
 
 | URL parameter | Example |
 |---|---|
 | `client_type` | Bride/Couple or Pro |
-| `tiers` | 3 (6 means 6+) |
-| `style` | Cascade (blank if "Not sure yet") |
+| `tiers` | 3 tiers (matches Airtable Cake Size: 1 tier, 2 tiers ... 6+ tiers) |
+| `style` | Cascading (matches Airtable Cake Style; blank if "Not sure yet") |
 | `palette` | Vintage Glam (blank if skipped) |
 | `package` | The Thaleia |
 | `estimate` | 1000 (the starting price shown, pro price for pros) |

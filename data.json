@@ -7,22 +7,22 @@
   "pro": "Pro"
  },
  "styles": [
-  "Cascade",
+  "Cascading",
   "Scattered",
-  "Focal arrangement",
+  "Focal Point",
   "Bundles",
   "Crown",
   "Minimal",
-  "Maximalism"
+  "Maximalist"
  ],
  "styleLean": {
   "Minimal": 0,
-  "Focal arrangement": 0.25,
+  "Focal Point": 0.25,
   "Bundles": 0.35,
   "Scattered": 0.5,
   "Crown": 0.5,
-  "Cascade": 0.75,
-  "Maximalism": 1
+  "Cascading": 0.75,
+  "Maximalist": 1
  },
  "palettes": [
   {
@@ -224,5 +224,9 @@
   "The Aster": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/63a3dae8-6d3c-4d0e-8e35-adee5968d47e.png",
   "The Hortensia": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/38e3c27e-7407-44c0-bea7-63b20a30be12.png"
  },
- "finderUrl": "index.html"
+ "finderUrl": "index.html",
+ "leadTime": {
+  "minimumWeeks": 6,
+  "rushWeeks": 8
+ }
 }

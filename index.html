@@ -134,7 +134,7 @@ function inquiryUrl(p) {
   const u = new URL(D.filloutUrl), here = new URLSearchParams(location.search);
   // Pass along anything the visitor arrived with (email links, ads)
   ['utm_source', 'ck_subscriber_id', 'first_name', 'last_name', 'email', 'phone', 'event_date'].forEach(k => { if (here.get(k)) u.searchParams.set(k, here.get(k)); });
-  const set = {client_type: D.clientTypes[st.who], tiers: st.tiers, style: st.style || '', palette: st.palette || '', package: p.name, estimate: priceFor(p), source: 'estimator'};
+  const set = {client_type: D.clientTypes[st.who], tiers: st.tiers === 6 ? '6+ tiers' : st.tiers + (st.tiers === 1 ? ' tier' : ' tiers'), style: st.style || '', palette: st.palette || '', package: p.name, estimate: priceFor(p), source: 'estimator'};
   for (const [k, v] of Object.entries(set)) if (v !== '' && v != null) u.searchParams.set(k, v);
   return u.toString();
 }
@@ -145,7 +145,7 @@ function renderResult() {
   const sug = suggested();
   let p = f.find(x => x.name === st.pkg) || sug;
   if (!p) { el.hidden = false; el.innerHTML = `<h2>Let’s talk</h2><p>This one is best quoted personally.</p><a class="cta" target="_top" href="${esc(D.filloutUrl)}">Start my inquiry</a>`; return; }
-  const cake = `${st.tiers === 6 ? '6+' : st.tiers}-tier cake${st.style ? ' with a ' + ({Bundles: 'bundled', Maximalism: 'maximalist'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
+  const cake = `${st.tiers === 6 ? '6+' : st.tiers}-tier cake${st.style ? ' with a ' + ({Bundles: 'bundled'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
   const others = f.filter(x => x !== p);
   el.innerHTML = `
     <span class="tag">${p === sug ? '🌟 Recommended for you' : 'Your pick'}</span>${st.who === 'pro' ? ' <span class="tag soft">Pro pricing</span>' : ''}
@@ -161,7 +161,7 @@ function renderResult() {
     </ul>
     ${others.length ? `<div class="others"><p>Other packages for a ${st.tiers === 6 ? '6+' : st.tiers}-tier cake</p>${others.map(o => `<button type="button" data-pkg="${esc(o.name)}"><span>${esc(o.name)}</span><span>from ${money(priceFor(o))}</span></button>`).join('')}</div>` : ''}
     <a class="cta" target="_top" href="${esc(inquiryUrl(p))}">Start my inquiry</a>
-    <p class="fine">Your final quote is based on your exact design. Your choices here carry over to the inquiry form so you won’t have to answer them twice.</p>`;
+    <p class="fine">Custom designs need at least ${D.leadTime.minimumWeeks} weeks’ notice, and dates under ${D.leadTime.rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design. Your choices here carry over to the inquiry form so you won’t have to answer them twice.</p>`;
   show('#s-result');
 }
 

@@ -31,7 +31,7 @@ li{margin:1px 0}
   <a class="primary" id="finder" target="_top" href="index.html">Find your package</a>
   <a class="secondary" id="inquire" target="_top" href="#">Start your inquiry</a>
 </div>
-<p class="note">Every design is custom colored. Your final quote is based on your exact design.</p>
+<p class="note" id="note">Every design is custom colored. Your final quote is based on your exact design.</p>
 <script>
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
@@ -66,6 +66,7 @@ fetch('data.json').then(r => r.json()).then(D => {
     </div></article>`).join('');
   document.getElementById('finder').href = D.finderUrl + (pro ? '?for=pro' : '');
   document.getElementById('inquire').href = D.filloutUrl + '?source=packages';
+  document.getElementById('note').textContent = `Every design is custom colored. Custom designs need at least ${D.leadTime.minimumWeeks} weeks’ notice; dates under ${D.leadTime.rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design.`;
   report();
 });
 </script>
