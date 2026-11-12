@@ -7,6 +7,11 @@
 //   the client/quote automations, which should only run for a full inquiry. Returns a signed token so the
 //   full inquiry doesn't need a second spam check.
 //
+// POST /api/quiz-lead
+//   The Sugar Flower Match quiz (quiz.kelsiecakes.com) asking to email someone their result. Checks Turnstile and
+//   saves a row in "Quiz Leads". CORS-enabled for the quiz's origin only. data.json is also readable from the quiz,
+//   so both tools use the same lead times, budgets and starting price.
+//
 // POST /api/inquiry
 //   1. Checks the lead token from /api/lead (or a Cloudflare Turnstile token)
 //   2. Creates the lead's Google Drive folder (photos + an inquiry summary doc) through the Apps Script bridge
@@ -32,6 +37,14 @@ const L = {   // Airtable "Price Estimator Leads" field IDs
   size: 'fldIKhFHXsekDWqpk', style: 'fldyXSKAc0MKaSwEC', budget: 'fldpceXldthwtL05K', pkg: 'fldlfTGwa5ZjAmVy3', estimate: 'fldj34iPXEjPAVhu3',
   sent: 'flduV2t6Hze057aLS', project: 'fldfYBWj66RH9xbQ4', utm: 'fld6KDRIy0OIslpPf', submitted: 'fldZ59O4j8PtJZbim',
 };
+const Q = {   // Airtable "Quiz Leads" field IDs
+  email: 'fldaDSIaCWJlwngJ0', first: 'fld8qC5aGabP6kU89', result: 'fldYDwOJd4ZBVooxP', role: 'fldohQ9loStlmDzHQ', timeline: 'fldN3xaMB8mD86y7t',
+  experience: 'fldiCElViwaQMihVR', vision: 'fldDJcKHVianzXM67', budget: 'fldA8alymBkaHcdXb', tags: 'fldBMgbzo9XgQRLlE', utm: 'fldyqwyh2ftHNwLhc', submitted: 'fldGuNQPM8wLPnZbE',
+};
+const QUIZ_RESULTS = {readyToShip: 'Ready to Ship', madeToOrder: 'Made to Order', curated: 'Curated', fullyCustom: 'Fully Custom'};
+const QUIZ_ORIGINS = ['https://quiz.kelsiecakes.com'];
+const cors = request => { const o = request.headers.get('Origin') || '';
+  return QUIZ_ORIGINS.includes(o) ? {'Access-Control-Allow-Origin': o, 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', Vary: 'Origin'} : {}; };
 const EVENT_TYPES = ['Wedding', 'Birthday', 'Holiday Party', 'Other'];
 const s = (v, max = 200) => String(v ?? '').trim().slice(0, max);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,6 +57,20 @@ export default {
       if (request.method !== 'POST') return json({ok: false, error: 'POST only'}, 405);
       try { return await lead(request, env); }
       catch (e) { console.error('lead failed', e && e.stack || e); return json({ok: false, error: 'server'}, 500); }
+    }
+    if (url.pathname === '/api/quiz-lead') {
+      if (request.method === 'OPTIONS') return new Response(null, {status: 204, headers: cors(request)});
+      if (request.method !== 'POST') return json({ok: false, error: 'POST only'}, 405);
+      let res;
+      try { res = await quizLead(request, env); }
+      catch (e) { console.error('quiz lead failed', e && e.stack || e); res = json({ok: false, error: 'server'}, 500); }
+      for (const [k, v] of Object.entries(cors(request))) res.headers.set(k, v);
+      return res;
+    }
+    if (url.pathname === '/data.json' || url.pathname === '/copy.json') {   // public settings, readable by the quiz
+      const r = await env.ASSETS.fetch(request), out = new Response(r.body, r);
+      out.headers.set('Access-Control-Allow-Origin', '*');
+      return out;
     }
     if (url.pathname === '/api/inquiry') {
       if (request.method !== 'POST') return json({ok: false, error: 'POST only'}, 405);
@@ -95,6 +122,27 @@ async function lead(request, env) {
   if (!r.ok) { console.error('airtable lead', r.status, await r.text()); return json({ok: true, lead: ''}); }   // never block the visitor on our side
   const id = (await r.json()).records[0].id;
   return json({ok: true, lead: await makeLeadToken(id, env)});
+}
+
+async function quizLead(request, env) {
+  if (Number(request.headers.get('content-length') || 0) > 20 * 1024) return json({ok: false, error: 'too large'}, 413);
+  const b = await request.json().catch(() => null);
+  if (!b || typeof b !== 'object') return json({ok: false, error: 'bad request'}, 400);
+  if (!(await turnstileOk(b.turnstile, request, env))) return json({ok: false, error: 'spam check failed'}, 403);
+  const email = s(b.email, 200).toLowerCase();
+  if (!EMAIL_RE.test(email)) return json({ok: false, error: 'missing', fields: ['email']}, 400);
+  if (!QUIZ_RESULTS[b.result]) return json({ok: false, error: 'bad result'}, 400);
+  const fields = {
+    [Q.email]: email, [Q.first]: s(b.name, 80), [Q.result]: QUIZ_RESULTS[b.result], [Q.role]: s(b.role, 40), [Q.timeline]: s(b.timeline, 40),
+    [Q.experience]: s(b.experience, 40), [Q.vision]: s(b.customization, 40), [Q.budget]: s(b.budget, 40),
+    [Q.tags]: (Array.isArray(b.tags) ? b.tags : []).map(x => s(x, 60)).slice(0, 20).join(', '), [Q.utm]: s(b.utmSource, 80), [Q.submitted]: new Date().toISOString(),
+  };
+  const r = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE}/${env.QUIZ_TABLE}`, {
+    method: 'POST', headers: {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'},
+    body: JSON.stringify({records: [{fields}], typecast: true}),
+  });
+  if (!r.ok) { console.error('airtable quiz lead', r.status, await r.text()); return json({ok: false, error: 'save failed'}, 502); }
+  return json({ok: true});
 }
 
 async function inquiry(request, env, ctx) {

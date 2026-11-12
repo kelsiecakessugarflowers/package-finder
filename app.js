@@ -383,6 +383,10 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
   // ?for=couple|family|baker|vendor preselects the role (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');
   if (D.roles.some(r => r.key === f)) { st.role = f; $('#role').value = f; }
+  // The quiz (and any link) can also fill in the occasion and budget: ?occasion=Wedding&budget=$500-$1,000
+  const q = new URLSearchParams(location.search), occ = q.get('occasion'), bud = q.get('budget');
+  if (D.eventTypes.includes(occ)) { st.eventType = occ; $('#eventType').value = occ; }
+  if (D.budgets.includes(bud)) { st.budget = bud; $('#budget').value = bud; }
   history.replaceState({view: 'cake'}, ''); showView('cake'); track('estimator_view');
   loadTurnstile('#tsLead', tok => { tsLeadToken = tok; });
 });

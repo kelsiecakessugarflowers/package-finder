@@ -3,12 +3,13 @@
   "name": "package-finder",
   "main": "worker.js",
   "compatibility_date": "2026-11-01",
-  "assets": { "directory": ".", "binding": "ASSETS" },
+  "assets": { "directory": ".", "binding": "ASSETS", "run_worker_first": ["/data.json", "/copy.json"] },   // so the quiz can read them (CORS)
   "observability": { "enabled": true },
   "vars": {
     "AIRTABLE_BASE": "app93rZTtyXYVWYJr",
     "PROJECTS_TABLE": "tbl9LF35NrPvODWD1",
     "LEADS_TABLE": "tblWCC1N4wTwv1yPf",
+    "QUIZ_TABLE": "tblxogLZtF6ahVOEU",
     "LEADS_FOLDER_ID": "1ma3TRtn0wUzC_iL1MHg4OlJ9p2mos9ok"
   }
   // Secrets (set in the Cloudflare dashboard, never here): AIRTABLE_TOKEN, TURNSTILE_SECRET, DRIVE_SCRIPT_URL, DRIVE_SCRIPT_KEY
