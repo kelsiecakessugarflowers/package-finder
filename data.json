@@ -1,0 +1,219 @@
+{
+ "filloutUrl": "https://kelsiecakes.fillout.com/t/6sqeBeZ6Xaus",
+ "proDiscount": 0.3,
+ "proRoundTo": 10,
+ "clientTypes": {
+  "consumer": "Bride/Couple",
+  "pro": "Pro"
+ },
+ "styles": [
+  "Cascade",
+  "Scattered",
+  "Focal arrangement",
+  "Bundles",
+  "Crown",
+  "Minimal",
+  "Maximalism"
+ ],
+ "styleLean": {
+  "Minimal": 0,
+  "Focal arrangement": 0.25,
+  "Bundles": 0.35,
+  "Scattered": 0.5,
+  "Crown": 0.5,
+  "Cascade": 0.75,
+  "Maximalism": 1
+ },
+ "palettes": [
+  {
+   "name": "Vintage Glam",
+   "colors": [
+    [
+     "Gold",
+     "#C9A44C"
+    ],
+    [
+     "Champagne",
+     "#E8D6B0"
+    ],
+    [
+     "Ivory",
+     "#F7F1E3"
+    ],
+    [
+     "Soft blush",
+     "#EBC6C0"
+    ],
+    [
+     "Antique green",
+     "#7D8B6A"
+    ]
+   ]
+  },
+  {
+   "name": "Bold Pinks",
+   "colors": [
+    [
+     "Hot pink",
+     "#E8308C"
+    ],
+    [
+     "Fuchsia",
+     "#C2186B"
+    ],
+    [
+     "Crimson",
+     "#A3122A"
+    ],
+    [
+     "Black",
+     "#1C1C1C"
+    ],
+    [
+     "White",
+     "#FFFFFF"
+    ]
+   ]
+  },
+  {
+   "name": "Ethereal Romance",
+   "colors": [
+    [
+     "White",
+     "#FFFFFF"
+    ],
+    [
+     "Blush",
+     "#F0D3CF"
+    ],
+    [
+     "Dove gray",
+     "#B9B7B4"
+    ],
+    [
+     "Sage green",
+     "#A8B79C"
+    ]
+   ]
+  },
+  {
+   "name": "Fruitful Elegance",
+   "colors": [
+    [
+     "Terracotta",
+     "#C2643F"
+    ],
+    [
+     "Peach",
+     "#F2B38F"
+    ],
+    [
+     "Deep plum",
+     "#5B2A45"
+    ],
+    [
+     "Soft green",
+     "#A9B98C"
+    ]
+   ]
+  },
+  {
+   "name": "Italian Coastal Chic",
+   "colors": [
+    [
+     "Lemon yellow",
+     "#F4D84A"
+    ],
+    [
+     "Cobalt blue",
+     "#1F4FA8"
+    ],
+    [
+     "Crisp white",
+     "#FFFFFF"
+    ],
+    [
+     "Greenery",
+     "#6F8F4E"
+    ]
+   ]
+  }
+ ],
+ "packages": [
+  {
+   "name": "The Marguerite",
+   "price": 500,
+   "tiers": [
+    1,
+    2
+   ],
+   "suitableFor": "A single tier cake, or accent on larger tiered cake",
+   "statement": "0-1",
+   "supporting": "1–3 small supporting flowers",
+   "greenery": "a touch of greenery and filler"
+  },
+  {
+   "name": "The Bryony",
+   "price": 700,
+   "tiers": [
+    2,
+    3
+   ],
+   "suitableFor": "Small wedding cake, single-tier showstopper, minimal tiered design",
+   "statement": "2-3",
+   "supporting": "6–8 supporting blooms",
+   "greenery": "5–7 filler/greenery pieces"
+  },
+  {
+   "name": "The Thaleia",
+   "price": 1000,
+   "tiers": [
+    3,
+    4
+   ],
+   "suitableFor": "Three to four tier cake",
+   "statement": "4",
+   "supporting": "8–10 supporting blooms",
+   "greenery": "7–10 filler/greenery pieces"
+  },
+  {
+   "name": "The Florian",
+   "price": 1500,
+   "tiers": [
+    3,
+    4,
+    5
+   ],
+   "suitableFor": "Cakes with variety and volume, 3+ tiers",
+   "statement": "6",
+   "supporting": "10–12 supporting blooms",
+   "greenery": "10–14 filler/greenery pieces"
+  },
+  {
+   "name": "The Aster",
+   "price": 2500,
+   "tiers": [
+    4,
+    5,
+    6
+   ],
+   "suitableFor": "Large, four or more tier wedding cake",
+   "statement": "10",
+   "supporting": "Dozens of supporting blooms and filler/greenery",
+   "greenery": "~15–20 filler/greenery"
+  },
+  {
+   "name": "The Hortensia",
+   "price": 4000,
+   "tiers": [
+    4,
+    5,
+    6
+   ],
+   "suitableFor": "Large, four or more tier wedding cake, editorial-scale design",
+   "statement": "20",
+   "supporting": "~30–40 supporting blooms",
+   "greenery": "~20–28 filler/greenery"
+  }
+ ]
+}

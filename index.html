@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Find Your Sugar Flower Package | Sugar Flowers by Kelsie Cakes</title>
+<meta name="description" content="Answer a few quick questions to see which custom sugar flower package fits your cake, with a starting price.">
+<style>
+:root{--bg:#f7f2ee;--card:#fff;--ink:#492C38;--muted:#6B4A5E;--line:#D0BCC5;--accent:#6B4A5E;--accent-soft:#efe5ea}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+h1,h2,.price,.pkgname{font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;font-weight:500}
+h1{font-size:34px;line-height:1.15;margin:0 0 6px;text-align:center}
+.lead{text-align:center;color:var(--muted);margin:0 0 24px}
+section{background:var(--card);border:1px solid var(--line);padding:18px 16px;margin-bottom:14px}
+section[hidden]{display:none}
+h2{font-size:24px;margin:0 0 4px}
+.step{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
+.hint{color:var(--muted);font-size:14px;margin:0 0 12px}
+button{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);cursor:pointer;border-radius:0}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button[aria-pressed=true]{border:2px solid var(--accent);background:var(--accent-soft)}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.who button{padding:16px 12px;text-align:left}
+.who strong{display:block;font-size:17px}
+.who span{font-size:14px;color:var(--muted)}
+.tiers{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.tiers button{padding:14px 0;font-size:18px}
+.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.styles button{padding:0;text-align:left;display:flex;flex-direction:column}
+.styles .ph{aspect-ratio:4/5;width:100%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;overflow:hidden}
+.styles img{width:100%;height:100%;object-fit:cover;display:block}
+.styles .lbl{padding:8px 10px;font-size:15px}
+.pals{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pals button{padding:10px;text-align:left;font-size:15px}
+.sw{display:flex;height:22px;margin-bottom:6px;outline:1px solid var(--line)}
+.sw i{flex:1}
+.pals .none{display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.result{border:2px solid var(--accent)}
+.pkgname{font-size:30px;margin:2px 0 0;line-height:1.1}
+.price{font-size:26px;margin:4px 0 2px}
+.tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:999px;background:var(--ink);color:#fff}
+.tag.soft{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+ul.inc{margin:10px 0 0;padding-left:20px}
+ul.inc li{margin:2px 0}
+.others{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.others p{margin:0 0 8px;font-size:14px;color:var(--muted)}
+.others button{display:flex;justify-content:space-between;width:100%;padding:10px 12px;margin-bottom:6px;font-size:15px}
+.cta{display:block;width:100%;margin-top:16px;padding:16px;font-size:17px;letter-spacing:.04em;background:var(--accent);border:1px solid var(--accent);color:#fff;text-align:center;text-decoration:none}
+.fine{font-size:13px;color:var(--muted);margin:10px 0 0}
+@media (max-width:480px){.who,.pals{grid-template-columns:1fr}.tiers{grid-template-columns:repeat(3,1fr)}.styles{grid-template-columns:1fr 1fr}h1{font-size:28px}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Find your sugar flower package</h1>
+  <p class="lead">A few quick questions, then you’ll see the package that fits your cake and where pricing starts.</p>
+
+  <section id="s-who">
+    <p class="step">Step 1</p>
+    <h2>Who are the flowers for?</h2>
+    <p class="hint">Pricing and timelines are a little different for professionals.</p>
+    <div class="who" id="who">
+      <button type="button" data-who="consumer" aria-pressed="false"><strong>My own celebration</strong><span>I’m getting married or planning the event</span></button>
+      <button type="button" data-who="pro" aria-pressed="false"><strong>I’m a professional</strong><span>Cake artist, baker, venue or planner</span></button>
+    </div>
+  </section>
+
+  <section id="s-tiers" hidden>
+    <p class="step">Step 2</p>
+    <h2>How many tiers?</h2>
+    <p class="hint">Your best guess is perfect.</p>
+    <div class="tiers" id="tiers"></div>
+  </section>
+
+  <section id="s-style" hidden>
+    <p class="step">Step 3</p>
+    <h2>Which style do you love?</h2>
+    <p class="hint">Pick the one closest to your vision.</p>
+    <div class="styles" id="styles"></div>
+  </section>
+
+  <section id="s-pal" hidden>
+    <p class="step">Step 4 · optional</p>
+    <h2>Any colors in mind?</h2>
+    <p class="hint">Everything is custom colored, so these are just starting points.</p>
+    <div class="pals" id="pals"></div>
+  </section>
+
+  <section id="s-result" class="result" hidden aria-live="polite"></section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const st = {who: '', tiers: 0, style: null, palette: null, pkg: ''};
+let D;
+
+// Pro price: discount, rounded to the nearest proRoundTo (30% off $700 = $490)
+const priceFor = p => st.who === 'pro' ? Math.round(p.price * (1 - D.proDiscount) / D.proRoundTo) * D.proRoundTo : p.price;
+const fits = () => D.packages.filter(p => (p.tiers || []).includes(st.tiers)).sort((a, b) => a.price - b.price);
+function suggested() {
+  const f = fits(); if (!f.length) return null;
+  const lean = st.style ? (D.styleLean[st.style] ?? 0.5) : 0; // "Not sure yet" starts at the smallest fit
+  return f[Math.round(lean * (f.length - 1))];
+}
+// "6–8 supporting blooms" -> "6-8 supporting blooms", "0-1" -> "Up to 1", "a touch of…" stays as written
+function aim(t, noun) {
+  const s = String(t || '');
+  if (/dozens/i.test(s)) return 'Dozens of ' + noun;
+  const m = s.match(/(\d+)\s*[-–]\s*(\d+)/), one = s.match(/(\d+)/);
+  if (m) return +m[1] === 0 ? 'Up to ' + m[2] + ' ' + (+m[2] === 1 ? noun.replace(/s$/, '') : noun) : m[1] + '-' + m[2] + ' ' + noun;
+  if (one) return one[1] + ' ' + noun;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+const show = id => { const el = $(id); if (el.hidden) { el.hidden = false; return true; } return false; };
+const press = (box, attr, val) => box.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset[attr] === String(val)));
+
+function renderStatic() {
+  $('#tiers').innerHTML = [1, 2, 3, 4, 5, 6].map(n => `<button type="button" data-tier="${n}" aria-pressed="false">${n === 6 ? '6+' : n}</button>`).join('');
+  $('#styles').innerHTML = D.styles.map(s => `<button type="button" data-style="${esc(s)}" aria-pressed="false">
+    <span class="ph"><img src="photos/${slug(s)}.jpg" alt="${esc(s)} sugar flower cake" loading="lazy" onerror="this.remove()"></span><span class="lbl">${esc(s)}</span></button>`).join('')
+    + `<button type="button" data-style="" aria-pressed="false"><span class="ph">Help me decide</span><span class="lbl">Not sure yet</span></button>`;
+  $('#pals').innerHTML = D.palettes.map(p => `<button type="button" data-pal="${esc(p.name)}" aria-pressed="false">
+    <span class="sw">${p.colors.map(c => `<i style="background:${c[1]}" title="${esc(c[0])}"></i>`).join('')}</span>${esc(p.name)}</button>`).join('')
+    + `<button type="button" class="none" data-pal="" aria-pressed="false">Not sure yet</button>`;
+}
+
+function inquiryUrl(p) {
+  const u = new URL(D.filloutUrl), here = new URLSearchParams(location.search);
+  // Pass along anything the visitor arrived with (email links, ads)
+  ['utm_source', 'ck_subscriber_id', 'first_name', 'last_name', 'email', 'phone', 'event_date'].forEach(k => { if (here.get(k)) u.searchParams.set(k, here.get(k)); });
+  const set = {client_type: D.clientTypes[st.who], tiers: st.tiers, style: st.style || '', palette: st.palette || '', package: p.name, estimate: priceFor(p), source: 'estimator'};
+  for (const [k, v] of Object.entries(set)) if (v !== '' && v != null) u.searchParams.set(k, v);
+  return u.toString();
+}
+
+function renderResult() {
+  const el = $('#s-result'), f = fits();
+  if (!st.who || !st.tiers || st.style === null) { el.hidden = true; return; }
+  const sug = suggested();
+  let p = f.find(x => x.name === st.pkg) || sug;
+  if (!p) { el.hidden = false; el.innerHTML = `<h2>Let’s talk</h2><p>This one is best quoted personally.</p><a class="cta" target="_top" href="${esc(D.filloutUrl)}">Start my inquiry</a>`; return; }
+  const cake = `${st.tiers === 6 ? '6+' : st.tiers}-tier cake${st.style ? ' with a ' + ({Bundles: 'bundled', Maximalism: 'maximalist'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
+  const others = f.filter(x => x !== p);
+  el.innerHTML = `
+    <span class="tag">${p === sug ? '🌟 Recommended for you' : 'Your pick'}</span>${st.who === 'pro' ? ' <span class="tag soft">Pro pricing</span>' : ''}
+    <p class="pkgname">${esc(p.name)}</p>
+    <p class="hint" style="margin:2px 0 0">For your ${esc(cake)}${st.palette ? ' in ' + esc(st.palette) : ''}</p>
+    <p class="price">Starting at ${money(priceFor(p))}</p>
+    <ul class="inc">
+      <li>${esc(aim(p.statement, 'statement flowers'))}</li>
+      <li>${esc(aim(p.supporting, 'supporting blooms'))}</li>
+      <li>${esc(aim(p.greenery, 'filler and greenery pieces'))}</li>
+      <li>Custom design, colors matched to your palette</li>
+      <li>Insured shipping with the Delicate but Durable Promise</li>
+    </ul>
+    ${others.length ? `<div class="others"><p>Other packages for a ${st.tiers === 6 ? '6+' : st.tiers}-tier cake</p>${others.map(o => `<button type="button" data-pkg="${esc(o.name)}"><span>${esc(o.name)}</span><span>from ${money(priceFor(o))}</span></button>`).join('')}</div>` : ''}
+    <a class="cta" target="_top" href="${esc(inquiryUrl(p))}">Start my inquiry</a>
+    <p class="fine">Your final quote is based on your exact design. Your choices here carry over to the inquiry form so you won’t have to answer them twice.</p>`;
+  show('#s-result');
+}
+
+function next(id) { if (show(id)) $(id).scrollIntoView({behavior: 'smooth', block: 'start'}); }
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const d = b.dataset;
+  if ('who' in d) { st.who = d.who; press($('#who'), 'who', d.who); next('#s-tiers'); }
+  else if ('tier' in d) { st.tiers = +d.tier; st.pkg = ''; press($('#tiers'), 'tier', d.tier); next('#s-style'); }
+  else if ('style' in d) { st.style = d.style; st.pkg = ''; press($('#styles'), 'style', d.style); next('#s-pal'); }
+  else if ('pal' in d) { st.palette = d.pal || null; press($('#pals'), 'pal', d.pal); }
+  else if ('pkg' in d) { st.pkg = d.pkg; }
+  renderResult();
+});
+
+fetch('data.json').then(r => r.json()).then(d => { D = d; renderStatic(); });
+</script>
+</body>
+</html>
