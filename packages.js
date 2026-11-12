@@ -16,8 +16,8 @@ const track = (event, data = {}) => { if (parent !== window) try { parent.postMe
 const report = () => parent !== window && parent.postMessage({kcEmbedHeight: document.documentElement.scrollHeight}, '*');
 new ResizeObserver(report).observe(document.body);
 
-fetch('data.json').then(r => r.json()).then(D => {
-  const T = D.copy, fill = (s, v) => String(s).replace(/\{(\w+)\}/g, (_, k) => v[k] ?? '');
+Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).then(([D, T]) => {
+  const fill = (s, v) => String(s).replace(/\{(\w+)\}/g, (_, k) => v[k] ?? '');
   const price = p => pro ? Math.round(p.price * (1 - D.proDiscount) / D.proRoundTo) * D.proRoundTo : p.price;
   const img = D.packageImages || {};
   document.getElementById('grid').innerHTML = D.packages.map(p => `<article class="card">

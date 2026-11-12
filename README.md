@@ -1,3 +1,17 @@
+## Changing the wording
+
+Every customer-facing sentence is in **`copy.json`**. Open it on GitHub, click the pencil, change the text between the quotes, and commit. The site updates in about a minute.
+
+- Keep the quotes and the comma at the end of each line.
+- Words in `{curly}` braces are filled in for you: `{event}` / `{Event}` become the occasion they pick (wedding, birthday, holiday party), `{price}`, `{size}`, `{cake}`, `{minPrice}` (your cheapest package), `{minWeeks}`, `{rushWeeks}`.
+- A blank value (`""`) hides that line, e.g. the `hint...` notes under each question.
+- Which "Your design will include" lines and add-ons show for whom (bakers only, over $2,000, ...) is in `data.json` > `includes` / `addons`.
+
+## Two versions
+
+- `main` is the live site: the last button sends people to the Fillout form.
+- `replace-fillout` is the same site with the built-in inquiry form turned on (`data.json` > `inquiry.mode` = `"direct"`). Merge its pull request when you're ready to retire Fillout.
+
 # Price Estimator (package-finder)
 
 Public price estimator and packages embed for Sugar Flowers by Kelsie Cakes.
@@ -18,7 +32,6 @@ Flower costs and pricing formulas stay in the private quote builder (nevermore-b
 | `logo-main.svg`, `logo-alt.svg` | Logos (alt in headers, main in the footer) |
 | `packages.html` | Packages embed for the website (replaces the BlockBuilder block) |
 | `data.json` → `copy` | Every customer-facing line on both pages, filled from the copy Google Sheet by the "Sync copy from Google Sheet" button. `{braces}` are filled in by the page. |
-| `scripts/sync-copy.mjs` | Pulls the "Your text" column of the copy sheet into `data.json` |
 | `brand.css` | Shared brand colors and fonts. Other pages (quiz, quote builder) can load this too. |
 | `data.json` | Packages, styles, palettes, pro discount, links |
 | `scripts/sync-packages.mjs` | Pulls live packages from Airtable |
@@ -41,21 +54,12 @@ Names must match exactly:
 
 A style with no photo shows a plain tile.
 
-## Updating the wording
-
-1. Edit the "Your text" column in the **Price Estimator Copy** Google Sheet. A blank cell keeps the current wording.
-2. GitHub > package-finder > Actions > **Sync copy from Google Sheet** > Run workflow.
-
-One-time setup: in the sheet, File > Share > Publish to web > Sheet1 > Comma-separated values (.csv) > Publish,
-and paste that link into `data.json` > `copySheetCsvUrl`. (Publishing only exposes the sheet's text, which is
-already public on the estimator.) New lines added later (for example `labelPalette`) can be added as new rows
-with the same key name.
-
 ## Updating packages
 
 Airtable's Packages table is the source of truth. After changing it, go to Actions > "Sync packages from Airtable" > Run workflow.
 One-time setup: Settings > Secrets and variables > Actions > New secret `AIRTABLE_TOKEN` (the same token as the quote builder works).
 Optional Airtable field "Website Description" (long text) replaces the "Suitable For" line on the packages embed.
+The "Best for:" and "Vibe:" lines of each package's guide text, and its **Estimator Tags** (Budget Friendly, Venue Preferred, ...), show on the estimate.
 
 ## Packages embed in Showit
 

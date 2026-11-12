@@ -43,9 +43,6 @@ textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid va
 @media (min-width:640px){.gallery{grid-auto-columns:31%}}
 .gallery-head{display:flex;justify-content:space-between;align-items:baseline}
 .swipe{font-size:12px;color:var(--muted)}
-.emailbox{max-width:420px;margin:0 auto;text-align:center}
-.emailbox label{text-align:left}
-.emailbox #tsLead{display:flex;justify-content:center;margin-top:14px}
 .grid2 .field{min-width:0}
 .sum{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;margin:0}
 .sum dt{color:var(--muted);font-size:13px;padding-top:2px}
@@ -96,7 +93,17 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .inc{margin:8px 0 0;padding-left:20px;font-size:15px}
 .inc li{margin:2px 0}
 .sub{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
-.pkg{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px;margin-bottom:6px;text-align:left}
+.pkg{display:flex;gap:10px;justify-content:space-between;align-items:center;width:100%;padding:8px 10px;margin-bottom:6px;text-align:left}
+.pkg img{width:44px;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);flex:0 0 auto}
+.pkg .pkgtxt{flex:1;min-width:0}
+.pkg .pkgtxt small{display:block;color:var(--muted);font-size:12px;line-height:1.3;margin-top:2px}
+.pkg .pkgprice{font-weight:700;color:var(--ink);white-space:nowrap}
+.tag.soft{background:var(--kc-cream,#F9F4F1);color:var(--ink);border:1px solid var(--line)}
+.guide{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:12px 0 0;font-size:14px}
+.guide dt{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+.guide dd{margin:0}
+.inc.addons{list-style:"+ "}
+.retainer{margin:0 0 12px}
 .note{background:var(--soft);border-left:3px solid var(--accent);padding:10px 12px;margin:12px 0 0;font-size:14px}
 .note.shop{border-left-color:var(--kc-berry)}
 .note a,.muted a{color:var(--accent);font-weight:600}
@@ -118,13 +125,13 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 
   <section>
     <h2 id="t-cardCake"></h2>
-    <label for="role" id="t-labelRole"></label>
-    <select id="role"></select>
-    <p class="hint" id="hintRole"></p>
     <label for="eventType" id="t-labelEventType"></label>
     <select id="eventType"></select>
     <input id="eventOther" hidden style="margin-top:6px">
     <p class="hint" id="hintEventType"></p>
+    <label for="role" id="t-labelRole"></label>
+    <select id="role"></select>
+    <p class="hint" id="hintRole"></p>
     <label for="date" id="t-labelDate"></label>
     <input type="date" id="date">
     <p class="err" id="dateErr" hidden></p>
@@ -138,30 +145,19 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <label for="budget" id="t-labelBudget"></label>
     <select id="budget"></select>
     <p class="hint" id="hintBudget"></p>
+    <label for="leadEmail" id="t-labelLeadEmail"></label>
+    <input id="leadEmail" type="email" autocomplete="email" inputmode="email">
+    <p class="hint" id="t-emailNote"></p>
     <div id="cakeNotes" aria-live="polite"></div>
+    <div id="tsLead" style="margin-top:12px"></div>
+    <p class="err" id="leadErr" hidden></p>
   </section>
  </div>
 
- <!-- Page 2: email to unlock the estimate -->
- <div id="viewEmail" hidden>
-  <section>
-    <h2 id="t-cardEmail"></h2>
-    <div class="emailbox">
-      <p class="muted" id="t-emailIntro" style="margin-top:0"></p>
-      <label for="leadEmail" id="t-labelLeadEmail"></label>
-      <input id="leadEmail" type="email" autocomplete="email" inputmode="email">
-      <p class="muted" id="t-emailNote" style="margin:8px 0 0"></p>
-      <div id="tsLead"></div>
-      <p class="err" id="leadErr" hidden></p>
-    </div>
-    <button type="button" class="back" id="backToCake"></button>
-  </section>
- </div>
-
- <!-- Page 3: the estimate, what's included, then the rest of the inquiry -->
+ <!-- Page 2: the estimate, what's included, then the rest of the inquiry -->
  <div id="viewDetails" hidden>
   <section aria-live="polite">
-    <h2 id="t-cardSummary"></h2>
+    <h2 id="t-cardEstimate"></h2>
     <div id="estimate"></div>
     <p class="sub" id="t-summaryHeading"></p>
     <dl class="sum" id="summary"></dl>
@@ -171,6 +167,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <h2 id="t-cardIncluded"></h2>
     <div id="includedBody"></div>
   </section>
+  <p class="note retainer" id="retainerNote"></p>
   <section id="details">
     <h2 id="t-cardDetails"></h2>
     <p class="muted" id="t-detailsIntro" style="margin-top:0"></p>

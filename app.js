@@ -6,13 +6,28 @@ const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, 
 const st = {role: '', eventType: '', date: '', size: '', style: null, budget: '', pkg: ''};
 let dateTouched = false;   // the date starts on a suggested Saturday; it has to be confirmed before sending an inquiry
 let D, T, direct = false, tsToken = '', view = 'cake';
-// Pages: 'cake' (questions) -> 'email' (email unlocks the estimate) -> 'details' (estimate, what's included, rest of the inquiry)
+// Pages: 'cake' (questions + email, which unlocks the estimate) -> 'details' (estimate, what's included, rest of the inquiry)
 let leadEmail = '', leadToken = '', tsLeadToken = '';
 const photos = [];
 let resaleFile = null;   // {name, type, data}
 const US_STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');   // {name, type, data (base64), url (preview)}
 // Copy lives in data.json "copy"; {placeholders} are filled here
-const t = (k, vars = {}) => String(T[k] ?? '').replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? '');
+// Copy lives in copy.json (edit it right in GitHub); {placeholders} are filled here.
+// {event} / {Event} follow the occasion they pick: "wedding", "birthday", "holiday party" (or "event" until they choose).
+const occasion = () => ({'': 'event', Other: 'event'})[st.eventType] ?? st.eventType.toLowerCase();
+const t = (k, vars = {}) => { const ev = occasion(), all = {event: ev, Event: ev.charAt(0).toUpperCase() + ev.slice(1), ...vars};
+  return String(T[k] ?? '').replace(/\{(\w+)\}/g, (_, v) => all[v] ?? ''); };
+const priceText = n => t('priceFormat', {price: money(n)}) || money(n);
+// "2-3" -> 2-3, "0-1" -> up to 1, "~15-20" -> about 15-20, "Dozens of..." -> dozens of, "4" -> 4; null when there's no number
+function count(txt) {
+  const x = String(txt || '');
+  if (/dozens/i.test(x)) return {n: 'dozens of', s: 's'};
+  const m = x.match(/(\d+)\s*[-–]\s*(\d+)/), one = x.match(/(\d+)/), about = x.trim().startsWith('~') ? 'about ' : '';
+  if (m) return +m[1] === 0 ? {n: 'up to ' + m[2], s: +m[2] === 1 ? '' : 's'} : {n: about + m[1] + '-' + m[2], s: 's'};
+  if (one) return {n: about + one[1], s: +one[1] === 1 ? '' : 's'};
+  return null;
+}
+const countLine = (key, txt) => { const c = count(txt); return c ? t(key, c) : t(key + 'Text', {text: String(txt || '').trim()}); };
 
 // ---- Analytics: anonymous events only (no names, emails or dates) ----
 // Opened directly: pushed to this page's GTM. Inside a Showit iframe: posted to the parent page,
@@ -51,17 +66,10 @@ function shopReason() {
   if (st.budget === D.shopBudget) return 'budget';
   return '';
 }
-function aim(txt, noun) {
-  const s = String(txt || '');
-  if (/dozens/i.test(s)) return 'Dozens of ' + noun;
-  const m = s.match(/(\d+)\s*[-–]\s*(\d+)/), one = s.match(/(\d+)/);
-  if (m) return +m[1] === 0 ? 'Up to ' + m[2] + ' ' + (+m[2] === 1 ? noun.replace(/s$/, '') : noun) : m[1] + '-' + m[2] + ' ' + noun;
-  if (one) return (s.trim().startsWith('~') ? 'About ' : '') + one[1] + ' ' + noun;
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
 
+const applyCopy = () => document.querySelectorAll('[id^="t-"]').forEach(el => { el.textContent = t(el.id.slice(2)); });
 function renderStatic() {
-  document.querySelectorAll('[id^="t-"]').forEach(el => { el.textContent = t(el.id.slice(2)); });
+  applyCopy();
   document.title = `${t('title')} | ${t('brand')}`;
   const opts = (list, val = x => x, lbl = x => x) => `<option value="">${esc(t('choose'))}</option>` + list.map(x => `<option value="${esc(val(x))}">${esc(lbl(x))}</option>`).join('');
   $('#role').innerHTML = opts(D.roles, r => r.key, r => r.label);
@@ -69,14 +77,13 @@ function renderStatic() {
   $('#styleDlgTitle').textContent = t('labelStyle');
   $('#dateErr').textContent = t('confirmDate');
   $('#tiles').innerHTML = D.styles.map(x => `<button type="button" class="tile" data-style="${esc(x)}"><img src="photos/${slug(x)}.jpg" alt="" loading="lazy"><span>${esc(x)}</span></button>`).join('')
-    + `<button type="button" class="tile" data-style=""><div class="none">?</div><span>${esc(t('styleNotSure'))}</span></button>`;
+    + `<button type="button" class="tile" data-style=""><img src="photos/not-sure-yet.jpg" alt="" loading="lazy"><span>${esc(t('styleNotSure'))}</span></button>`;
   $('#budget').innerHTML = opts(D.budgets);
   $('#referral').innerHTML = opts(D.inquiry.referralOptions);
   $('#eventType').innerHTML = opts(D.eventTypes);
   $('#eventOther').placeholder = t('eventOtherPlaceholder');
   $('#bizState').innerHTML = opts([...US_STATES, t('outsideUS')]);
   $('#photosHint').textContent = t('photosHint', {max: D.inquiry.maxPhotos});
-  $('#backToCake').textContent = t('editAnswers');
   // What's included: the proposal's photo cards (data.json "included")
   const inc = D.included || {}, altOf = u => decodeURIComponent(u.split('/').pop()).replace(/^[0-9a-f]{20,}_/, '').replace(/\.\w+$/, '').replace(/[_-]+/g, ' ');
   const groups = [['includedExpect', inc.expect], ['includedAlways', inc.always]].filter(g => g[1]?.length);
@@ -106,8 +113,9 @@ function budgetMax() {
 }
 
 function render() {
-  $('#styleBtn').innerHTML = st.style ? `<img src="photos/${slug(st.style)}.jpg" alt=""><span>${esc(st.style)}</span><span class="chev">▾</span>`
-    : `<span${st.style === null ? ' style="color:var(--muted)"' : ''}>${esc(st.style === null ? t('choose') : t('styleNotSure'))}</span><span class="chev">▾</span>`;
+  applyCopy(); $('#dateErr').textContent = t('confirmDate');   // wording follows the occasion as they pick it
+  $('#styleBtn').innerHTML = st.style !== null ? `<img src="photos/${st.style ? slug(st.style) : 'not-sure-yet'}.jpg" alt=""><span>${esc(st.style || t('styleNotSure'))}</span><span class="chev">▾</span>`
+    : `<span style="color:var(--muted)">${esc(t('choose'))}</span><span class="chev">▾</span>`;
   document.querySelectorAll('.tile').forEach(b => b.classList.toggle('on', st.style !== null && b.dataset.style === st.style));
 
   const el = $('#estimate'), cta = $('#barCta'), bar = $('#barPrice'), shop = shopReason(), n = daysUntil();
@@ -123,6 +131,7 @@ function render() {
   const hv = {minPrice: all.length ? money(priceFor(all[0])) : '', sizeMinPrice: cheapestFit ? money(priceFor(cheapestFit)) : '',
     minWeeks: D.leadTime.minimumWeeks, rushWeeks: D.leadTime.rushWeeks};
   ['Role', 'EventType', 'Date', 'Size', 'Style', 'Budget'].forEach(k => { $('#hint' + k).textContent = t('hint' + k, hv); });
+  $('#retainerNote').textContent = t('noteRetainer');
 
   if (!p) {
     el.innerHTML = `<p class="muted" style="margin:0">${esc(t('estimateEmpty'))}</p>` + notes.join('');
@@ -134,25 +143,28 @@ function render() {
     const cap = budgetMax(), overBudget = cap !== null && priceFor(p) > cap;
     const others = f.filter(x => x !== p).sort((a, b) => (overBudget ? (priceFor(a) > cap) - (priceFor(b) > cap) : 0) || a.price - b.price);
     const othersKey = overBudget && others.some(o => priceFor(o) <= cap) ? 'othersHeadingBudget' : 'othersHeading';
-    const img = (D.packageImages || {})[p.name];
-    el.innerHTML = `<div class="est">${img ? `<img class="pkgimg" src="${esc(img)}" alt="">` : ''}<div>
-      <span class="tag ${p === sug ? 'star' : 'sel'}">${esc(t(p === sug ? 'tagRecommended' : 'tagSelected'))}</span>${isPro() ? ` <span class="tag info">${esc(t('tagPro'))}</span>` : ''}
+    const img = (D.packageImages || {})[p.name], price = priceFor(p);
+    const tags = q => (q.tags || []).map(x => `<span class="tag soft">${esc(x)}</span>`).join(' ');
+    // "Your design will include..." and add-ons: lines in data.json, some only for certain roles or prices
+    const shows = x => (!x.onlyFor || x.onlyFor.includes(st.role)) && !(x.hideFor || []).includes(st.role) && !(x.over && price <= x.over);
+    const line = x => ({includeStatement: () => countLine('includeStatement', p.statement), includeSupporting: () => countLine('includeSupporting', p.supporting),
+      includeFiller: () => countLine('includeFiller', p.greenery)}[x.key] || (() => t(x.key)))();
+    const incl = (D.includes || []).filter(shows).map(line).filter(Boolean), adds = (D.addons || []).filter(shows).map(line).filter(Boolean);
+    const guide = [['guideBestFor', p.bestFor], ['guideVibe', p.vibe]].filter(g => g[1]);
+    el.innerHTML = `<div class="est">${img ? `<img class="pkgimg" src="${esc(img)}" alt="${esc(p.name)}">` : ''}<div>
+      <span class="tag ${p === sug ? 'star' : 'sel'}">${esc(t(p === sug ? 'tagRecommended' : 'tagSelected'))}</span>${isPro() ? ` <span class="tag info">${esc(t('tagPro'))}</span>` : ''} ${tags(p)}
       <p class="pkgname">${esc(p.name)}</p>
       <p class="muted" style="margin:2px 0 0">${esc(t('forYour', {cake}))}</p>
-      <p class="price">${esc(t('startingAt'))} ${money(priceFor(p))}</p></div></div>
-      <ul class="inc">
-        <li>${esc(aim(p.statement, t('unitStatement')))}</li>
-        <li>${esc(aim(p.supporting, t('unitSupporting')))}</li>
-        <li>${esc(aim(p.greenery, t('unitFiller')))}</li>
-        <li>${esc(t('includeCustom'))}</li>
-        <li>${esc(t('includeShipping'))}</li>
-      </ul>
-      ${others.length ? `<p class="sub">${esc(t(othersKey, {size: size1}))}</p>` + others.map(o => `<button type="button" class="pkg" data-pkg="${esc(o.name)}"><span>${esc(o.name)}</span><span>${esc(t('startingAt'))} ${money(priceFor(o))}</span></button>`).join('') : ''}
+      <p class="price">${esc(priceText(price))}</p></div></div>
+      ${guide.length ? `<dl class="guide">${guide.map(([k, v]) => `<dt>${esc(t(k))}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
+      ${incl.length ? `<p class="sub">${esc(t('includes'))}</p><ul class="inc">${incl.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p><ul class="inc addons">${adds.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${others.length ? `<p class="sub">${esc(t(othersKey, {size: size1}))}</p>` + others.map(o => { const oi = (D.packageImages || {})[o.name];
+        return `<button type="button" class="pkg" data-pkg="${esc(o.name)}">${oi ? `<img src="${esc(oi)}" alt="">` : ''}<span class="pkgtxt"><b>${esc(o.name)}</b>${o.tags?.length ? ' ' + tags(o) : ''}${o.bestFor ? `<small>${esc(o.bestFor)}</small>` : ''}</span><span class="pkgprice">${esc(priceText(priceFor(o)))}</span></button>`; }).join('') : ''}
       ${notes.join('')}
-      <p class="note">${esc(t('noteRetainer'))}</p>
       <p class="muted">${esc(t('noteFinal'))}</p>
       `;
-    bar.innerHTML = `<small>${esc(t('startingAt'))}</small>${money(priceFor(p))}<small>${esc(p.name)}${isPro() ? ' · ' + esc(t('tagPro')) : ''}</small>`;
+    bar.innerHTML = `${esc(priceText(price))}<small>${esc(p.name)}</small>`;
   }
   // Shop route: a link to inquire anyway (it goes through the email page like everyone else)
   if (shop) $('#cakeNotes').insertAdjacentHTML('beforeend', `<p class="muted"><a href="#" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>`);
@@ -161,8 +173,6 @@ function render() {
     bar.innerHTML = !p && !shop ? `<small style="white-space:normal">${esc(t('barEmpty'))}</small>` : '';
     if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; }
     else { cta.textContent = t('barNext'); cta.href = '#'; cta.dataset.cta = 'next'; }
-  } else if (view === 'email') {
-    bar.innerHTML = ''; cta.textContent = t('barShowEstimate'); cta.href = '#'; cta.dataset.cta = 'lead';
   } else if (!p) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; }
   else if (direct) { cta.textContent = t('barSend'); cta.href = '#'; cta.dataset.cta = 'send'; }
   else { cta.textContent = t('barCta'); cta.href = inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
@@ -196,9 +206,8 @@ document.addEventListener('click', e => {
   if (link) track('estimator_cta', {action: link.dataset.cta});
   const action = link && link.dataset.cta;   // read once: going to the details page changes the button
   if (['next', 'inquiry_anyway'].includes(action)) { e.preventDefault(); goNext(); }
-  else if (action === 'lead') { e.preventDefault(); submitLead(); }
   else if (action === 'send') { e.preventDefault(); submitInquiry(); }
-  if (e.target.id === 'editAnswers' || e.target.id === 'backToCake') go('cake');
+  if (e.target.id === 'editAnswers') go('cake');
   const rm = e.target.closest('[data-rm]'); if (rm) { photos.splice(+rm.dataset.rm, 1); renderThumbs(); }
 });
 
@@ -239,7 +248,7 @@ document.addEventListener('change', async e => {
   for (const f of [...e.target.files]) { if (photos.length >= D.inquiry.maxPhotos) break; const p = await readPhoto(f); if (p.data.length * 0.75 <= 5 * 1024 * 1024) photos.push(p); }
   e.target.value = ''; renderThumbs();
 });
-// Turnstile spam check: on the email page, and on the last page only if saving the email failed
+// Turnstile spam check: on the first page (for the email), and on the last page only if saving the email failed
 const tsWidgets = {}, tsQueue = [];
 function loadTurnstile(sel, set) {
   if (!D.inquiry.turnstileSiteKey || tsWidgets[sel] !== undefined) return;
@@ -255,30 +264,29 @@ const resetTurnstile = sel => { if (window.turnstile && tsWidgets[sel]) window.t
 // ---- Pages ----
 function showView(v) {
   view = v; $('#proFields').hidden = !isPro();
-  $('#viewEstimate').hidden = v !== 'cake'; $('#viewEmail').hidden = v !== 'email'; $('#viewDetails').hidden = v !== 'details';
+  $('#viewEstimate').hidden = v !== 'cake'; $('#viewDetails').hidden = v !== 'details';
   $('#details').hidden = !direct;   // Fillout mode: the bar button opens the Fillout form instead
   render(); window.scrollTo(0, 0);
 }
 function go(v) { history.pushState({view: v}, ''); showView(v); }
-// From the questions: check the required ones, then the email page (or straight to the estimate if we already have their email)
+// "See my estimate": check the questions and email, save the email, then show the estimate
 function goNext() {
   document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
-  const need = [['role', !st.role], ['eventType', !st.eventType], ['date', !dateTouched], ['size', !st.size], ['styleBtn', st.style === null]].filter(x => x[1]).map(x => x[0]);
+  const email = $('#leadEmail').value.trim(), err = $('#leadErr'); err.hidden = true;
+  const need = [['role', !st.role], ['eventType', !st.eventType], ['date', !dateTouched], ['size', !st.size], ['styleBtn', st.style === null],
+    ['leadEmail', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)]].filter(x => x[1]).map(x => x[0]);
   if (need.length) {
     need.forEach(k => $('#' + k).classList.add('bad'));
     $('#' + need[0]).scrollIntoView({behavior: 'smooth', block: 'center'});
     $('#dateErr').hidden = !need.includes('date');
     return;
   }
-  if (leadEmail) return goDetails();
-  go('email'); loadTurnstile('#tsLead', tok => { tsLeadToken = tok; });
-  track('estimator_email_view');
-  setTimeout(() => $('#leadEmail').focus({preventScroll: true}), 50);
+  if (email === leadEmail) return goDetails();   // came back to edit answers; email already saved
+  if (D.inquiry.turnstileSiteKey && !tsLeadToken) { err.textContent = t('missing'); err.hidden = false; $('#tsLead').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  submitLead(email);
 }
-async function submitLead() {
-  const email = $('#leadEmail').value.trim(), err = $('#leadErr'); err.hidden = true;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('#leadEmail').classList.add('bad'); err.textContent = t('missing'); err.hidden = false; return; }
-  if (D.inquiry.turnstileSiteKey && !tsLeadToken) { err.textContent = t('missing'); err.hidden = false; return; }
+async function submitLead(email) {
+  const err = $('#leadErr');
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), cta = $('#barCta');
   cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true');
   try {
@@ -292,7 +300,7 @@ async function submitLead() {
   } catch (e) {
     if (String(e.message) === 'spam') { err.textContent = t('sendError'); err.hidden = false; resetTurnstile('#tsLead'); tsLeadToken = ''; render(); return; }
   }
-  leadEmail = email; if (!val('email')) $('#email').value = email;
+  leadEmail = email; if (!val('email') || val('email') === leadEmail) $('#email').value = email;
   track('estimator_lead');
   goDetails();
 }
@@ -309,8 +317,8 @@ function renderSummary() {
   const dateLong = new Date(st.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
   const rows = [
     ['sumRole', role()?.label], ['sumEvent', st.eventType === 'Other' ? val('eventOther') || 'Other' : st.eventType], ['sumDate', dateLong], ['sumSize', st.size],
-    ['sumStyle', st.style ? `<img src="photos/${slug(st.style)}.jpg" alt="">${esc(st.style)}` : esc(t('styleNotSure')), true],
-    ['sumBudget', st.budget], ['sumPackage', pkg ? `${esc(pkg.name)} · ${esc(t('startingAt'))} ${money(priceFor(pkg))}${isPro() ? ' · ' + esc(t('tagPro')) : ''}` : '', true],
+    ['sumStyle', `<img src="photos/${st.style ? slug(st.style) : 'not-sure-yet'}.jpg" alt="">${esc(st.style || t('styleNotSure'))}`, true],
+    ['sumBudget', st.budget], ['sumPackage', pkg ? `${esc(pkg.name)} · ${esc(priceText(priceFor(pkg)))}${isPro() ? ' · ' + esc(t('tagPro')) : ''}` : '', true],
   ].filter(r => r[1]);
   $('#summary').innerHTML = rows.map(([k, v, html]) => `<dt>${esc(t(k))}</dt><dd>${html ? v : esc(v)}</dd>`).join('');
   $('#editAnswers').textContent = t('editAnswers');
@@ -344,6 +352,8 @@ async function submitInquiry() {
     const out = await res.json().catch(() => ({}));
     if (!res.ok || !out.ok) throw new Error(out.error || res.status);
     track('estimator_submit', {package: name, pricing: isPro() ? 'pro' : 'standard', photos: photos.length});
+    // Your thank-you page on kelsiecakes.com (data.json "thanksUrl"); the built-in message shows if it can't open
+    if (D.thanksUrl) { try { (framed ? window.top : window).location.href = D.thanksUrl; } catch (e2) { try { window.open(D.thanksUrl, '_top'); } catch (e3) {} } }
     $('main').innerHTML = `<section class="thanks"><h2>${esc(t('thanksHeading'))}</h2><p>${esc(t('thanksText'))}</p><p>${esc(t('thanksSignoff'))}</p></section>`;
     document.querySelector('.bar').remove(); document.body.style.paddingBottom = '0'; window.scrollTo(0, 0);
   } catch (e2) {
@@ -352,8 +362,8 @@ async function submitInquiry() {
   }
 }
 
-fetch('data.json').then(r => r.json()).then(d => {
-  D = d; T = d.copy; loadGtm(d.gtmId);
+Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).then(([d, copy]) => {
+  D = d; T = copy; loadGtm(d.gtmId);
   { const x = new Date(); x.setMonth(x.getMonth() + 3); x.setDate(x.getDate() + ((6 - x.getDay() + 7) % 7));
     st.date = `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; }
   direct = d.inquiry.mode === 'direct' || new URLSearchParams(location.search).has('direct');
@@ -363,4 +373,5 @@ fetch('data.json').then(r => r.json()).then(d => {
   const f = new URLSearchParams(location.search).get('for');
   if (D.roles.some(r => r.key === f)) { st.role = f; $('#role').value = f; }
   history.replaceState({view: 'cake'}, ''); showView('cake'); track('estimator_view');
+  loadTurnstile('#tsLead', tok => { tsLeadToken = tok; });
 });

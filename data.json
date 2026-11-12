@@ -96,112 +96,6 @@
   "Cascading": 0.75,
   "Maximalist": 1
  },
- "copy": {
-  "title": "Custom Sugar Flower Package Estimator",
-  "brand": "Sugar Flowers by Kelsie Cakes",
-  "intro": "Let's find out if we're a good fit to work together! Tell me about your dream cake to estimate the pricing. After you reach out, I'll walk you through a detailed design proposal and final quote.",
-  "cardCake": "All About The Cake",
-  "labelRole": "Your Role",
-  "labelDate": "Event date",
-  "labelSize": "Your Cake Size (it's okay to estimate if it's not finalized yet)",
-  "labelStyle": "Your Preferred Floral Arrangement Style",
-  "labelBudget": "Your Budget for Sugar Flowers",
-  "choose": "Choose…",
-  "styleNotSure": "Not sure yet",
-  "cardEstimate": "Your estimate",
-  "estimateEmpty": "Choose your cake size and style to see your estimate.",
-  "tagRecommended": "🌟 Recommended",
-  "tagSelected": "✓ Selected",
-  "tagPro": "Pro pricing",
-  "startingAt": "Starting at",
-  "forYour": "For your {cake}",
-  "includes": "Includes",
-  "unitStatement": "statement flowers",
-  "unitSupporting": "supporting blooms",
-  "unitFiller": "filler flowers and foliage",
-  "includeCustom": "Your design will be fully customized and color-matched to your palette",
-  "includeShipping": "Delivered to you with our Delicate-but-Durable Shipping Promise",
-  "othersHeading": "Other packages I recommend for a {size} cake",
-  "noteFinal": "Your final quote will be based on the complexity and details for your unique cake.",
-  "noteRetainer": "Since we are a small, artist-owned boutique, we can only book a limited number of custom designs each year. Since we are still available for your date, you can hold your date with a $150 retainer that goes toward your final invoice.",
-  "noteRush": "Just a head's up! Your date is less than {rushWeeks} weeks away. A rush fee may apply.",
-  "noteShort": "Oh dear! Custom designs need at least {minWeeks} weeks’ notice. We may be booked already, but please reach out, and we'll see what we can do!",
-  "shopBudget": "For budgets under $350, my ready-to-ship sugar flower collection is the best fit. Inventory is limited, so be sure to grab your favorites!",
-  "shopDate": "Oh no! Your event is less than 3 weeks away, which is too soon for a custom design. But don't worry! My ready-to-ship Sugar Flower collection was made for exactly this situation!",
-  "inquiryAnyway": "Still looking for something custom? Let us know what you're looking for!",
-  "barEmpty": "Your personalized package recommendation is calculating...",
-  "barCta": "Reach Out to Inquire",
-  "barShop": "Shop for Ready-to-Ship Sugar Flowers!",
-  "embedEstimatorButton": "Get a price estimate",
-  "embedInquiryButton": "Start your Inquiry",
-  "embedNote": "Every design is color-matched to your personalized palette. Custom designs need at least {minWeeks} weeks’ notice; dates under {rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design.",
-  "embedProStartingAt": "Starting at",
-  "cardDetails": "Your details",
-  "detailsIntro": "After you’ve submitted your inquiry, I’ll check my calendar for availability and send you a more detailed questionnaire about your cake design via email.",
-  "labelFirst": "Your First Name",
-  "labelLast": "Your Last Name",
-  "labelPronouns": "Your Pronouns",
-  "labelEmail": "Your Email",
-  "labelPhone": "Your Phone",
-  "labelReferral": "How did you find out about Sugar Flowers by Kelsie Cakes?",
-  "labelVision": "Anything else you’d like to share about your design? We’ll go over all the details together, but I’d love to hear what you’re envisioning!",
-  "labelPhotos": "Do you have any inspiration photos you’d like to share?",
-  "photosHint": "Up to {max} photos.",
-  "allergenHeading": "Allergen Information",
-  "allergenText": "Sugar Flowers contain egg whites and are not created in an allergen-free facility. They may contain inedible material, such as floral wire, and are not for consumption.",
-  "allergenCheck": "I Understand.",
-  "required": "Required",
-  "missing": "Oops! Please fill in the highlighted fields.",
-  "sending": "Sending…",
-  "sendError": "Oh dear! Something went wrong sending your inquiry. Please try again, or email hello@sugarflowersonline.com.",
-  "thanksHeading": "Thank you so much for your inquiry!",
-  "thanksText": "Please check your email to make sure you received the confirmation email. I’m so excited to work with you! I’ve verify availability and send you a more detailed questionnaire about your cake design via email. I look forward to meeting with you!",
-  "thanksSignoff": "xoxo, Kelsie",
-  "footerTerms": "Terms",
-  "footerPrivacy": "Privacy",
-  "labelPalette": "What’s your color palette for this floral arrangement?",
-  "confirmDate": "Please confirm your event date.",
-  "barSend": "Submit my inquiry",
-  "cardSummary": "Your custom sugar flower design price estimate",
-  "editAnswers": "Edit my answers",
-  "sumRole": "Your Role",
-  "sumDate": "The Event",
-  "sumSize": "Cake Size",
-  "sumStyle": "Arrangement Style",
-  "sumBudget": "Preferred Budget",
-  "sumPackage": "Recommended Package",
-  "othersHeadingBudget": "Other packages I recommend for a {size} cake that align closer to your budget",
-  "proHeading": "About your business",
-  "labelBizLink": "What’s your website or IG handle?",
-  "labelBizLocation": "Where is your business located?",
-  "labelBizCity": "City",
-  "labelBizState": "State",
-  "outsideUS": "Outside the US",
-  "labelResale": "Since you’re in Florida, do you have your resale certificate?",
-  "resaleYes": "Yes",
-  "resaleNo": "No",
-  "labelResaleFile": "Upload your resale certificate (PDF or photo, optional)",
-  "labelEventType": "What’s the occasion?",
-  "eventOtherPlaceholder": "Tell me about your event",
-  "sumEvent": "Event",
-  "submitNote": "By submitting this form, you agree to be contacted about this sugar flower design by Kelsie Delisle.",
-  "hintRole": "",
-  "hintEventType": "",
-  "hintDate": "",
-  "hintSize": "",
-  "hintStyle": "",
-  "hintBudget": "Custom designs start at {minPrice}",
-  "barNext": "See my estimate",
-  "cardEmail": "Your estimate is ready",
-  "emailIntro": "",
-  "labelLeadEmail": "Your Email",
-  "emailNote": "",
-  "barShowEstimate": "Show my estimate",
-  "cardIncluded": "What's included",
-  "includedExpect": "What you can expect",
-  "includedAlways": "Always included",
-  "summaryHeading": "Your answers"
- },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
   "The Bryony": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/86abda08-cff3-447d-887d-25a9cee653f8.png",
@@ -222,7 +116,10 @@
    "suitableFor": "A single tier cake, or accent on larger tiered cake",
    "statement": "0-1",
    "supporting": "1–3 small supporting flowers",
-   "greenery": "a touch of greenery and filler"
+   "greenery": "a touch of greenery and filler",
+   "bestFor": "A single tier cake, or a delicate accent on a larger tiered cake",
+   "vibe": "Clean and unfussy — a few perfect blooms placed with intention",
+   "tags": []
   },
   {
    "id": "rec5peH1R9mBD9OjA",
@@ -235,7 +132,10 @@
    "suitableFor": "Small wedding cake, single-tier showstopper, minimal tiered design",
    "statement": "2-3",
    "supporting": "6–8 supporting blooms",
-   "greenery": "5–7 filler/greenery pieces"
+   "greenery": "5–7 filler/greenery pieces",
+   "bestFor": "A small wedding cake, a single-tier showstopper, or a more minimal design on a tiered cake",
+   "vibe": "Lush in miniature — garden-fresh and full without overwhelming a smaller cake",
+   "tags": []
   },
   {
    "id": "recY9AzzlOTGoItSd",
@@ -248,7 +148,10 @@
    "suitableFor": "Three to four tier cake",
    "statement": "4",
    "supporting": "8–10 supporting blooms",
-   "greenery": "7–10 filler/greenery pieces"
+   "greenery": "7–10 filler/greenery pieces",
+   "bestFor": "A three to four tier cake",
+   "vibe": "A classic wedding cake floral arrangement reimagined in sugar — romantic and layered",
+   "tags": []
   },
   {
    "id": "recak2NCPtcfHTAYV",
@@ -262,7 +165,10 @@
    "suitableFor": "Cakes with variety and volume, 3+ tiers",
    "statement": "6",
    "supporting": "10–12 supporting blooms",
-   "greenery": "10–14 filler/greenery pieces"
+   "greenery": "10–14 filler/greenery pieces",
+   "bestFor": "A cake with enough variety and volume to play with the design — from tumbling cascades to scattered clusters",
+   "vibe": "Lots of volume, texture, and movement",
+   "tags": []
   },
   {
    "id": "recEd9AzDKIOuG01H",
@@ -276,7 +182,10 @@
    "suitableFor": "Large, four or more tier wedding cake",
    "statement": "10",
    "supporting": "Dozens of supporting blooms and filler/greenery",
-   "greenery": "~15–20 filler/greenery"
+   "greenery": "~15–20 filler/greenery",
+   "bestFor": "A large, four or more tier wedding cake",
+   "vibe": "A maximalist design rich with detail",
+   "tags": []
   },
   {
    "id": "rec0EfqMNRyJhkIDg",
@@ -290,10 +199,12 @@
    "suitableFor": "Large, four or more tier wedding cake, editorial-scale design",
    "statement": "20",
    "supporting": "~30–40 supporting blooms",
-   "greenery": "~20–28 filler/greenery"
+   "greenery": "~20–28 filler/greenery",
+   "bestFor": "A large, four or more tier wedding cake, or an editorial-scale design",
+   "vibe": "An abundance of blooms for the most showstopping installation on your cake",
+   "tags": []
   }
  ],
- "copySheetCsvUrl": "",
  "eventTypes": [
   "Wedding",
   "Birthday",
@@ -314,5 +225,47 @@
    "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad926657d1a1a83dbad4261_detail_instructions.jpg",
    "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fcc17d1a1a83dba659fb_assitance_from_kelsie.jpg"
   ]
- }
+ },
+ "includes": [
+  {
+   "key": "includeStatement"
+  },
+  {
+   "key": "includeSupporting"
+  },
+  {
+   "key": "includeFiller"
+  },
+  {
+   "key": "includeCustom"
+  },
+  {
+   "key": "includeShipping"
+  },
+  {
+   "key": "includeInstructions",
+   "hideFor": [
+    "baker"
+   ]
+  },
+  {
+   "key": "includePriority",
+   "onlyFor": [
+    "baker"
+   ]
+  }
+ ],
+ "addons": [
+  {
+   "key": "addonMore"
+  },
+  {
+   "key": "addonLuxe"
+  },
+  {
+   "key": "addonWhiteGlove",
+   "over": 2000
+  }
+ ],
+ "thanksUrl": "https://kelsiecakes.com/thanks-for-your-inquiry/"
 }
