@@ -171,7 +171,6 @@
   "sumBudget": "Preferred Budget",
   "sumPackage": "Recommended Package",
   "othersHeadingBudget": "Other packages I recommend for a {size} cake that align closer to your budget",
-  "smsConsent": "Is it okay for me to send you text messages about this?",
   "proHeading": "About your business",
   "labelBizLink": "What’s your website or IG handle?",
   "labelBizLocation": "Where is your business located?",
@@ -185,7 +184,23 @@
   "labelEventType": "What’s the occasion?",
   "eventOtherPlaceholder": "Tell me about your event",
   "sumEvent": "Event",
-  "submitNote": "By submitting this form, you agree to be contacted about this sugar flower design by Kelsie Delisle."
+  "submitNote": "By submitting this form, you agree to be contacted about this sugar flower design by Kelsie Delisle.",
+  "hintRole": "",
+  "hintEventType": "",
+  "hintDate": "",
+  "hintSize": "",
+  "hintStyle": "",
+  "hintBudget": "Custom designs start at {minPrice}",
+  "barNext": "See my estimate",
+  "cardEmail": "Your estimate is ready",
+  "emailIntro": "",
+  "labelLeadEmail": "Your Email",
+  "emailNote": "",
+  "barShowEstimate": "Show my estimate",
+  "cardIncluded": "What's included",
+  "includedExpect": "What you can expect",
+  "includedAlways": "Always included",
+  "summaryHeading": "Your answers"
  },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
@@ -284,5 +299,20 @@
   "Birthday",
   "Holiday Party",
   "Other"
- ]
+ ],
+ "included": {
+  "expect": [
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad926327d1a1a83dbad3ba3_botanical_details.jpg",
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad9263a7d1a1a83dbad3db1_color_palette_matching.jpg",
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad926457d1a1a83dbad3e98_true_to_life_detial.jpg",
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad9265a7d1a1a83dbad418b_design_sketches.jpg",
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fd4a855d1b997bb1a71d_handpainted_details.png"
+  ],
+  "always": [
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fcc1855d1b997bb191a9_careful_packaging.jpg",
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fcc17d1a1a83dba659fd_timely_insured_delivery.jpg",
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad926657d1a1a83dbad4261_detail_instructions.jpg",
+   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fcc17d1a1a83dba659fb_assitance_from_kelsie.jpg"
+  ]
+ }
 }

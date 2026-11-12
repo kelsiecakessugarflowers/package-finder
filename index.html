@@ -18,7 +18,7 @@ h1.title{font-weight:600;color:var(--ink);font-size:22px;line-height:1.25;margin
 footer{text-align:center;padding:8px 16px 24px;color:var(--muted);font-size:12px}
 footer img{width:220px;height:auto;display:block;margin:0 auto 10px}
 footer a{color:var(--muted)}
-input.bad,select.bad,textarea.bad,.check.bad{border-color:var(--kc-berry);background:#fff7f8}
+input.bad,select.bad,textarea.bad,.check.bad,.stylebtn.bad,.radios.bad{border-color:var(--kc-berry);background:#fff7f8}
 .err{color:var(--kc-berry);font-size:13px;margin:8px 0 0}
 textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--text);min-height:72px;height:72px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
@@ -28,9 +28,26 @@ textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid va
 .radios{display:flex;gap:18px;margin:6px 0}
 .radios label{display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:15px}
 .radios input{width:auto}
-.check.sms{font-size:14px;margin-top:8px;border:none;padding:4px 0}
+/* Little notes under the questions (copy keys hint*; blank ones are hidden) */
+.hint{margin:5px 0 0;font-size:13px;color:var(--accent);display:flex;gap:6px;align-items:baseline}
+.hint::before{content:"✿";font-size:12px;color:var(--kc-mauve,#9F748A)}
+.hint:empty{display:none}
+/* Estimate: package photo beside the name */
+.est{display:grid;grid-template-columns:1fr auto;gap:0 14px;align-items:start}
+.est .pkgimg{width:112px;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);grid-row:1 / span 5;grid-column:2}
+@media (min-width:520px){.est .pkgimg{width:150px}}
+.price{font-size:26px}
+/* What's included: swipeable photo cards like the proposal */
+.gallery{display:grid;grid-auto-flow:column;grid-auto-columns:46%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;margin:0 -2px;scrollbar-width:thin}
+.gallery img{width:100%;aspect-ratio:5/7;object-fit:cover;display:block;scroll-snap-align:start;border:1px solid var(--line);background:var(--soft)}
+@media (min-width:640px){.gallery{grid-auto-columns:31%}}
+.gallery-head{display:flex;justify-content:space-between;align-items:baseline}
+.swipe{font-size:12px;color:var(--muted)}
+.emailbox{max-width:420px;margin:0 auto;text-align:center}
+.emailbox label{text-align:left}
+.emailbox #tsLead{display:flex;justify-content:center;margin-top:14px}
 .grid2 .field{min-width:0}
-.sum{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px;margin:0}
+.sum{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;margin:0}
 .sum dt{color:var(--muted);font-size:13px;padding-top:2px}
 .sum dd{margin:0}
 .sum img{width:22px;aspect-ratio:2/3;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--line)}
@@ -103,32 +120,56 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <h2 id="t-cardCake"></h2>
     <label for="role" id="t-labelRole"></label>
     <select id="role"></select>
+    <p class="hint" id="hintRole"></p>
     <label for="eventType" id="t-labelEventType"></label>
     <select id="eventType"></select>
     <input id="eventOther" hidden style="margin-top:6px">
+    <p class="hint" id="hintEventType"></p>
     <label for="date" id="t-labelDate"></label>
     <input type="date" id="date">
     <p class="err" id="dateErr" hidden></p>
+    <p class="hint" id="hintDate"></p>
     <label for="size" id="t-labelSize"></label>
     <select id="size"></select>
+    <p class="hint" id="hintSize"></p>
     <label for="styleBtn" id="t-labelStyle"></label>
     <button type="button" class="stylebtn" id="styleBtn" aria-haspopup="dialog"></button>
+    <p class="hint" id="hintStyle"></p>
     <label for="budget" id="t-labelBudget"></label>
     <select id="budget"></select>
-  </section>
-
-
-  <section aria-live="polite">
-    <h2 id="t-cardEstimate"></h2>
-    <div id="estimate"></div>
+    <p class="hint" id="hintBudget"></p>
+    <div id="cakeNotes" aria-live="polite"></div>
   </section>
  </div>
 
- <div id="viewDetails" hidden>
+ <!-- Page 2: email to unlock the estimate -->
+ <div id="viewEmail" hidden>
   <section>
+    <h2 id="t-cardEmail"></h2>
+    <div class="emailbox">
+      <p class="muted" id="t-emailIntro" style="margin-top:0"></p>
+      <label for="leadEmail" id="t-labelLeadEmail"></label>
+      <input id="leadEmail" type="email" autocomplete="email" inputmode="email">
+      <p class="muted" id="t-emailNote" style="margin:8px 0 0"></p>
+      <div id="tsLead"></div>
+      <p class="err" id="leadErr" hidden></p>
+    </div>
+    <button type="button" class="back" id="backToCake"></button>
+  </section>
+ </div>
+
+ <!-- Page 3: the estimate, what's included, then the rest of the inquiry -->
+ <div id="viewDetails" hidden>
+  <section aria-live="polite">
     <h2 id="t-cardSummary"></h2>
+    <div id="estimate"></div>
+    <p class="sub" id="t-summaryHeading"></p>
     <dl class="sum" id="summary"></dl>
     <button type="button" class="back" id="editAnswers"></button>
+  </section>
+  <section id="included">
+    <h2 id="t-cardIncluded"></h2>
+    <div id="includedBody"></div>
   </section>
   <section id="details">
     <h2 id="t-cardDetails"></h2>
@@ -138,7 +179,6 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
       <div class="field"><label for="last" id="t-labelLast"></label><input id="last" autocomplete="family-name"></div>
       <div class="field"><label for="email" id="t-labelEmail"></label><input id="email" type="email" autocomplete="email"></div>
       <div class="field"><label for="phone" id="t-labelPhone"></label><input id="phone" type="tel" autocomplete="tel"></div>
-      <label class="check full sms"><input type="checkbox" id="smsConsent"><span id="t-smsConsent"></span></label>
       <div class="full grid2" id="proFields" hidden>
         <p class="sub full" id="t-proHeading"></p>
         <div class="field full"><label for="bizLink" id="t-labelBizLink"></label><input id="bizLink" placeholder="@yourbakery or yourbakery.com"></div>
@@ -161,7 +201,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <p class="sub" id="t-allergenHeading"></p>
     <p class="allergen" id="t-allergenText"></p>
     <label class="check" data-f="allergen"><input type="checkbox" id="allergen"><span id="t-allergenCheck"></span></label>
-    <div id="turnstile" style="margin-top:12px"></div>
+    <div id="turnstile" style="margin-top:12px"></div>   <!-- only used if saving the email on page 2 failed -->
     <p class="muted" id="t-submitNote" style="margin:10px 0 0"></p>
     <p class="err" id="formErr" hidden></p>
   </section>

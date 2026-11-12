@@ -5,7 +5,9 @@ const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, 
 // style: null = not chosen yet, '' = "Not sure yet"
 const st = {role: '', eventType: '', date: '', size: '', style: null, budget: '', pkg: ''};
 let dateTouched = false;   // the date starts on a suggested Saturday; it has to be confirmed before sending an inquiry
-let D, T, direct = false, tsToken = '', view = 'estimate';
+let D, T, direct = false, tsToken = '', view = 'cake';
+// Pages: 'cake' (questions) -> 'email' (email unlocks the estimate) -> 'details' (estimate, what's included, rest of the inquiry)
+let leadEmail = '', leadToken = '', tsLeadToken = '';
 const photos = [];
 let resaleFile = null;   // {name, type, data}
 const US_STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');   // {name, type, data (base64), url (preview)}
@@ -74,6 +76,12 @@ function renderStatic() {
   $('#eventOther').placeholder = t('eventOtherPlaceholder');
   $('#bizState').innerHTML = opts([...US_STATES, t('outsideUS')]);
   $('#photosHint').textContent = t('photosHint', {max: D.inquiry.maxPhotos});
+  $('#backToCake').textContent = t('editAnswers');
+  // What's included: the proposal's photo cards (data.json "included")
+  const inc = D.included || {}, altOf = u => decodeURIComponent(u.split('/').pop()).replace(/^[0-9a-f]{20,}_/, '').replace(/\.\w+$/, '').replace(/[_-]+/g, ' ');
+  const groups = [['includedExpect', inc.expect], ['includedAlways', inc.always]].filter(g => g[1]?.length);
+  $('#includedBody').innerHTML = groups.map(([k, list]) => `${t(k) ? `<p class="sub">${esc(t(k))}</p>` : ''}<div class="gallery">${list.map(u => `<img src="${esc(u)}" alt="${esc(altOf(u))}" loading="lazy">`).join('')}</div>`).join('');
+  $('#included').hidden = !groups.length;
   // Footer: logo, copyright and legal links on the full page; none of it inside an embed (the header logo is enough there)
   if (!framed) $('#footer').innerHTML = `<img src="logo-alt.svg" alt="Sugar Flowers by Kelsie Cakes">© ${new Date().getFullYear()} ${esc(D.legal.owner)} · <a href="${esc(D.legal.termsUrl)}" target="_top">${esc(t('footerTerms'))}</a> · <a href="${esc(D.legal.privacyUrl)}" target="_top">${esc(t('footerPrivacy'))}</a>`;
 
@@ -82,6 +90,7 @@ function renderStatic() {
 function inquiryUrl(p) {
   const u = new URL(D.filloutUrl), here = new URLSearchParams(location.search);
   ['utm_source', 'ck_subscriber_id', 'first_name', 'last_name', 'email', 'phone'].forEach(k => { if (here.get(k)) u.searchParams.set(k, here.get(k)); });
+  if (leadEmail) u.searchParams.set('email', leadEmail);
   const set = {client_type: role()?.clientType, event_date: dateTouched ? st.date : '', tiers: st.size, style: st.style,
     budget: st.budget, package: p?.name, estimate: p ? priceFor(p) : '', source: 'estimator'};
   for (const [k, v] of Object.entries(set)) if (v !== '' && v != null) u.searchParams.set(k, v);
@@ -108,6 +117,13 @@ function render() {
   else if (n !== null && n >= 0 && n < D.leadTime.minimumWeeks * 7) notes.push(`<p class="note">${esc(t('noteShort', {minWeeks: D.leadTime.minimumWeeks}))}</p>`);
   else if (n !== null && n >= 0 && n < D.leadTime.rushWeeks * 7) notes.push(`<p class="note">${esc(t('noteRush', {rushWeeks: D.leadTime.rushWeeks}))}</p>`);
 
+  $('#cakeNotes').innerHTML = notes.join('');
+  // Little notes under the questions; numbers come from the packages so they stay in step with Airtable
+  const all = [...D.packages].sort((a, b) => a.price - b.price), cheapestFit = f[0];
+  const hv = {minPrice: all.length ? money(priceFor(all[0])) : '', sizeMinPrice: cheapestFit ? money(priceFor(cheapestFit)) : '',
+    minWeeks: D.leadTime.minimumWeeks, rushWeeks: D.leadTime.rushWeeks};
+  ['Role', 'EventType', 'Date', 'Size', 'Style', 'Budget'].forEach(k => { $('#hint' + k).textContent = t('hint' + k, hv); });
+
   if (!p) {
     el.innerHTML = `<p class="muted" style="margin:0">${esc(t('estimateEmpty'))}</p>` + notes.join('');
     bar.innerHTML = `<small style="white-space:normal">${esc(t('barEmpty'))}</small>`;
@@ -118,11 +134,12 @@ function render() {
     const cap = budgetMax(), overBudget = cap !== null && priceFor(p) > cap;
     const others = f.filter(x => x !== p).sort((a, b) => (overBudget ? (priceFor(a) > cap) - (priceFor(b) > cap) : 0) || a.price - b.price);
     const othersKey = overBudget && others.some(o => priceFor(o) <= cap) ? 'othersHeadingBudget' : 'othersHeading';
-    el.innerHTML = `
+    const img = (D.packageImages || {})[p.name];
+    el.innerHTML = `<div class="est">${img ? `<img class="pkgimg" src="${esc(img)}" alt="">` : ''}<div>
       <span class="tag ${p === sug ? 'star' : 'sel'}">${esc(t(p === sug ? 'tagRecommended' : 'tagSelected'))}</span>${isPro() ? ` <span class="tag info">${esc(t('tagPro'))}</span>` : ''}
       <p class="pkgname">${esc(p.name)}</p>
       <p class="muted" style="margin:2px 0 0">${esc(t('forYour', {cake}))}</p>
-      <p class="price">${esc(t('startingAt'))} ${money(priceFor(p))}</p>
+      <p class="price">${esc(t('startingAt'))} ${money(priceFor(p))}</p></div></div>
       <ul class="inc">
         <li>${esc(aim(p.statement, t('unitStatement')))}</li>
         <li>${esc(aim(p.supporting, t('unitSupporting')))}</li>
@@ -134,14 +151,22 @@ function render() {
       ${notes.join('')}
       <p class="note">${esc(t('noteRetainer'))}</p>
       <p class="muted">${esc(t('noteFinal'))}</p>
-      ${shop ? `<p class="muted"><a target="_top" href="${direct ? '#details' : esc(inquiryUrl(p))}" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>` : ''}`;
+      `;
     bar.innerHTML = `<small>${esc(t('startingAt'))}</small>${money(priceFor(p))}<small>${esc(p.name)}${isPro() ? ' · ' + esc(t('tagPro')) : ''}</small>`;
   }
-  if (!p && !shop) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; return; }
-  cta.removeAttribute('aria-disabled');
-  if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; }
-  else if (view === 'details') { cta.textContent = t('barSend'); cta.href = '#'; cta.dataset.cta = 'send'; }
-  else { cta.textContent = t('barCta'); cta.href = direct ? '#' : inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
+  // Shop route: a link to inquire anyway (it goes through the email page like everyone else)
+  if (shop) $('#cakeNotes').insertAdjacentHTML('beforeend', `<p class="muted"><a href="#" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>`);
+  cta.removeAttribute('aria-disabled'); cta.target = '_top';
+  if (view === 'cake') {
+    bar.innerHTML = !p && !shop ? `<small style="white-space:normal">${esc(t('barEmpty'))}</small>` : '';
+    if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; }
+    else { cta.textContent = t('barNext'); cta.href = '#'; cta.dataset.cta = 'next'; }
+  } else if (view === 'email') {
+    bar.innerHTML = ''; cta.textContent = t('barShowEstimate'); cta.href = '#'; cta.dataset.cta = 'lead';
+  } else if (!p) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; }
+  else if (direct) { cta.textContent = t('barSend'); cta.href = '#'; cta.dataset.cta = 'send'; }
+  else { cta.textContent = t('barCta'); cta.href = inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
+  if (view === 'details') renderSummary();
 }
 
 let lastResult = '';
@@ -170,9 +195,10 @@ document.addEventListener('click', e => {
   if (pkg) { st.pkg = pkg.dataset.pkg; track('estimator_change', {field: 'package', value: st.pkg}); render(); trackResult(); }
   if (link) track('estimator_cta', {action: link.dataset.cta});
   const action = link && link.dataset.cta;   // read once: going to the details page changes the button
-  if (direct && ['inquiry', 'inquiry_anyway'].includes(action)) { e.preventDefault(); goDetails(); }
+  if (['next', 'inquiry_anyway'].includes(action)) { e.preventDefault(); goNext(); }
+  else if (action === 'lead') { e.preventDefault(); submitLead(); }
   else if (action === 'send') { e.preventDefault(); submitInquiry(); }
-  if (e.target.id === 'editAnswers') history.back();
+  if (e.target.id === 'editAnswers' || e.target.id === 'backToCake') go('cake');
   const rm = e.target.closest('[data-rm]'); if (rm) { photos.splice(+rm.dataset.rm, 1); renderThumbs(); }
 });
 
@@ -213,32 +239,71 @@ document.addEventListener('change', async e => {
   for (const f of [...e.target.files]) { if (photos.length >= D.inquiry.maxPhotos) break; const p = await readPhoto(f); if (p.data.length * 0.75 <= 5 * 1024 * 1024) photos.push(p); }
   e.target.value = ''; renderThumbs();
 });
-function loadTurnstile() {
-  if (!D.inquiry.turnstileSiteKey) return;
-  window.onTurnstileLoad = () => window.turnstile.render('#turnstile', {sitekey: D.inquiry.turnstileSiteKey, callback: tok => { tsToken = tok; }, 'expired-callback': () => { tsToken = ''; }});
+// Turnstile spam check: on the email page, and on the last page only if saving the email failed
+const tsWidgets = {}, tsQueue = [];
+function loadTurnstile(sel, set) {
+  if (!D.inquiry.turnstileSiteKey || tsWidgets[sel] !== undefined) return;
+  tsWidgets[sel] = null;
+  const draw = () => { tsWidgets[sel] = window.turnstile.render(sel, {sitekey: D.inquiry.turnstileSiteKey, callback: set, 'expired-callback': () => set('')}); };
+  if (window.turnstile) return draw();
+  tsQueue.push(draw);
+  if (window.__tsScript) return; window.__tsScript = true;
+  window.onTurnstileLoad = () => tsQueue.splice(0).forEach(f => f());
   const sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit'; sc.async = true; document.head.appendChild(sc);
 }
-// ---- Second page: their answers at the top, then the details form ----
+const resetTurnstile = sel => { if (window.turnstile && tsWidgets[sel]) window.turnstile.reset(tsWidgets[sel]); };
+// ---- Pages ----
 function showView(v) {
-  view = v; $('#proFields').hidden = !isPro(); $('#viewEstimate').hidden = v !== 'estimate'; $('#viewDetails').hidden = v !== 'details';
+  view = v; $('#proFields').hidden = !isPro();
+  $('#viewEstimate').hidden = v !== 'cake'; $('#viewEmail').hidden = v !== 'email'; $('#viewDetails').hidden = v !== 'details';
+  $('#details').hidden = !direct;   // Fillout mode: the bar button opens the Fillout form instead
   render(); window.scrollTo(0, 0);
 }
-function goDetails() {
+function go(v) { history.pushState({view: v}, ''); showView(v); }
+// From the questions: check the required ones, then the email page (or straight to the estimate if we already have their email)
+function goNext() {
   document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
-  const need = [['role', !st.role], ['eventType', !st.eventType], ['size', !st.size], ['date', !dateTouched]].filter(x => x[1]).map(x => x[0]);
+  const need = [['role', !st.role], ['eventType', !st.eventType], ['date', !dateTouched], ['size', !st.size], ['styleBtn', st.style === null]].filter(x => x[1]).map(x => x[0]);
   if (need.length) {
     need.forEach(k => $('#' + k).classList.add('bad'));
     $('#' + need[0]).scrollIntoView({behavior: 'smooth', block: 'center'});
     $('#dateErr').hidden = !need.includes('date');
     return;
   }
-  renderSummary(); history.pushState({view: 'details'}, ''); showView('details');
-  if (!window.__ts) { window.__ts = true; loadTurnstile(); }
+  if (leadEmail) return goDetails();
+  go('email'); loadTurnstile('#tsLead', tok => { tsLeadToken = tok; });
+  track('estimator_email_view');
+  setTimeout(() => $('#leadEmail').focus({preventScroll: true}), 50);
+}
+async function submitLead() {
+  const email = $('#leadEmail').value.trim(), err = $('#leadErr'); err.hidden = true;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('#leadEmail').classList.add('bad'); err.textContent = t('missing'); err.hidden = false; return; }
+  if (D.inquiry.turnstileSiteKey && !tsLeadToken) { err.textContent = t('missing'); err.hidden = false; return; }
+  const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), cta = $('#barCta');
+  cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true');
+  try {
+    const res = await fetch('/api/lead', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+      email, turnstile: tsLeadToken, clientType: role()?.clientType, eventType: st.eventType, eventOther: st.eventType === 'Other' ? val('eventOther') : '',
+      eventDate: st.date, size: st.size, style: st.style || '', budget: st.budget, packageName: name, estimate: pkg ? priceFor(pkg) : 0,
+      utmSource: new URLSearchParams(location.search).get('utm_source') || ''})});
+    const out = await res.json().catch(() => ({}));
+    if (res.status === 403) throw new Error('spam');
+    leadToken = out.lead || '';   // if saving failed on our side, they still see the estimate; the last page asks for the spam check instead
+  } catch (e) {
+    if (String(e.message) === 'spam') { err.textContent = t('sendError'); err.hidden = false; resetTurnstile('#tsLead'); tsLeadToken = ''; render(); return; }
+  }
+  leadEmail = email; if (!val('email')) $('#email').value = email;
+  track('estimator_lead');
+  goDetails();
+}
+function goDetails() {
+  go('details');
+  if (direct && !leadToken) loadTurnstile('#turnstile', tok => { tsToken = tok; });
   track('estimator_details_view');
 }
 // Opening or tapping the date field counts as confirming it, so a real date that matches the suggested Saturday still works
 ['focus', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.id === 'date' && !dateTouched) { dateTouched = true; $('#dateErr').hidden = true; e.target.classList.remove('bad'); } }, true));
-addEventListener('popstate', () => { if (view === 'details') showView('estimate'); });
+addEventListener('popstate', e => { const v = e.state?.view || 'cake'; showView(v === 'details' && !leadEmail ? 'cake' : v); });
 function renderSummary() {
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
   const dateLong = new Date(st.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
@@ -264,17 +329,17 @@ async function submitInquiry() {
   }
   const err = $('#formErr');
   if (bad.length) { err.textContent = t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
-  if (D.inquiry.turnstileSiteKey && !tsToken) { err.textContent = t('missing'); err.hidden = false; $('#turnstile').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  if (D.inquiry.turnstileSiteKey && !leadToken && !tsToken) { err.textContent = t('missing'); err.hidden = false; $('#turnstile').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), r = role();
   const cta = $('#barCta'); cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true'); err.hidden = true;
   try {
     const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
       ...req, role: st.role, eventType: st.eventType, eventOther: st.eventType === 'Other' ? val('eventOther') : '', size: st.size, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
       clientType: r.clientType, roleLabel: r.label, packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
-      utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, smsConsent: $('#smsConsent').checked,
+      utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, lead: leadToken,
       ...(isPro() ? {bizLink: val('bizLink'), bizCity: val('bizCity'), bizState: val('bizState'),
         resale: val('bizState') === 'FL' ? (document.querySelector('[name=resale]:checked')?.value || '') : '',
-        resaleFile: val('bizState') === 'FL' && document.querySelector('[name=resale]:checked')?.value === 'Yes' ? resaleFile : null} : {}), smsConsentText: t('smsConsent'), turnstile: tsToken,
+        resaleFile: val('bizState') === 'FL' && document.querySelector('[name=resale]:checked')?.value === 'Yes' ? resaleFile : null} : {}), turnstile: tsToken,
       photos: photos.map(({name, type, data}) => ({name, type, data}))})});
     const out = await res.json().catch(() => ({}));
     if (!res.ok || !out.ok) throw new Error(out.error || res.status);
@@ -283,7 +348,7 @@ async function submitInquiry() {
     document.querySelector('.bar').remove(); document.body.style.paddingBottom = '0'; window.scrollTo(0, 0);
   } catch (e2) {
     err.textContent = t('sendError'); err.hidden = false; render();
-    if (window.turnstile) { window.turnstile.reset(); tsToken = ''; }
+    resetTurnstile('#turnstile'); tsToken = '';
   }
 }
 
@@ -297,5 +362,5 @@ fetch('data.json').then(r => r.json()).then(d => {
   // ?for=couple|family|baker|vendor preselects the role (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');
   if (D.roles.some(r => r.key === f)) { st.role = f; $('#role').value = f; }
-  render(); track('estimator_view');
+  history.replaceState({view: 'cake'}, ''); showView('cake'); track('estimator_view');
 });
