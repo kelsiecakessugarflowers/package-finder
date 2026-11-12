@@ -34,9 +34,7 @@ textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid va
 .hint::before{content:"✿";font-size:12px;color:var(--kc-mauve,#9F748A)}
 .hint:empty{display:none}
 /* Estimate: package photo beside the name */
-.est{display:grid;grid-template-columns:1fr auto;gap:0 14px;align-items:start}
-.est .pkgimg{width:112px;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);grid-row:1 / span 5;grid-column:2}
-@media (min-width:520px){.est .pkgimg{width:150px}}
+.est .pkgimg{width:100%;aspect-ratio:40/23;object-fit:contain;display:block;border:1px solid var(--line);background:var(--kc-white);margin:0 0 10px}   /* package art is 2000x1150 with the name on it: never crop */
 .price{font-size:26px}
 /* What's included: swipeable photo cards like the proposal */
 .gallery{display:grid;grid-auto-flow:column;grid-auto-columns:46%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;margin:0 -2px;scrollbar-width:thin}
@@ -95,7 +93,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .inc li{margin:2px 0}
 .sub{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
 .pkg{display:flex;gap:10px;justify-content:space-between;align-items:center;width:100%;padding:8px 10px;margin-bottom:6px;text-align:left}
-.pkg img{width:44px;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);flex:0 0 auto}
+.pkg img{width:72px;aspect-ratio:40/23;object-fit:contain;border:1px solid var(--line);background:var(--kc-white);flex:0 0 auto}
 .pkg .pkgtxt{flex:1;min-width:0}
 .pkg .pkgtxt small{display:block;color:var(--muted);font-size:12px;line-height:1.3;margin-top:2px}
 .pkg .pkgprice{font-weight:700;color:var(--ink);white-space:nowrap}

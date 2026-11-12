@@ -15,8 +15,8 @@ Every customer-facing sentence is in **`copy.json`**. Open it on GitHub, click t
 # Price Estimator (package-finder)
 
 Public price estimator and packages embed for Sugar Flowers by Kelsie Cakes.
-One page, laid out like the quote builder: role, event date, cake size, cake style and budget, an optional palette,
-and a live estimate with a sticky bar for "Request final quote" (opens the Fillout inquiry with answers filled in).
+First page: occasion, role, date, cake size, style, budget and email. Second page: the recommended package and estimate,
+what's included, and the inquiry (Fillout on `main`, the built-in form on the `replace-fillout` branch).
 Budgets under $350 and dates under 3 weeks out are sent to the shop (shop.kelsiecakes.com) instead.
 
 This repo is public. It only holds package names, starting prices, styles and palettes.
@@ -31,7 +31,7 @@ Flower costs and pricing formulas stay in the private quote builder (nevermore-b
 | `scripts/google-drive-bridge.gs` | Google Apps Script that creates lead folders in Drive |
 | `logo-main.svg`, `logo-alt.svg` | Logos (alt in headers, main in the footer) |
 | `packages.html` | Packages embed for the website (replaces the BlockBuilder block) |
-| `data.json` → `copy` | Every customer-facing line on both pages, filled from the copy Google Sheet by the "Sync copy from Google Sheet" button. `{braces}` are filled in by the page. |
+| `copy.json` | Every customer-facing line on both pages. Edit it on GitHub. `{braces}` are filled in by the page. |
 | `brand.css` | Shared brand colors and fonts. Other pages (quiz, quote builder) can load this too. |
 | `data.json` | Packages, styles, palettes, pro discount, links |
 | `scripts/sync-packages.mjs` | Pulls live packages from Airtable |
@@ -66,7 +66,7 @@ The "Best for:" and "Vibe:" lines of each package's guide text, and its **Estima
 Add an Embed Code element with this, using your live site address:
 
 ```html
-<iframe id="kc-packages" src="https://YOUR-SITE/packages.html" style="width:100%;border:0;height:1400px" loading="lazy" title="Sugar flower packages"></iframe>
+<iframe id="kc-packages" src="https://estimator.kelsiecakes.com/packages.html" style="width:100%;border:0;height:1400px" loading="lazy" title="Sugar flower packages"></iframe>
 <script>addEventListener('message',e=>{if(e.data&&e.data.kcEmbedHeight)document.getElementById('kc-packages').style.height=e.data.kcEmbedHeight+'px'})</script>
 ```
 
