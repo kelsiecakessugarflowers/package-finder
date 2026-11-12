@@ -20,9 +20,15 @@ footer img{width:220px;height:auto;display:block;margin:0 auto 10px}
 footer a{color:var(--muted)}
 input.bad,select.bad,textarea.bad,.check.bad{border-color:var(--kc-berry);background:#fff7f8}
 .err{color:var(--kc-berry);font-size:13px;margin:8px 0 0}
-textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--text);min-height:110px;resize:vertical}
+textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--text);min-height:72px;height:72px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
 .grid2>.full{grid-column:1/-1}
+.grid2 .field{display:flex;flex-direction:column;justify-content:flex-end}
+.plabel{margin:10px 0 -4px;font-size:13px;color:var(--muted)}
+.radios{display:flex;gap:18px;margin:6px 0}
+.radios label{display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:15px}
+.radios input{width:auto}
+.check.sms{font-size:14px;margin-top:8px;border:none;padding:4px 0}
 .grid2 .field{min-width:0}
 .sum{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px;margin:0}
 .sum dt{color:var(--muted);font-size:13px;padding-top:2px}
@@ -81,6 +87,8 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .bar .big{font-size:20px;font-weight:700;flex:1;color:var(--ink);min-width:0}
 .bar .big small{display:block;font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar a{background:var(--accent);color:var(--kc-white);text-decoration:none;font-weight:600;padding:12px 16px;white-space:nowrap}
+[hidden]{display:none!important}
+@media (min-width:700px){.bar{justify-content:center;gap:28px}.bar .big{flex:0 0 auto;text-align:right}}
 .bar a[aria-disabled=true]{background:var(--line);color:var(--muted);pointer-events:none}
 </style>
 </head>
@@ -127,9 +135,22 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
       <div class="field"><label for="last" id="t-labelLast"></label><input id="last" autocomplete="family-name"></div>
       <div class="field"><label for="email" id="t-labelEmail"></label><input id="email" type="email" autocomplete="email"></div>
       <div class="field"><label for="phone" id="t-labelPhone"></label><input id="phone" type="tel" autocomplete="tel"></div>
+      <label class="check full sms"><input type="checkbox" id="smsConsent"><span id="t-smsConsent"></span></label>
+      <div class="full grid2" id="proFields" hidden>
+        <p class="sub full" id="t-proHeading"></p>
+        <div class="field full"><label for="bizLink" id="t-labelBizLink"></label><input id="bizLink" placeholder="@yourbakery or yourbakery.com"></div>
+        <p class="full plabel" id="t-labelBizLocation"></p>
+        <div class="field"><label for="bizCity" id="t-labelBizCity"></label><input id="bizCity" autocomplete="address-level2"></div>
+        <div class="field"><label for="bizState" id="t-labelBizState"></label><select id="bizState"></select></div>
+        <div class="field full" id="resaleBox" hidden>
+          <label id="t-labelResale"></label>
+          <div class="radios"><label><input type="radio" name="resale" value="Yes"> <span id="t-resaleYes"></span></label><label><input type="radio" name="resale" value="No"> <span id="t-resaleNo"></span></label></div>
+          <div id="resaleFileBox" hidden><label for="resaleFile" id="t-labelResaleFile"></label><input id="resaleFile" type="file" accept="image/*,application/pdf"></div>
+        </div>
+      </div>
       <div class="field"><label for="pronouns" id="t-labelPronouns"></label><input id="pronouns"></div>
-      <div class="field"><label for="palette" id="t-labelPalette"></label><input id="palette"></div>
-      <div class="field full"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
+      <div class="field"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
+      <div class="field full"><label for="palette" id="t-labelPalette"></label><input id="palette"></div>
       <div class="field full"><label for="vision" id="t-labelVision"></label><textarea id="vision"></textarea></div>
       <div class="field full"><label for="photos" id="t-labelPhotos"></label>
         <input id="photos" type="file" accept="image/*" multiple><p class="muted" id="photosHint" style="margin:4px 0 0"></p><div class="thumbs" id="thumbs"></div></div>

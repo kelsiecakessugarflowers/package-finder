@@ -6,7 +6,9 @@ const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, 
 const st = {role: '', date: '', size: '', style: null, budget: '', pkg: ''};
 let dateTouched = false;   // the date starts on a suggested Saturday; it has to be confirmed before sending an inquiry
 let D, T, direct = false, tsToken = '', view = 'estimate';
-const photos = [];   // {name, type, data (base64), url (preview)}
+const photos = [];
+let resaleFile = null;   // {name, type, data}
+const US_STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');   // {name, type, data (base64), url (preview)}
 // Copy lives in data.json "copy"; {placeholders} are filled here
 const t = (k, vars = {}) => String(T[k] ?? '').replace(/\{(\w+)\}/g, (_, v) => vars[v] ?? '');
 
@@ -68,6 +70,7 @@ function renderStatic() {
     + `<button type="button" class="tile" data-style=""><div class="none">?</div><span>${esc(t('styleNotSure'))}</span></button>`;
   $('#budget').innerHTML = opts(D.budgets);
   $('#referral').innerHTML = opts(D.inquiry.referralOptions);
+  $('#bizState').innerHTML = opts([...US_STATES, t('outsideUS')]);
   $('#photosHint').textContent = t('photosHint', {max: D.inquiry.maxPhotos});
   // Footer: logo, copyright and legal links on the full page; none of it inside an embed (the header logo is enough there)
   if (!framed) $('#footer').innerHTML = `<img src="logo-alt.svg" alt="Sugar Flowers by Kelsie Cakes">© ${new Date().getFullYear()} ${esc(D.legal.owner)} · <a href="${esc(D.legal.termsUrl)}" target="_top">${esc(t('footerTerms'))}</a> · <a href="${esc(D.legal.privacyUrl)}" target="_top">${esc(t('footerPrivacy'))}</a>`;
@@ -171,7 +174,16 @@ document.addEventListener('click', e => {
 });
 
 // Clear a highlight as soon as the field is filled in
-['input', 'change'].forEach(ev => document.addEventListener(ev, e => { e.target.classList?.remove('bad'); if (e.target.id === 'allergen') $('.check').classList.remove('bad'); }));
+document.addEventListener('change', async e => {
+  if (e.target.id === 'bizState') { $('#resaleBox').hidden = e.target.value !== 'FL'; }
+  if (e.target.name === 'resale') { $('#resaleFileBox').hidden = e.target.value !== 'Yes'; document.querySelectorAll('[name=resale]').forEach(x => x.closest('.radios').classList.remove('bad')); }
+  if (e.target.id === 'resaleFile' && e.target.files[0]) {
+    const f = e.target.files[0];
+    if (f.size > 5 * 1024 * 1024) { e.target.value = ''; resaleFile = null; return; }
+    const r = new FileReader(); r.onload = () => { resaleFile = {name: f.name, type: f.type || 'application/pdf', data: String(r.result).split(',')[1]}; }; r.readAsDataURL(f);
+  }
+});
+['input', 'change'].forEach(ev => document.addEventListener(ev, e => { e.target.classList?.remove('bad'); if (e.target.id === 'allergen') $('[data-f=allergen]').classList.remove('bad'); }));
 
 // ---- Built-in inquiry form (inquiry.mode "direct", or ?direct=1 to preview) ----
 const val = id => $('#' + id).value.trim();
@@ -205,7 +217,7 @@ function loadTurnstile() {
 }
 // ---- Second page: their answers at the top, then the details form ----
 function showView(v) {
-  view = v; $('#viewEstimate').hidden = v !== 'estimate'; $('#viewDetails').hidden = v !== 'details';
+  view = v; $('#proFields').hidden = !isPro(); $('#viewEstimate').hidden = v !== 'estimate'; $('#viewDetails').hidden = v !== 'details';
   render(); window.scrollTo(0, 0);
 }
 function goDetails() {
@@ -242,7 +254,11 @@ async function submitInquiry() {
   if (req.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.email)) bad.push('email');
   document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
   bad.forEach(k => $('#' + k).classList.add('bad'));
-  if (!$('#allergen').checked) { bad.push('allergen'); $('.check').classList.add('bad'); }
+  if (!$('#allergen').checked) { bad.push('allergen'); $('[data-f=allergen]').classList.add('bad'); }
+  if (isPro()) {
+    ['bizCity', 'bizState'].forEach(k => { if (!val(k)) { bad.push(k); $('#' + k).classList.add('bad'); } });
+    if (val('bizState') === 'FL' && !document.querySelector('[name=resale]:checked')) { bad.push('resale'); $('.radios').classList.add('bad'); }
+  }
   const err = $('#formErr');
   if (bad.length) { err.textContent = t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   if (D.inquiry.turnstileSiteKey && !tsToken) { err.textContent = t('missing'); err.hidden = false; $('#turnstile').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
@@ -252,7 +268,10 @@ async function submitInquiry() {
     const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
       ...req, role: st.role, size: st.size, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
       clientType: r.clientType, roleLabel: r.label, packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
-      utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, turnstile: tsToken,
+      utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, smsConsent: $('#smsConsent').checked,
+      ...(isPro() ? {bizLink: val('bizLink'), bizCity: val('bizCity'), bizState: val('bizState'),
+        resale: val('bizState') === 'FL' ? (document.querySelector('[name=resale]:checked')?.value || '') : '',
+        resaleFile: val('bizState') === 'FL' && document.querySelector('[name=resale]:checked')?.value === 'Yes' ? resaleFile : null} : {}), smsConsentText: t('smsConsent'), turnstile: tsToken,
       photos: photos.map(({name, type, data}) => ({name, type, data}))})});
     const out = await res.json().catch(() => ({}));
     if (!res.ok || !out.ok) throw new Error(out.error || res.status);

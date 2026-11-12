@@ -170,7 +170,18 @@
   "sumStyle": "Arrangement Style",
   "sumBudget": "Preferred Budget",
   "sumPackage": "Recommended Package",
-  "othersHeadingBudget": "Other packages I recommend for a {size} cake that align closer to your budget"
+  "othersHeadingBudget": "Other packages I recommend for a {size} cake that align closer to your budget",
+  "smsConsent": "Is it okay for me to send you text messages about this?",
+  "proHeading": "About your business",
+  "labelBizLink": "What’s your website or IG handle?",
+  "labelBizLocation": "Where is your business located?",
+  "labelBizCity": "City",
+  "labelBizState": "State",
+  "outsideUS": "Outside the US",
+  "labelResale": "Since you’re in Florida, do you have your resale certificate?",
+  "resaleYes": "Yes",
+  "resaleNo": "No",
+  "labelResaleFile": "Upload your resale certificate (PDF or photo, optional)"
  },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
