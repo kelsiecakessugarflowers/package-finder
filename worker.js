@@ -19,7 +19,7 @@ const F = {   // Airtable Projects field IDs
   pronouns: 'fldso5jf6z2lTX04G', eventDate: 'fldhHljxpD1hVCO0z', referral: 'fldvZ0a44glT9T5Ci', budget: 'fld950WYgXjVahByp',
   notes: 'fldrKSCWH57vW68ZC', photos: 'fldYFZXTaK0kQuLtD', drive: 'fldzP5TqfsaZYQsMi', filesSent: 'fldFJvktoCnF6ji1C',
   origin: 'fldd25tQR8PnWLIHm', submissionId: 'fldb7sCElUmRoyIvw', title: 'fldTLaAloI3N2QOpy', cakeSize: 'fld9lBxcF1GfwMlrg',
-  cakeStyle: 'fldKLT4HiURtXIf6y', smsConsent: 'fldCQZB0hRsVHICrp', bizLink: 'fld0qczDmIyoiqWvS', bizLocation: 'fldE4RodCh2aFeKIA', resale: 'fld4OANnR01g8YLJ7', pdfDocs: 'fldUgCOYZzzZ23eke', package: 'fld8g50wK9o6bp7Xd', palette: 'fldyyrCKobDGdk567', clientType: 'flduerhLqjxEad89Y',
+  cakeStyle: 'fldKLT4HiURtXIf6y', smsConsent: 'fldCQZB0hRsVHICrp', eventType: 'fldCb5HirXCWc4cAC', bizLink: 'fld0qczDmIyoiqWvS', bizLocation: 'fldE4RodCh2aFeKIA', resale: 'fld4OANnR01g8YLJ7', pdfDocs: 'fldUgCOYZzzZ23eke', package: 'fld8g50wK9o6bp7Xd', palette: 'fldyyrCKobDGdk567', clientType: 'flduerhLqjxEad89Y',
 };
 const MAX_PHOTOS = 5, MAX_PHOTO_BYTES = 5 * 1024 * 1024;   // Airtable's direct upload limit is 5 MB per file
 
@@ -54,6 +54,7 @@ async function inquiry(request, env, ctx) {
     referral: s(b.referral, 80), vision: s(b.vision, 5000), eventDate: s(b.eventDate, 10), size: s(b.size, 20), style: s(b.style, 40),
     budget: s(b.budget, 40), palette: s(b.palette, 60), clientType: s(b.clientType, 40), role: s(b.roleLabel, 80),
     packageId: s(b.packageId, 20), packageName: s(b.packageName, 60), estimate: Number(b.estimate) || 0, utm: s(b.utmSource, 80),
+    eventType: ['Wedding', 'Birthday', 'Holiday Party', 'Other'].includes(b.eventType) ? b.eventType : '', eventOther: s(b.eventOther, 120),
     bizLink: s(b.bizLink, 200), bizCity: s(b.bizCity, 80), bizState: s(b.bizState, 40), resale: ['Yes', 'No'].includes(b.resale) ? b.resale : '',
     allergen: b.allergen === true, sms: b.smsConsent === true, smsText: s(b.smsConsentText, 300),
   };
@@ -76,7 +77,7 @@ async function inquiry(request, env, ctx) {
   const title = [d.style, 'Sugar Flowers'].filter(Boolean).join(' ');
   const summary = [
     ['Name', `${d.first} ${d.last}`], ['Pronouns', d.pronouns], ['Email', d.email], ['Phone', d.phone], ['Event date', dateLong],
-    ['I am', d.role], ['Cake size', d.size], ['Cake style', d.style || 'Not sure yet'], ['Budget', d.budget], ['Color palette', d.palette],
+    ['I am', d.role], ['Event', d.eventType === 'Other' ? `Other: ${d.eventOther}` : d.eventType], ['Cake size', d.size], ['Cake style', d.style || 'Not sure yet'], ['Budget', d.budget], ['Color palette', d.palette],
     ['Package shown', d.packageName ? `${d.packageName} (starting at $${d.estimate.toLocaleString('en-US')})` : ''],
     ['Business website / Instagram', d.bizLink], ['Business location', bizLocation], ['FL resale certificate', d.resale ? d.resale + (rf ? ' (uploaded)' : '') : ''], ['Found me through', d.referral], ['Text messages', d.sms ? `Yes (agreed to: "${d.smsText}")` : 'No'], ['Vision', d.vision], ['Allergen statement', 'I Understand.'], ['UTM source', d.utm],
     ['Submitted', new Date().toISOString()], ['Submission ID', submissionId],
@@ -89,7 +90,7 @@ async function inquiry(request, env, ctx) {
     [F.eventDate]: d.eventDate, [F.referral]: d.referral, [F.budget]: d.budget || undefined, [F.notes]: notes,
     [F.cakeSize]: d.size, [F.cakeStyle]: d.style || undefined, [F.palette]: d.palette || undefined, [F.clientType]: d.clientType,
     [F.package]: /^rec\w{14}$/.test(d.packageId) ? [d.packageId] : undefined, [F.title]: title,
-    [F.smsConsent]: d.sms || undefined, [F.bizLink]: d.bizLink || undefined, [F.bizLocation]: bizLocation || undefined, [F.resale]: d.resale || undefined, [F.origin]: 'Price Estimator', [F.submissionId]: submissionId,
+    [F.eventType]: d.eventType || undefined, [F.smsConsent]: d.sms || undefined, [F.bizLink]: d.bizLink || undefined, [F.bizLocation]: bizLocation || undefined, [F.resale]: d.resale || undefined, [F.origin]: 'Price Estimator', [F.submissionId]: submissionId,
   };
   const base = env.AIRTABLE_BASE, table = env.PROJECTS_TABLE;
   const created = await fetch(`https://api.airtable.com/v0/${base}/${table}`, {

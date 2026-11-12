@@ -103,6 +103,9 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <h2 id="t-cardCake"></h2>
     <label for="role" id="t-labelRole"></label>
     <select id="role"></select>
+    <label for="eventType" id="t-labelEventType"></label>
+    <select id="eventType"></select>
+    <input id="eventOther" hidden style="margin-top:6px">
     <label for="date" id="t-labelDate"></label>
     <input type="date" id="date">
     <p class="err" id="dateErr" hidden></p>
@@ -159,6 +162,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <p class="allergen" id="t-allergenText"></p>
     <label class="check" data-f="allergen"><input type="checkbox" id="allergen"><span id="t-allergenCheck"></span></label>
     <div id="turnstile" style="margin-top:12px"></div>
+    <p class="muted" id="t-submitNote" style="margin:10px 0 0"></p>
     <p class="err" id="formErr" hidden></p>
   </section>
  </div>

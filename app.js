@@ -3,7 +3,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // style: null = not chosen yet, '' = "Not sure yet"
-const st = {role: '', date: '', size: '', style: null, budget: '', pkg: ''};
+const st = {role: '', eventType: '', date: '', size: '', style: null, budget: '', pkg: ''};
 let dateTouched = false;   // the date starts on a suggested Saturday; it has to be confirmed before sending an inquiry
 let D, T, direct = false, tsToken = '', view = 'estimate';
 const photos = [];
@@ -70,6 +70,8 @@ function renderStatic() {
     + `<button type="button" class="tile" data-style=""><div class="none">?</div><span>${esc(t('styleNotSure'))}</span></button>`;
   $('#budget').innerHTML = opts(D.budgets);
   $('#referral').innerHTML = opts(D.inquiry.referralOptions);
+  $('#eventType').innerHTML = opts(D.eventTypes);
+  $('#eventOther').placeholder = t('eventOtherPlaceholder');
   $('#bizState').innerHTML = opts([...US_STATES, t('outsideUS')]);
   $('#photosHint').textContent = t('photosHint', {max: D.inquiry.maxPhotos});
   // Footer: logo, copyright and legal links on the full page; none of it inside an embed (the header logo is enough there)
@@ -151,7 +153,8 @@ function trackResult() {
 }
 
 document.addEventListener('change', e => {
-  const id = e.target.id; if (!['role', 'date', 'size', 'budget'].includes(id)) return;
+  if (e.target.id === 'eventType') $('#eventOther').hidden = e.target.value !== 'Other';
+  const id = e.target.id; if (!['role', 'eventType', 'date', 'size', 'budget'].includes(id)) return;
   st[id] = e.target.value;
   if (id === 'date') { dateTouched = true; $('#dateErr').hidden = true; }
   if (id === 'size' || id === 'style') st.pkg = '';
@@ -222,7 +225,7 @@ function showView(v) {
 }
 function goDetails() {
   document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
-  const need = [['role', !st.role], ['size', !st.size], ['date', !dateTouched]].filter(x => x[1]).map(x => x[0]);
+  const need = [['role', !st.role], ['eventType', !st.eventType], ['size', !st.size], ['date', !dateTouched]].filter(x => x[1]).map(x => x[0]);
   if (need.length) {
     need.forEach(k => $('#' + k).classList.add('bad'));
     $('#' + need[0]).scrollIntoView({behavior: 'smooth', block: 'center'});
@@ -240,7 +243,7 @@ function renderSummary() {
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
   const dateLong = new Date(st.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
   const rows = [
-    ['sumRole', role()?.label], ['sumDate', dateLong], ['sumSize', st.size],
+    ['sumRole', role()?.label], ['sumEvent', st.eventType === 'Other' ? val('eventOther') || 'Other' : st.eventType], ['sumDate', dateLong], ['sumSize', st.size],
     ['sumStyle', st.style ? `<img src="photos/${slug(st.style)}.jpg" alt="">${esc(st.style)}` : esc(t('styleNotSure')), true],
     ['sumBudget', st.budget], ['sumPackage', pkg ? `${esc(pkg.name)} · ${esc(t('startingAt'))} ${money(priceFor(pkg))}${isPro() ? ' · ' + esc(t('tagPro')) : ''}` : '', true],
   ].filter(r => r[1]);
@@ -266,7 +269,7 @@ async function submitInquiry() {
   const cta = $('#barCta'); cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true'); err.hidden = true;
   try {
     const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-      ...req, role: st.role, size: st.size, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
+      ...req, role: st.role, eventType: st.eventType, eventOther: st.eventType === 'Other' ? val('eventOther') : '', size: st.size, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
       clientType: r.clientType, roleLabel: r.label, packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
       utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, smsConsent: $('#smsConsent').checked,
       ...(isPro() ? {bizLink: val('bizLink'), bizCity: val('bizCity'), bizState: val('bizState'),

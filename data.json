@@ -181,7 +181,11 @@
   "labelResale": "Since you’re in Florida, do you have your resale certificate?",
   "resaleYes": "Yes",
   "resaleNo": "No",
-  "labelResaleFile": "Upload your resale certificate (PDF or photo, optional)"
+  "labelResaleFile": "Upload your resale certificate (PDF or photo, optional)",
+  "labelEventType": "What’s the occasion?",
+  "eventOtherPlaceholder": "Tell me about your event",
+  "sumEvent": "Event",
+  "submitNote": "By submitting this form, you agree to be contacted about this sugar flower design by Kelsie Delisle."
  },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
@@ -274,5 +278,11 @@
    "greenery": "~20–28 filler/greenery"
   }
  ],
- "copySheetCsvUrl": ""
+ "copySheetCsvUrl": "",
+ "eventTypes": [
+  "Wedding",
+  "Birthday",
+  "Holiday Party",
+  "Other"
+ ]
 }
