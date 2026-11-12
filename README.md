@@ -17,7 +17,8 @@ Flower costs and pricing formulas stay in the private quote builder (nevermore-b
 | `scripts/google-drive-bridge.gs` | Google Apps Script that creates lead folders in Drive |
 | `logo-main.svg`, `logo-alt.svg` | Logos (alt in headers, main in the footer) |
 | `packages.html` | Packages embed for the website (replaces the BlockBuilder block) |
-| `data.json` → `copy` | Every customer-facing line on both pages. Edit text here (or in the copy Google Sheet, then paste). `{braces}` are filled in by the page. |
+| `data.json` → `copy` | Every customer-facing line on both pages, filled from the copy Google Sheet by the "Sync copy from Google Sheet" button. `{braces}` are filled in by the page. |
+| `scripts/sync-copy.mjs` | Pulls the "Your text" column of the copy sheet into `data.json` |
 | `brand.css` | Shared brand colors and fonts. Other pages (quiz, quote builder) can load this too. |
 | `data.json` | Packages, styles, palettes, pro discount, links |
 | `scripts/sync-packages.mjs` | Pulls live packages from Airtable |
@@ -39,6 +40,16 @@ Names must match exactly:
 | Maximalist | `maximalist.jpg` |
 
 A style with no photo shows a plain tile.
+
+## Updating the wording
+
+1. Edit the "Your text" column in the **Price Estimator Copy** Google Sheet. A blank cell keeps the current wording.
+2. GitHub > package-finder > Actions > **Sync copy from Google Sheet** > Run workflow.
+
+One-time setup: in the sheet, File > Share > Publish to web > Sheet1 > Comma-separated values (.csv) > Publish,
+and paste that link into `data.json` > `copySheetCsvUrl`. (Publishing only exposes the sheet's text, which is
+already public on the estimator.) New lines added later (for example `labelPalette`) can be added as new rows
+with the same key name.
 
 ## Updating packages
 

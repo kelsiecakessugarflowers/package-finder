@@ -12,11 +12,11 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 var(--kc-font-body);padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
-header .logo{height:46px;width:auto;display:block}
-header h1{font-size:12px;line-height:1.2;margin:0;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;text-align:right}
+header{display:flex;justify-content:center}
+header .logo{height:58px;width:auto;display:block}
+h1.title{font-family:var(--kc-font-heading);font-weight:500;color:var(--ink);font-size:24px;line-height:1.2;margin:8px 2px 6px;text-align:center}
 footer{text-align:center;padding:8px 16px 24px;color:var(--muted);font-size:12px}
-footer img{width:150px;height:auto;display:block;margin:0 auto 10px}
+footer img{width:220px;height:auto;display:block;margin:0 auto 10px}
 footer a{color:var(--muted)}
 input.bad,select.bad,textarea.bad,.check.bad{border-color:var(--kc-berry);background:#fff7f8}
 .err{color:var(--kc-berry);font-size:13px;margin:8px 0 0}
@@ -32,22 +32,30 @@ textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid va
 .thanks{text-align:center;padding:28px 16px}
 .thanks h2{background:none;border:none;margin:0 0 10px;padding:0;text-transform:none;letter-spacing:0;font-family:var(--kc-font-heading);font-weight:500;font-size:26px;display:block}
 main{max-width:640px;margin:0 auto;padding:12px}
-.intro{margin:4px 2px 12px;color:var(--muted);font-size:15px}
+.intro{margin:4px 2px 14px;color:var(--muted);font-size:15px;text-align:center}
 section{background:var(--card);border:1px solid var(--line);padding:14px;margin-bottom:12px}
 h2{font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);margin:-14px -14px 12px;padding:12px 14px;background:var(--soft);border-bottom:1px solid var(--line);font-weight:700}
 label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
 section>label:first-of-type{margin-top:0}
 input,select{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:0;background:var(--card);color:var(--text)}
 input[type=date]{-webkit-appearance:none;appearance:none;min-height:46px;text-align:left;display:block}
-.stylepick{display:flex;gap:10px;align-items:flex-start}
-.stylepick>div{flex:1;min-width:0}
-.stylepick img{width:76px;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);margin-top:10px}
+.stylebtn{width:100%;display:flex;align-items:center;gap:10px;padding:6px 10px;text-align:left;min-height:46px;font-size:16px}
+.stylebtn img{width:30px;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line)}
+.stylebtn .chev{margin-left:auto;color:var(--muted)}
+dialog{border:none;padding:0;width:min(560px,94vw);max-height:88vh;background:var(--card)}
+dialog::backdrop{background:rgba(26,24,25,.45)}
+.dlghead{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;background:var(--soft);border-bottom:1px solid var(--line);padding:10px 14px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:14px;color:var(--ink)}
+.dlghead button{border:none;background:none;font-size:22px;line-height:1;padding:4px 8px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:12px}
+.tile{padding:0;display:flex;flex-direction:column;text-align:left}
+.tile img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+.tile span{padding:8px 10px;font-size:15px}
+.tile.on{outline:2px solid var(--accent);outline-offset:-2px;background:var(--soft)}
+.tile .none{aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;background:var(--soft);color:var(--muted);font-size:14px}
 button{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:0;padding:10px 12px;cursor:pointer}
 button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .muted{color:var(--muted);font-size:13px}
 .pals{display:flex;flex-wrap:wrap;gap:6px}
-.pal{display:flex;flex-direction:column;gap:4px;padding:6px;flex:1 1 calc(50% - 6px);font-size:13px;text-align:left}
-.pal.on{border:2px solid var(--accent);background:var(--soft)}
 .sw{display:flex;height:16px;outline:1px solid var(--line)}.sw i{flex:1}
 .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:999px;vertical-align:2px;white-space:nowrap}
 .tag.star{background:var(--accent);color:var(--kc-white)}
@@ -70,8 +78,9 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 </style>
 </head>
 <body>
-<header><img class="logo" src="logo-alt.svg" alt="Sugar Flowers by Kelsie Cakes"><h1 id="t-title"></h1></header>
+<header><img class="logo" src="logo-main.svg" alt="Sugar Flowers by Kelsie Cakes"></header>
 <main>
+  <h1 class="title" id="t-title"></h1>
   <p class="intro" id="t-intro"></p>
 
   <section>
@@ -82,22 +91,12 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <input type="date" id="date">
     <label for="size" id="t-labelSize"></label>
     <select id="size"></select>
-    <div class="stylepick">
-      <div>
-        <label for="style" id="t-labelStyle"></label>
-        <select id="style"></select>
-      </div>
-      <img id="stylePhoto" alt="" hidden>
-    </div>
+    <label for="styleBtn" id="t-labelStyle"></label>
+    <button type="button" class="stylebtn" id="styleBtn" aria-haspopup="dialog"></button>
     <label for="budget" id="t-labelBudget"></label>
     <select id="budget"></select>
   </section>
 
-  <section>
-    <h2 id="t-cardPalette"></h2>
-    <p class="muted" id="t-paletteHint" style="margin-top:0"></p>
-    <div class="pals" id="pals"></div>
-  </section>
 
   <section aria-live="polite">
     <h2 id="t-cardEstimate"></h2>
@@ -115,6 +114,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <div class="field" data-f="email"><label for="email" id="t-labelEmail"></label><input id="email" type="email" autocomplete="email"></div>
     <div class="field" data-f="phone"><label for="phone" id="t-labelPhone"></label><input id="phone" type="tel" autocomplete="tel"></div>
     <div class="field" data-f="referral"><label for="referral" id="t-labelReferral"></label><select id="referral"></select></div>
+    <div class="field" data-f="palette"><label for="palette" id="t-labelPalette"></label><input id="palette"></div>
     <div class="field" data-f="vision"><label for="vision" id="t-labelVision"></label><textarea id="vision"></textarea></div>
     <div class="field" data-f="photos"><label for="photos" id="t-labelPhotos"></label>
       <input id="photos" type="file" accept="image/*" multiple><p class="muted" id="photosHint" style="margin:4px 0 0"></p><div class="thumbs" id="thumbs"></div></div>
@@ -126,6 +126,10 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
   </section>
 </main>
 <footer id="footer"></footer>
+<dialog id="styleDlg" aria-labelledby="styleDlgTitle">
+  <div class="dlghead"><span id="styleDlgTitle"></span><button type="button" id="styleClose" aria-label="Close">×</button></div>
+  <div class="tiles" id="tiles"></div>
+</dialog>
 
 <div class="bar">
   <div class="big" id="barPrice"></div>
@@ -138,7 +142,8 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // style: null = not chosen yet, '' = "Not sure yet"
-const st = {role: '', date: '', size: '', style: null, budget: '', palette: '', pkg: ''};
+const st = {role: '', date: '', size: '', style: null, budget: '', pkg: ''};
+let dateTouched = false;   // the date starts on a suggested Saturday; it has to be confirmed before sending an inquiry
 let D, T, direct = false, tsToken = '';
 const photos = [];   // {name, type, data (base64), url (preview)}
 // Copy lives in data.json "copy"; {placeholders} are filled here
@@ -196,29 +201,30 @@ function renderStatic() {
   const opts = (list, val = x => x, lbl = x => x) => `<option value="">${esc(t('choose'))}</option>` + list.map(x => `<option value="${esc(val(x))}">${esc(lbl(x))}</option>`).join('');
   $('#role').innerHTML = opts(D.roles, r => r.key, r => r.label);
   $('#size').innerHTML = opts(D.tierOptions);
-  $('#style').innerHTML = opts(D.styles) + `<option value="-">${esc(t('styleNotSure'))}</option>`;
+  $('#styleDlgTitle').textContent = t('labelStyle');
+  $('#tiles').innerHTML = D.styles.map(x => `<button type="button" class="tile" data-style="${esc(x)}"><img src="photos/${slug(x)}.jpg" alt="" loading="lazy"><span>${esc(x)}</span></button>`).join('')
+    + `<button type="button" class="tile" data-style=""><div class="none">?</div><span>${esc(t('styleNotSure'))}</span></button>`;
   $('#budget').innerHTML = opts(D.budgets);
   $('#referral').innerHTML = opts(D.inquiry.referralOptions);
   $('#photosHint').textContent = t('photosHint', {max: D.inquiry.maxPhotos});
   // Footer: logo, copyright and legal links on the full page; none of it inside an embed (the header logo is enough there)
-  if (!framed) $('#footer').innerHTML = `<img src="logo-main.svg" alt="Sugar Flowers by Kelsie Cakes">© ${new Date().getFullYear()} ${esc(D.legal.owner)} · <a href="${esc(D.legal.termsUrl)}" target="_top">${esc(t('footerTerms'))}</a> · <a href="${esc(D.legal.privacyUrl)}" target="_top">${esc(t('footerPrivacy'))}</a>`;
-  $('#pals').innerHTML = D.palettes.map(p => `<button type="button" class="pal" data-pal="${esc(p.name)}" aria-pressed="false">
-    <span class="sw">${p.colors.map(c => `<i style="background:${c[1]}" title="${esc(c[0])}"></i>`).join('')}</span>${esc(p.name)}</button>`).join('');
+  if (!framed) $('#footer').innerHTML = `<img src="logo-alt.svg" alt="Sugar Flowers by Kelsie Cakes">© ${new Date().getFullYear()} ${esc(D.legal.owner)} · <a href="${esc(D.legal.termsUrl)}" target="_top">${esc(t('footerTerms'))}</a> · <a href="${esc(D.legal.privacyUrl)}" target="_top">${esc(t('footerPrivacy'))}</a>`;
+
 }
 
 function inquiryUrl(p) {
   const u = new URL(D.filloutUrl), here = new URLSearchParams(location.search);
   ['utm_source', 'ck_subscriber_id', 'first_name', 'last_name', 'email', 'phone'].forEach(k => { if (here.get(k)) u.searchParams.set(k, here.get(k)); });
-  const set = {client_type: role()?.clientType, event_date: st.date, tiers: st.size, style: st.style, palette: st.palette,
+  const set = {client_type: role()?.clientType, event_date: dateTouched ? st.date : '', tiers: st.size, style: st.style,
     budget: st.budget, package: p?.name, estimate: p ? priceFor(p) : '', source: 'estimator'};
   for (const [k, v] of Object.entries(set)) if (v !== '' && v != null) u.searchParams.set(k, v);
   return u.toString();
 }
 
 function render() {
-  const ph = $('#stylePhoto');
-  if (st.style) { ph.onerror = () => { ph.hidden = true; }; ph.src = `photos/${slug(st.style)}.jpg`; ph.alt = st.style + ' style example'; ph.hidden = false; } else ph.hidden = true;
-  document.querySelectorAll('.pal').forEach(b => { const on = b.dataset.pal === st.palette; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  $('#styleBtn').innerHTML = st.style ? `<img src="photos/${slug(st.style)}.jpg" alt=""><span>${esc(st.style)}</span><span class="chev">▾</span>`
+    : `<span${st.style === null ? ' style="color:var(--muted)"' : ''}>${esc(st.style === null ? t('choose') : t('styleNotSure'))}</span><span class="chev">▾</span>`;
+  document.querySelectorAll('.tile').forEach(b => b.classList.toggle('on', st.style !== null && b.dataset.style === st.style));
 
   const el = $('#estimate'), cta = $('#barCta'), bar = $('#barPrice'), shop = shopReason(), n = daysUntil();
   const f = fits(), sug = st.size && st.style !== null ? suggested() : null, p = sug && (f.find(x => x.name === st.pkg) || sug);
@@ -229,7 +235,7 @@ function render() {
 
   if (!p) {
     el.innerHTML = `<p class="muted" style="margin:0">${esc(t('estimateEmpty'))}</p>` + notes.join('');
-    bar.innerHTML = `<small>${esc(t('barEmpty'))}</small>`;
+    bar.innerHTML = `<small style="white-space:normal">${esc(t('barEmpty'))}</small>`;
   } else {
     const size1 = st.size.replace(/s$/, '').replace(/^(\d) /, '$1-');   // "3 tiers" -> "3-tier", "6+ tiers" -> "6+ tier"
     const cake = `${size1} cake${st.style ? ' with a ' + ({Bundles: 'bundled'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
@@ -237,7 +243,7 @@ function render() {
     el.innerHTML = `
       <span class="tag ${p === sug ? 'star' : 'sel'}">${esc(t(p === sug ? 'tagRecommended' : 'tagSelected'))}</span>${isPro() ? ` <span class="tag info">${esc(t('tagPro'))}</span>` : ''}
       <p class="pkgname">${esc(p.name)}</p>
-      <p class="muted" style="margin:2px 0 0">${esc(t('forYour', {cake}))}${st.palette ? ' · ' + esc(st.palette) : ''}</p>
+      <p class="muted" style="margin:2px 0 0">${esc(t('forYour', {cake}))}</p>
       <p class="price">${esc(t('startingAt'))} ${money(priceFor(p))}</p>
       <ul class="inc">
         <li>${esc(aim(p.statement, t('unitStatement')))}</li>
@@ -268,15 +274,19 @@ function trackResult() {
 }
 
 document.addEventListener('change', e => {
-  const id = e.target.id; if (!['role', 'date', 'size', 'style', 'budget'].includes(id)) return;
-  st[id] = id === 'style' ? (e.target.value === '-' ? '' : e.target.value || null) : e.target.value;
+  const id = e.target.id; if (!['role', 'date', 'size', 'budget'].includes(id)) return;
+  st[id] = e.target.value;
+  if (id === 'date') dateTouched = true;
   if (id === 'size' || id === 'style') st.pkg = '';
   if (id !== 'date') track('estimator_change', {field: id, value: st[id] || (id === 'style' && st.style === '' ? 'not sure' : '')});
   render(); trackResult();
 });
 document.addEventListener('click', e => {
-  const pal = e.target.closest('.pal'), pkg = e.target.closest('.pkg'), link = e.target.closest('[data-cta]');
-  if (pal) { st.palette = st.palette === pal.dataset.pal ? '' : pal.dataset.pal; track('estimator_change', {field: 'palette', value: st.palette}); render(); }
+  const tile = e.target.closest('.tile'), pkg = e.target.closest('.pkg'), link = e.target.closest('[data-cta]');
+  if (e.target.closest('#styleBtn')) $('#styleDlg').showModal();
+  if (e.target.id === 'styleClose' || e.target.id === 'styleDlg') $('#styleDlg').close();   // close button or tap outside
+  if (tile) { st.style = tile.dataset.style; st.pkg = ''; $('#styleDlg').close(); $('#styleBtn').classList.remove('bad');
+    track('estimator_change', {field: 'style', value: st.style || 'not sure'}); render(); trackResult(); }
   if (pkg) { st.pkg = pkg.dataset.pkg; track('estimator_change', {field: 'package', value: st.pkg}); render(); trackResult(); }
   if (link) track('estimator_cta', {action: link.dataset.cta});
   if (direct && link && link.dataset.cta === 'inquiry') { e.preventDefault(); submitInquiry(); }
@@ -324,14 +334,15 @@ async function submitInquiry() {
   document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
   bad.forEach(k => $('#' + k).classList.add('bad'));
   if (!$('#allergen').checked) { bad.push('allergen'); $('.check').classList.add('bad'); }
+  if (!dateTouched) { bad.push('dateConfirm'); $('#date').classList.add('bad'); }
   const err = $('#formErr');
-  if (bad.length) { err.textContent = t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  if (bad.length) { err.textContent = bad.includes('dateConfirm') && bad.length === 1 ? t('confirmDate') : t('missing'); err.hidden = false; (document.querySelector('.bad') || $('#details')).scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   if (D.inquiry.turnstileSiteKey && !tsToken) { err.textContent = t('missing'); err.hidden = false; $('#turnstile').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), r = role();
   const cta = $('#barCta'); cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true'); err.hidden = true;
   try {
     const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-      ...req, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: st.palette,
+      ...req, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
       clientType: r.clientType, roleLabel: r.label, packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
       utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, turnstile: tsToken,
       photos: photos.map(({name, type, data}) => ({name, type, data}))})});
@@ -348,8 +359,10 @@ async function submitInquiry() {
 
 fetch('data.json').then(r => r.json()).then(d => {
   D = d; T = d.copy; loadGtm(d.gtmId);
+  { const x = new Date(); x.setMonth(x.getMonth() + 3); x.setDate(x.getDate() + ((6 - x.getDay() + 7) % 7));
+    st.date = `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; }
   direct = d.inquiry.mode === 'direct' || new URLSearchParams(location.search).has('direct');
-  renderStatic();
+  renderStatic(); $('#date').value = st.date;
   if (direct) { $('#details').hidden = false; loadTurnstile(); }
   // ?for=couple|family|baker|vendor preselects the role (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');

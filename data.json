@@ -96,135 +96,18 @@
   "Cascading": 0.75,
   "Maximalist": 1
  },
- "palettes": [
-  {
-   "name": "Vintage Glam",
-   "colors": [
-    [
-     "Gold",
-     "#C9A44C"
-    ],
-    [
-     "Champagne",
-     "#E8D6B0"
-    ],
-    [
-     "Ivory",
-     "#F7F1E3"
-    ],
-    [
-     "Soft blush",
-     "#EBC6C0"
-    ],
-    [
-     "Antique green",
-     "#7D8B6A"
-    ]
-   ]
-  },
-  {
-   "name": "Bold Pinks",
-   "colors": [
-    [
-     "Hot pink",
-     "#E8308C"
-    ],
-    [
-     "Fuchsia",
-     "#C2186B"
-    ],
-    [
-     "Crimson",
-     "#A3122A"
-    ],
-    [
-     "Black",
-     "#1C1C1C"
-    ],
-    [
-     "White",
-     "#FFFFFF"
-    ]
-   ]
-  },
-  {
-   "name": "Ethereal Romance",
-   "colors": [
-    [
-     "White",
-     "#FFFFFF"
-    ],
-    [
-     "Blush",
-     "#F0D3CF"
-    ],
-    [
-     "Dove gray",
-     "#B9B7B4"
-    ],
-    [
-     "Sage green",
-     "#A8B79C"
-    ]
-   ]
-  },
-  {
-   "name": "Fruitful Elegance",
-   "colors": [
-    [
-     "Terracotta",
-     "#C2643F"
-    ],
-    [
-     "Peach",
-     "#F2B38F"
-    ],
-    [
-     "Deep plum",
-     "#5B2A45"
-    ],
-    [
-     "Soft green",
-     "#A9B98C"
-    ]
-   ]
-  },
-  {
-   "name": "Italian Coastal Chic",
-   "colors": [
-    [
-     "Lemon yellow",
-     "#F4D84A"
-    ],
-    [
-     "Cobalt blue",
-     "#1F4FA8"
-    ],
-    [
-     "Crisp white",
-     "#FFFFFF"
-    ],
-    [
-     "Greenery",
-     "#6F8F4E"
-    ]
-   ]
-  }
- ],
  "copy": {
-  "title": "Price Estimator",
+  "title": "Price Estimator for Your Custom Sugar Flower Design",
   "brand": "Sugar Flowers by Kelsie Cakes",
-  "intro": "Tell me about your cake to see which package fits and where pricing starts.",
-  "cardCake": "Your cake",
-  "labelRole": "I am",
+  "intro": "Let's find out if we're a good fit to work together! Tell me some information about your dream cake and get a rough estimate of the costs. Once you reach out, I'll walk you through a detailed design proposal and final quote.",
+  "cardCake": "All About The Cake",
+  "labelRole": "Your Role",
   "labelDate": "Event date",
-  "labelSize": "Cake size",
-  "labelStyle": "Cake style",
-  "labelBudget": "Budget for sugar flowers",
+  "labelSize": "Your Cake Size (it's okay to estimate if it's not finalized yet)",
+  "labelStyle": "Your Preferred Floral Arrangement Style",
+  "labelBudget": "Your Budget for Sugar Flowers",
   "choose": "Choose…",
   "styleNotSure": "Not sure yet",
-  "cardPalette": "Color palette (optional)",
-  "paletteHint": "Everything is custom colored, so these are starting points.",
   "cardEstimate": "Your estimate",
   "estimateEmpty": "Choose your cake size and style to see your estimate.",
   "tagRecommended": "🌟 Recommended",
@@ -237,22 +120,22 @@
   "unitSupporting": "supporting blooms",
   "unitFiller": "filler and greenery pieces",
   "includeCustom": "Custom design, colors matched to your palette",
-  "includeShipping": "Insured shipping with the Delicate but Durable Promise",
-  "othersHeading": "Other packages for a {size} cake",
-  "noteFinal": "Your final quote is based on your exact design.",
-  "noteRetainer": "You can hold your date with a $150 retainer.",
-  "noteRush": "Your date is less than {rushWeeks} weeks away, so a rush fee may apply.",
-  "noteShort": "Custom designs need at least {minWeeks} weeks’ notice. Send an inquiry and I’ll let you know what’s possible.",
-  "shopBudget": "For budgets under $350, my ready-to-ship sugar flowers are the best fit.",
-  "shopDate": "Your date is less than 3 weeks away, which is too soon for a custom design. My ready-to-ship sugar flowers are made for this.",
-  "inquiryAnyway": "Still want a custom design? Send an inquiry",
-  "barEmpty": "Your estimate shows here",
-  "barCta": "Request final quote",
-  "barShop": "Shop ready-to-ship",
+  "includeShipping": "Insured shipping with the Delicate-but-Durable Shipping Promise",
+  "othersHeading": "Other packages I recommend for a {size} cake",
+  "noteFinal": "Your final quote is based on the complexity and details for your unique cake.",
+  "noteRetainer": "Since we are a small, artist-owned boutique, we can only book a limited number of custom designs each year. Since we are still available for your date, you can hold your date with a $150 retainer that goes toward your final invoice.",
+  "noteRush": "Just a head's up! Your date is less than {rushWeeks} weeks away, so a rush fee may apply.",
+  "noteShort": "Oh dear! Custom designs need at least {minWeeks} weeks’ notice. We may be booked already, but please reach out and we'll see what we can do!",
+  "shopBudget": "For budgets under $350, my ready-to-ship sugar flower collection is the best fit. Inventory is limited, so be sure to grab your favorites!",
+  "shopDate": "Oh no! Your event is less than 3 weeks away, which is too soon for a custom design. But don't worry! My ready-to-ship Sugar Flower collection was made for exactly this situation!",
+  "inquiryAnyway": "Still looking for something custom? Let's us know what you're looking for!",
+  "barEmpty": "Your personalized package recommendation is calcuating...",
+  "barCta": "Request your offical quote!",
+  "barShop": "Shop for Ready-to-Ship Sugar Flowers!",
   "embedEstimatorButton": "Get a price estimate",
   "embedInquiryButton": "Start your inquiry",
   "embedNote": "Every design is custom colored. Custom designs need at least {minWeeks} weeks’ notice; dates under {rushWeeks} weeks out may include a rush fee. Your final quote is based on your exact design.",
-  "embedProStartingAt": "Pro, starting at",
+  "embedProStartingAt": "Starting at",
   "cardDetails": "Your details",
   "detailsIntro": "After you’ve submitted your inquiry, I’ll check my calendar for availability and send you a more detailed questionnaire about your cake design via email.",
   "labelFirst": "First Name",
@@ -275,7 +158,9 @@
   "thanksText": "I’ll check my calendar for availability and send you a more detailed questionnaire about your cake design via email. I look forward to meeting with you!",
   "thanksSignoff": "xoxo, Kelsie",
   "footerTerms": "Terms",
-  "footerPrivacy": "Privacy"
+  "footerPrivacy": "Privacy",
+  "labelPalette": "Color palette",
+  "confirmDate": "Please confirm your event date."
  },
  "packageImages": {
   "The Marguerite": "https://iuaqhzvogalrozlcjwyp.supabase.co/storage/v1/object/public/email-assets/cache/3eefe536-4702-4441-b1c7-7c74eb25ccda.png",
@@ -367,5 +252,6 @@
    "supporting": "~30–40 supporting blooms",
    "greenery": "~20–28 filler/greenery"
   }
- ]
+ ],
+ "copySheetCsvUrl": ""
 }
