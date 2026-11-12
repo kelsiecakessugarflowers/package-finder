@@ -35,7 +35,8 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
   document.getElementById('finder').href = D.finderUrl;
   document.getElementById('finder').textContent = T.embedEstimatorButton;
   document.getElementById('inquire').textContent = T.embedInquiryButton;
-  document.getElementById('inquire').href = D.filloutUrl + '?source=packages';
+  // Inquiries go through the estimator too (it saves the lead, then sends them on to the inquiry form)
+  document.getElementById('inquire').href = D.finderUrl + '?source=packages';
   document.getElementById('inquire').onclick = () => track('packages_cta', {action: 'inquiry'});
   document.getElementById('finder').onclick = () => track('packages_cta', {action: 'estimator'});
   document.getElementById('note').textContent = fill(T.embedNote, {minWeeks: D.leadTime.minimumWeeks, rushWeeks: D.leadTime.rushWeeks});

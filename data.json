@@ -267,5 +267,28 @@
    "over": 2000
   }
  ],
- "thanksUrl": "https://kelsiecakes.com/thanks-for-your-inquiry/"
+ "thanksUrl": "https://kelsiecakes.com/thanks-for-your-inquiry/",
+ "premiumStyles": [
+  "Minimal"
+ ],
+ "flowerTiers": {
+  "Premium": [
+   "bougainvillea",
+   "dahlia",
+   "ginger",
+   "hibiscus",
+   "peony (open)",
+   "poinsettia",
+   "ranunculus",
+   "tulip"
+  ],
+  "Luxe": [
+   "birds of paradise",
+   "delphinium",
+   "palm leaf",
+   "peony (closed)",
+   "protea",
+   "safflower"
+  ]
+ }
 }

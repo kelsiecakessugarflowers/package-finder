@@ -4,7 +4,7 @@ const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // style: null = not chosen yet, '' = "Not sure yet"
 const st = {role: '', eventType: '', date: '', size: '', style: null, budget: '', pkg: ''};
-let dateTouched = false;   // the date starts on a suggested Saturday; it has to be confirmed before sending an inquiry
+let dateTouched = false;   // true once they've picked a date (the field starts blank)
 let D, T, direct = false, tsToken = '', view = 'cake';
 // Pages: 'cake' (questions + email, which unlocks the estimate) -> 'details' (estimate, what's included, rest of the inquiry)
 let leadEmail = '', leadToken = '', tsLeadToken = '';
@@ -104,6 +104,10 @@ function inquiryUrl(p) {
   return u.toString();
 }
 
+// Bottom of the chosen budget range: "$1,500-$2,500" -> 1500, "$2,500+" -> 2500, "Under $350" / "Not sure yet" -> none
+function budgetMin() {
+  const m = String(st.budget || '').match(/^\$([\d,]+)/); return m ? +m[1].replace(/,/g, '') : null;
+}
 // Top of the chosen budget range: "Under $350" -> 350, "$500-$1,000" -> 1000, "$2,500+" -> none, "Not sure yet" -> none
 function budgetMax() {
   const b = st.budget || '', n = x => +x.replace(/,/g, '');
@@ -121,7 +125,7 @@ function render() {
   const el = $('#estimate'), cta = $('#barCta'), bar = $('#barPrice'), shop = shopReason(), n = daysUntil();
   const f = fits(), sug = st.size && st.style !== null ? suggested() : null, p = sug && (f.find(x => x.name === st.pkg) || sug);
   const notes = [];
-  if (shop) notes.push(`<p class="note shop">${esc(t(shop === 'date' ? 'shopDate' : 'shopBudget'))}<br><a target="_top" href="${esc(D.shopUrl)}" data-cta="shop">${esc(t('barShop'))}</a></p>`);
+  if (shop) notes.push(`<p class="note shop">${esc(t(shop === 'date' ? 'shopDate' : 'shopBudget'))}<br><a target="_blank" rel="noopener" href="${esc(D.shopUrl)}" data-cta="shop">${esc(t('barShop'))}</a></p>`);
   else if (n !== null && n >= 0 && n < D.leadTime.minimumWeeks * 7) notes.push(`<p class="note">${esc(t('noteShort', {minWeeks: D.leadTime.minimumWeeks}))}</p>`);
   else if (n !== null && n >= 0 && n < D.leadTime.rushWeeks * 7) notes.push(`<p class="note">${esc(t('noteRush', {rushWeeks: D.leadTime.rushWeeks}))}</p>`);
 
@@ -151,6 +155,12 @@ function render() {
       includeFiller: () => countLine('includeFiller', p.greenery)}[x.key] || (() => t(x.key)))();
     const incl = (D.includes || []).filter(shows).map(line).filter(Boolean), adds = (D.addons || []).filter(shows).map(line).filter(Boolean);
     const guide = [['guideBestFor', p.bestFor], ['guideVibe', p.vibe]].filter(g => g[1]);
+    // Premier / Luxe flowers (Airtable "Premium Tier"), named so people know what they are
+    const ft = D.flowerTiers || {}, tierLine = k => ft[k]?.length ? t('tierFlowers', {tier: t('tier' + k), flowers: ft[k].join(', ')}) : '';
+    const tierDetail = ['Premium', 'Luxe'].map(tierLine).filter(Boolean);
+    // A simple style with budget to spare: suggest premier/luxe blooms
+    const bmin = budgetMin(), premiumNote = (D.premiumStyles || []).includes(st.style) && bmin !== null && bmin > price && tierDetail.length
+      ? `<div class="note premium"><p>${esc(t('notePremiumFlowers', {style: st.style.toLowerCase()}))}</p>${tierDetail.map(x => `<p class="tierline">${esc(x)}</p>`).join('')}</div>` : '';
     el.innerHTML = `<div class="est">${img ? `<img class="pkgimg" src="${esc(img)}" alt="${esc(p.name)}">` : ''}<div>
       <span class="tag ${p === sug ? 'star' : 'sel'}">${esc(t(p === sug ? 'tagRecommended' : 'tagSelected'))}</span>${isPro() ? ` <span class="tag info">${esc(t('tagPro'))}</span>` : ''} ${tags(p)}
       <p class="pkgname">${esc(p.name)}</p>
@@ -158,20 +168,22 @@ function render() {
       <p class="price">${esc(priceText(price))}</p></div></div>
       ${guide.length ? `<dl class="guide">${guide.map(([k, v]) => `<dt>${esc(t(k))}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
       ${incl.length ? `<p class="sub">${esc(t('includes'))}</p><ul class="inc">${incl.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
-      ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p><ul class="inc addons">${adds.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p><ul class="inc addons">${(D.addons || []).filter(shows).map(x => `<li>${esc(line(x))}${x.key === 'addonLuxe' && tierDetail.length ? tierDetail.map(d => `<small class="tierline">${esc(d)}</small>`).join('') : ''}</li>`).join('')}</ul>` : ''}
       ${others.length ? `<p class="sub">${esc(t(othersKey, {size: size1}))}</p>` + others.map(o => { const oi = (D.packageImages || {})[o.name];
         return `<button type="button" class="pkg" data-pkg="${esc(o.name)}">${oi ? `<img src="${esc(oi)}" alt="">` : ''}<span class="pkgtxt"><b>${esc(o.name)}</b>${o.tags?.length ? ' ' + tags(o) : ''}${o.bestFor ? `<small>${esc(o.bestFor)}</small>` : ''}</span><span class="pkgprice">${esc(priceText(priceFor(o)))}</span></button>`; }).join('') : ''}
       ${notes.join('')}
+      ${premiumNote}
+      ${direct ? '' : `<p class="note">${esc(t('noteRetainer'))}</p>`}
       <p class="muted">${esc(t('noteFinal'))}</p>
       `;
     bar.innerHTML = `${esc(priceText(price))}<small>${esc(p.name)}</small>`;
   }
   // Shop route: a link to inquire anyway (it goes through the email page like everyone else)
   if (shop) $('#cakeNotes').insertAdjacentHTML('beforeend', `<p class="muted"><a href="#" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>`);
-  cta.removeAttribute('aria-disabled'); cta.target = '_top';
+  cta.removeAttribute('aria-disabled'); cta.target = '_top'; cta.removeAttribute('rel');
   if (view === 'cake') {
     bar.innerHTML = !p && !shop ? `<small style="white-space:normal">${esc(t('barEmpty'))}</small>` : '';
-    if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; }
+    if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; cta.target = '_blank'; cta.rel = 'noopener'; }
     else { cta.textContent = t('barNext'); cta.href = '#'; cta.dataset.cta = 'next'; }
   } else if (!p) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; }
   else if (direct) { cta.textContent = t('barSend'); cta.href = '#'; cta.dataset.cta = 'send'; }
@@ -191,7 +203,7 @@ document.addEventListener('change', e => {
   if (e.target.id === 'eventType') $('#eventOther').hidden = e.target.value !== 'Other';
   const id = e.target.id; if (!['role', 'eventType', 'date', 'size', 'budget'].includes(id)) return;
   st[id] = e.target.value;
-  if (id === 'date') { dateTouched = true; $('#dateErr').hidden = true; }
+  if (id === 'date') { dateTouched = !!st.date; $('#dateErr').hidden = true; }
   if (id === 'size' || id === 'style') st.pkg = '';
   if (id !== 'date') track('estimator_change', {field: id, value: st[id] || (id === 'style' && st.style === '' ? 'not sure' : '')});
   render(); trackResult();
@@ -311,7 +323,6 @@ function goDetails() {
   track('estimator_details_view');
 }
 // Opening or tapping the date field counts as confirming it, so a real date that matches the suggested Saturday still works
-['focus', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.id === 'date' && !dateTouched) { dateTouched = true; $('#dateErr').hidden = true; e.target.classList.remove('bad'); } }, true));
 addEventListener('popstate', e => { const v = e.state?.view || 'cake'; showView(v === 'details' && !leadEmail ? 'cake' : v); });
 function renderSummary() {
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
@@ -365,10 +376,9 @@ async function submitInquiry() {
 
 Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).then(([d, copy]) => {
   D = d; T = copy; loadGtm(d.gtmId);
-  { const x = new Date(); x.setMonth(x.getMonth() + 3); x.setDate(x.getDate() + ((6 - x.getDay() + 7) % 7));
-    st.date = `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; }
+  { const x = new Date(); $('#date').min = `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; }
   direct = d.inquiry.mode === 'direct' || new URLSearchParams(location.search).has('direct');
-  renderStatic(); $('#date').value = st.date;
+  renderStatic();
 
   // ?for=couple|family|baker|vendor preselects the role (links from emails, trade pages)
   const f = new URLSearchParams(location.search).get('for');
