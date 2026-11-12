@@ -24,18 +24,18 @@ const F = {   // Airtable Projects field IDs
 const MAX_PHOTOS = 5, MAX_PHOTO_BYTES = 5 * 1024 * 1024;   // Airtable's direct upload limit is 5 MB per file
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname === '/api/inquiry') {
       if (request.method !== 'POST') return json({ok: false, error: 'POST only'}, 405);
-      try { return await inquiry(request, env); }
+      try { return await inquiry(request, env, ctx); }
       catch (e) { console.error('inquiry failed', e && e.stack || e); return json({ok: false, error: 'server'}, 500); }
     }
     return env.ASSETS.fetch(request);
   },
 };
 
-async function inquiry(request, env) {
+async function inquiry(request, env, ctx) {
   if (Number(request.headers.get('content-length') || 0) > 40 * 1024 * 1024) return json({ok: false, error: 'too large'}, 413);
   const b = await request.json().catch(() => null);
   if (!b || typeof b !== 'object') return json({ok: false, error: 'bad request'}, 400);
@@ -73,7 +73,7 @@ async function inquiry(request, env) {
 
   const submissionId = crypto.randomUUID();
   const dateLong = new Date(d.eventDate + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
-  const title = [d.palette, d.style, 'Sugar Flowers'].filter(Boolean).join(' ');
+  const title = [d.style, 'Sugar Flowers'].filter(Boolean).join(' ');
   const summary = [
     ['Name', `${d.first} ${d.last}`], ['Pronouns', d.pronouns], ['Email', d.email], ['Phone', d.phone], ['Event date', dateLong],
     ['I am', d.role], ['Cake size', d.size], ['Cake style', d.style || 'Not sure yet'], ['Budget', d.budget], ['Color palette', d.palette],
@@ -82,19 +82,7 @@ async function inquiry(request, env) {
     ['Submitted', new Date().toISOString()], ['Submission ID', submissionId],
   ].filter(([, v]) => v);
 
-  // 2. Google Drive folder (a failure here never loses the lead; Airtable still gets it)
-  let drive = null;
-  if (env.DRIVE_SCRIPT_URL) {
-    drive = await fetch(env.DRIVE_SCRIPT_URL, {
-      method: 'POST', headers: {'Content-Type': 'application/json'}, redirect: 'follow',
-      body: JSON.stringify({key: env.DRIVE_SCRIPT_KEY, parentId: env.LEADS_FOLDER_ID,
-        folderName: `${d.first} ${d.last} | ${dateLong} | Sugar Flowers`,
-        docTitle: `Inquiry - ${d.first} ${d.last} - ${dateLong}`, summary, photos: rf ? [...photos, rf] : photos}),
-    }).then(r => r.json()).catch(e => ({ok: false, error: String(e)}));
-    if (!drive.ok) { console.error('drive failed', drive.error); drive = null; }
-  }
-
-  // 3. Airtable Projects record
+  // 2. Airtable Projects record (saved first, so the visitor isn't kept waiting on Drive)
   const notes = [d.vision ? d.vision + '\n' : '', '— From the Price Estimator —', ...summary.filter(([k]) => !['Vision', 'Name', 'Email', 'Phone', 'Pronouns', 'Submission ID'].includes(k)).map(([k, v]) => `${k}: ${v}`)].filter(Boolean).join('\n');
   const fields = {
     [F.first]: d.first, [F.last]: d.last, [F.email]: d.email, [F.phone]: d.phone, [F.pronouns]: d.pronouns || undefined,
@@ -102,7 +90,6 @@ async function inquiry(request, env) {
     [F.cakeSize]: d.size, [F.cakeStyle]: d.style || undefined, [F.palette]: d.palette || undefined, [F.clientType]: d.clientType,
     [F.package]: /^rec\w{14}$/.test(d.packageId) ? [d.packageId] : undefined, [F.title]: title,
     [F.smsConsent]: d.sms || undefined, [F.bizLink]: d.bizLink || undefined, [F.bizLocation]: bizLocation || undefined, [F.resale]: d.resale || undefined, [F.origin]: 'Price Estimator', [F.submissionId]: submissionId,
-    [F.drive]: drive ? drive.folderUrl : undefined, [F.filesSent]: drive && photos.length ? true : undefined,
   };
   const base = env.AIRTABLE_BASE, table = env.PROJECTS_TABLE;
   const created = await fetch(`https://api.airtable.com/v0/${base}/${table}`, {
@@ -112,21 +99,44 @@ async function inquiry(request, env) {
   if (!created.ok) { console.error('airtable create', created.status, await created.text()); return json({ok: false, error: 'save failed'}, 502); }
   const recordId = (await created.json()).records[0].id;
 
-  // Photos onto the record (one call per photo)
-  for (const p of photos) {
-    const r = await fetch(`https://content.airtable.com/v0/${base}/${recordId}/${F.photos}/uploadAttachment`, {
-      method: 'POST', headers: {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'},
-      body: JSON.stringify({contentType: p.type, file: p.data, filename: p.name}),
-    });
-    if (!r.ok) console.error('airtable photo', r.status, await r.text());
-  }
-  if (rf) {
-    const r = await fetch(`https://content.airtable.com/v0/${base}/${recordId}/${F.pdfDocs}/uploadAttachment`, {
-      method: 'POST', headers: {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'},
-      body: JSON.stringify({contentType: rf.type, file: rf.data, filename: rf.name}),
-    });
-    if (!r.ok) console.error('airtable certificate', r.status, await r.text());
-  }
+  // 3. Everything slow happens after the visitor sees the thank-you page:
+  //    Drive folder (photos + summary doc), then the Drive link and photos on the Airtable record.
+  ctx.waitUntil((async () => {
+    const auth = {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'};
+    // Google Drive folder (a failure here never loses the lead; it's already in Airtable)
+    let drive = null;
+    if (env.DRIVE_SCRIPT_URL) {
+      drive = await fetch(env.DRIVE_SCRIPT_URL, {
+        method: 'POST', headers: {'Content-Type': 'application/json'}, redirect: 'follow',
+        body: JSON.stringify({key: env.DRIVE_SCRIPT_KEY, parentId: env.LEADS_FOLDER_ID,
+          folderName: `${d.first} ${d.last} | ${dateLong} | Sugar Flowers`,
+          docTitle: `Inquiry - ${d.first} ${d.last} - ${dateLong}`, summary, photos: rf ? [...photos, rf] : photos}),
+      }).then(r => r.json()).catch(e => ({ok: false, error: String(e)}));
+      if (!drive.ok) { console.error('drive failed', drive.error); drive = null; }
+    }
+
+    if (drive) {
+      const u = await fetch(`https://api.airtable.com/v0/${base}/${table}/${recordId}`, {
+        method: 'PATCH', headers: auth, body: JSON.stringify({fields: {[F.drive]: drive.folderUrl, ...(photos.length ? {[F.filesSent]: true} : {})}}),
+      });
+      if (!u.ok) console.error('airtable drive link', u.status, await u.text());
+    }
+    // Photos onto the record (one call per photo)
+    for (const p of photos) {
+      const r = await fetch(`https://content.airtable.com/v0/${base}/${recordId}/${F.photos}/uploadAttachment`, {
+        method: 'POST', headers: {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'},
+        body: JSON.stringify({contentType: p.type, file: p.data, filename: p.name}),
+      });
+      if (!r.ok) console.error('airtable photo', r.status, await r.text());
+    }
+    if (rf) {
+      const r = await fetch(`https://content.airtable.com/v0/${base}/${recordId}/${F.pdfDocs}/uploadAttachment`, {
+        method: 'POST', headers: {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'},
+        body: JSON.stringify({contentType: rf.type, file: rf.data, filename: rf.name}),
+      });
+      if (!r.ok) console.error('airtable certificate', r.status, await r.text());
+    }
+  })().catch(e => console.error('background', e && e.stack || e)));
   return json({ok: true});
 }
 
