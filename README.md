@@ -21,7 +21,7 @@ Flower costs and pricing formulas stay in the private quote builder (nevermore-b
 
 ## Style photos
 
-Upload to `photos/` (GitHub: Add file > Upload files). JPG, portrait (4:5), about 1200px tall, under 300 KB.
+Upload to `photos/` (GitHub: Add file > Upload files). JPG, portrait (2:3, like 800 x 1200), under 300 KB.
 Names must match exactly:
 
 | Style | File |
