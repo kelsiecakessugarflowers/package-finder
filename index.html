@@ -377,6 +377,8 @@ function goDetails() {
   if (!window.__ts) { window.__ts = true; loadTurnstile(); }
   track('estimator_details_view');
 }
+// Opening or tapping the date field counts as confirming it, so a real date that matches the suggested Saturday still works
+['focus', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.id === 'date' && !dateTouched) { dateTouched = true; $('#dateErr').hidden = true; e.target.classList.remove('bad'); } }, true));
 addEventListener('popstate', () => { if (view === 'details') showView('estimate'); });
 function renderSummary() {
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
