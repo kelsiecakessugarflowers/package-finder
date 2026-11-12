@@ -32,6 +32,14 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
       </ul>
       <div class="price"><small>${esc(pro ? T.embedProStartingAt : T.startingAt)}</small>${money(price(p))}</div>
     </div></article>`).join('');
+  // Dots for the phone carousel: show which card is in view, tap to jump
+  const grid = document.getElementById('grid'), dots = document.getElementById('dots'), cards = [...grid.children];
+  dots.innerHTML = cards.map((_, i) => `<button type="button" data-i="${i}"></button>`).join('');
+  const mark = () => { const mid = grid.scrollLeft + grid.clientWidth / 2;
+    const i = cards.reduce((best, c, j) => Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid) < Math.abs(cards[best].offsetLeft + cards[best].offsetWidth / 2 - mid) ? j : best, 0);
+    [...dots.children].forEach((d, j) => d.classList.toggle('on', j === i)); };
+  grid.addEventListener('scroll', () => requestAnimationFrame(mark), {passive: true}); mark();
+  dots.onclick = e => { const i = e.target.dataset.i; if (i != null) cards[i].scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'}); };
   document.getElementById('finder').href = D.finderUrl;
   document.getElementById('finder').textContent = T.embedEstimatorButton;
   document.getElementById('inquire').textContent = T.embedInquiryButton;
