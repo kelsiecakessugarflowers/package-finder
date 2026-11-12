@@ -16,13 +16,18 @@
  *       DRIVE_SCRIPT_KEY = the same KEY as step 2
  *  After editing this script later: Deploy > Manage deployments > Edit > New version (the URL stays the same).
  */
+// The only folder this script ever writes to: 💐 Current Leads. It ignores any other folder a request asks for.
+var LEADS_FOLDER_ID = '1ma3TRtn0wUzC_iL1MHg4OlJ9p2mos9ok';
+
+// What this script does: creates one new folder inside Current Leads, puts the photos and a summary doc in it,
+// and shares that new folder as view-only by link. It never reads, edits, moves or deletes any existing file.
 function doPost(e) {
   try {
     var body = JSON.parse(e.postData.contents);
     var key = PropertiesService.getScriptProperties().getProperty('KEY');
     if (!key || body.key !== key) return out_({ok: false, error: 'unauthorized'});
 
-    var parent = DriveApp.getFolderById(body.parentId);
+    var parent = DriveApp.getFolderById(LEADS_FOLDER_ID);
     var folder = parent.createFolder(body.folderName);
     folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
