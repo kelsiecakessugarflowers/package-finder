@@ -137,12 +137,21 @@ async function quizLead(request, env) {
     [Q.experience]: s(b.experience, 40), [Q.vision]: s(b.customization, 40), [Q.budget]: s(b.budget, 40),
     [Q.tags]: (Array.isArray(b.tags) ? b.tags : []).map(x => s(x, 60)).slice(0, 20).join(', '), [Q.utm]: s(b.utmSource, 80), [Q.submitted]: new Date().toISOString(),
   };
-  const r = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE}/${env.QUIZ_TABLE}`, {
-    method: 'POST', headers: {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'},
-    body: JSON.stringify({records: [{fields}], typecast: true}),
-  });
-  if (!r.ok) { console.error('airtable quiz lead', r.status, await r.text()); return json({ok: false, error: 'save failed'}, 502); }
-  return json({ok: true});
+  // The spam-check token is used up by now, so retry Airtable here (busy/rate-limited answers) rather than in the browser
+  let status = 0, detail = '';
+  for (let i = 0; i < 3; i++) {
+    if (i) await new Promise(r => setTimeout(r, 400 * i));
+    const r = await fetch(`https://api.airtable.com/v0/${env.AIRTABLE_BASE}/${env.QUIZ_TABLE}`, {
+      method: 'POST', headers: {Authorization: `Bearer ${env.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json'},
+      body: JSON.stringify({records: [{fields}], typecast: true}),
+    });
+    if (r.ok) return json({ok: true});
+    status = r.status; detail = await r.text();
+    if (status < 500 && status !== 429) break;   // a real error (bad field etc.): retrying won't help
+  }
+  // Still not saved: the whole signup goes to the Worker's logs (Cloudflare > package-finder > Logs, search "QUIZ LEAD NOT SAVED")
+  console.error('QUIZ LEAD NOT SAVED', status, detail, JSON.stringify({email, name: s(b.name, 80), result: b.result, tags: b.tags}));
+  return json({ok: false, error: 'save failed'}, 502);
 }
 
 async function inquiry(request, env, ctx) {
