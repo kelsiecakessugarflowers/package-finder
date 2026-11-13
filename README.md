@@ -61,6 +61,13 @@ One-time setup: Settings > Secrets and variables > Actions > New secret `AIRTABL
 Optional Airtable field "Website Description" (long text) replaces the "Suitable For" line on the packages embed.
 The "Best for:" and "Vibe:" lines of each package's guide text, and its **Estimator Tags** (Budget Friendly, Venue Preferred, ...), show on the estimate.
 
+## Flower example photos
+
+Shown above "Your design will include…" on the estimate and in each package's "More details".
+Upload to `photos/` with these exact names: `statement.jpg`, `supporting.jpg`, `filler.jpg`.
+Portrait (800 x 1200, like the style photos), JPG, under 300 KB; the current ones have their label on the image.
+Until a photo is there, it simply doesn't show. Optional captions under them: `example_statement`, `example_supporting`, `example_filler` in copy.json.
+
 ## Packages embed in Showit
 
 Add an Embed Code element with this, using your live site address:
