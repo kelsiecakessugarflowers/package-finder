@@ -441,6 +441,12 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
   const q = new URLSearchParams(location.search), occ = q.get('occasion'), bud = q.get('budget');
   if (D.eventTypes.includes(occ)) { st.eventType = occ; $('#eventType').value = occ; renderRoles(); }
   if (D.budgets.includes(bud)) { st.budget = bud; $('#budget').value = bud; }
+  // ...and the date, cake size and style (?date=2027-05-01&size=3 tiers&style=Cascading; style=notsure for "Not sure yet")
+  const qd = q.get('date'), qs = q.get('size'), qy = q.get('style');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(qd || '')) { st.date = qd; $('#date').value = qd; dateTouched = true; }
+  if (D.tierOptions.includes(qs)) { st.size = qs; $('#size').value = qs; }
+  if (qy === 'notsure') st.style = ''; else if (D.styles.includes(qy)) st.style = qy;
+  render();
   history.replaceState({view: 'cake'}, ''); showView('cake'); track('estimator_view');
   loadTurnstile('#tsLead', tok => { tsLeadToken = tok; });
 });

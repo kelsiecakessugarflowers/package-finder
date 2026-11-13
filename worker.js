@@ -40,6 +40,7 @@ const L = {   // Airtable "Price Estimator Leads" field IDs
 const Q = {   // Airtable "Quiz Leads" field IDs
   email: 'fldaDSIaCWJlwngJ0', first: 'fld8qC5aGabP6kU89', result: 'fldYDwOJd4ZBVooxP', role: 'fldohQ9loStlmDzHQ', timeline: 'fldN3xaMB8mD86y7t',
   experience: 'fldiCElViwaQMihVR', vision: 'fldDJcKHVianzXM67', budget: 'fldA8alymBkaHcdXb', tags: 'fldBMgbzo9XgQRLlE', utm: 'fldyqwyh2ftHNwLhc', submitted: 'fldGuNQPM8wLPnZbE',
+  occasion: 'fldFrMDGXL2L61v3i', eventDate: 'fldNcqIu8yXDTj6IN', size: 'flddFv9C1V9oRo0VB', style: 'fldsSsjXzYe6y6L7D', palette: 'fldoRcTNbRiKEwxEB', recommended: 'fldRfW4tG08ue5p9V',
 };
 const QUIZ_RESULTS = {readyToShip: 'Ready to Ship', madeToOrder: 'Made to Order', curated: 'Curated', fullyCustom: 'Fully Custom'};
 const QUIZ_ORIGINS = ['https://quiz.kelsiecakes.com'];
@@ -135,7 +136,9 @@ async function quizLead(request, env) {
   const fields = {
     [Q.email]: email, [Q.first]: s(b.name, 80), [Q.result]: QUIZ_RESULTS[b.result], [Q.role]: s(b.role, 40), [Q.timeline]: s(b.timeline, 40),
     [Q.experience]: s(b.experience, 40), [Q.vision]: s(b.customization, 40), [Q.budget]: s(b.budget, 40),
-    [Q.tags]: (Array.isArray(b.tags) ? b.tags : []).map(x => s(x, 60)).slice(0, 20).join(', '), [Q.utm]: s(b.utmSource, 80), [Q.submitted]: new Date().toISOString(),
+    [Q.tags]: (Array.isArray(b.tags) ? b.tags : []).map(x => s(x, 60)).slice(0, 25).join(', '), [Q.utm]: s(b.utmSource, 80), [Q.submitted]: new Date().toISOString(),
+    [Q.occasion]: s(b.occasion, 40), [Q.eventDate]: /^\d{4}-\d{2}-\d{2}$/.test(b.eventDate || '') ? b.eventDate : undefined, [Q.size]: s(b.size, 20),
+    [Q.style]: s(b.style, 40), [Q.palette]: s(b.palette, 60), [Q.recommended]: s(b.recommended, 120),
   };
   // The spam-check token is used up by now, so retry Airtable here (busy/rate-limited answers) rather than in the browser
   let status = 0, detail = '';
