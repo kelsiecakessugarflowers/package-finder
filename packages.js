@@ -117,7 +117,9 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
 
   document.getElementById('finder').href = D.finderUrl;
   document.getElementById('finder').textContent = T.embedEstimatorButton;
-  document.getElementById('inquire').textContent = T.embedInquiryButton;
+  // The estimator is also the inquiry form, so one button is enough; a second one only shows if embedInquiryButton has text
+  document.getElementById('inquire').textContent = T.embedInquiryButton || '';
+  document.getElementById('inquire').hidden = !T.embedInquiryButton;
   // Inquiries go through the estimator too (it saves the lead, then sends them on to the inquiry form)
   document.getElementById('inquire').href = D.finderUrl + '?source=packages';
   document.getElementById('inquire').onclick = () => track('packages_cta', {action: 'inquiry'});
