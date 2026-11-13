@@ -15,8 +15,9 @@ Every customer-facing sentence is in **`copy.json`**. Open it on GitHub, click t
 # Price Estimator (package-finder)
 
 Public price estimator and packages embed for Sugar Flowers by Kelsie Cakes.
-First page: occasion, role, date, cake size, style, budget and email. Second page: the recommended package and estimate,
-what's included, and the inquiry (Fillout on `main`, the built-in form on the `replace-fillout` branch).
+First page: occasion, role, date, cake size, style and budget, then the recommended package and estimate right away,
+an optional "Email me this estimate" box, and the what's-included photos. The bottom bar goes on to the inquiry
+(Fillout on `main`; the built-in form, on its own page, on the `replace-fillout` branch).
 Budgets under $350 and dates under 3 weeks out are sent to the shop (shop.kelsiecakes.com) instead.
 
 This repo is public. It only holds package names, starting prices, styles and palettes.

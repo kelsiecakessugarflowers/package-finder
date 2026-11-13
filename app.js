@@ -156,6 +156,7 @@ function render() {
     minWeeks: D.leadTime.minimumWeeks, rushWeeks: D.leadTime.rushWeeks};
   ['Role', 'EventType', 'Date', 'Size', 'Style', 'Budget'].forEach(k => { $('#hint' + k).textContent = t('hint' + k, hv); });
   $('#retainerNote').textContent = t('noteRetainer');
+  $('#emailMe').hidden = !p || !!shop; if (!leadEmail && !$('#emailMeBtn').disabled) $('#emailMeBtn').textContent = t('emailMeButton');
   if (!$('#submitBtn').disabled) $('#submitBtn').textContent = t('barSend');   // a submit button at the end of the form too
   if (!$('#allPk1') && t('seeAllPackages')) $('#hintBudget').insertAdjacentHTML('afterend', `<a href="#" class="allpk" id="allPk1" data-act="packages">${esc(t('seeAllPackages'))}</a>`);
 
@@ -204,9 +205,11 @@ function render() {
   if (shop) $('#cakeNotes').insertAdjacentHTML('beforeend', `<p class="muted"><a href="#" data-cta="inquiry_anyway">${esc(t('inquiryAnyway'))}</a></p>`);
   cta.removeAttribute('aria-disabled'); cta.target = '_top'; cta.removeAttribute('rel');
   if (view === 'cake') {
-    bar.innerHTML = !p && !shop ? `<small style="white-space:normal">${esc(t('barEmpty'))}</small>` : '';
+    if (shop) bar.innerHTML = '';
     if (shop) { cta.textContent = t('barShop'); cta.href = D.shopUrl; cta.dataset.cta = 'shop'; cta.target = '_blank'; cta.rel = 'noopener'; }
-    else { cta.textContent = t('barNext'); cta.href = '#'; cta.dataset.cta = 'next'; }
+    else if (!p) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; }
+    else if (direct) { cta.textContent = t('barCta'); cta.href = '#'; cta.dataset.cta = 'next'; }   // to the inquiry page
+    else { cta.textContent = t('barCta'); cta.href = inquiryUrl(p); cta.dataset.cta = 'inquiry'; }  // Fillout
   } else if (!p) { cta.textContent = t('barCta'); cta.setAttribute('aria-disabled', 'true'); cta.href = '#'; delete cta.dataset.cta; }
   else if (direct) { cta.textContent = t('barSend'); cta.href = '#'; cta.dataset.cta = 'send'; }
   else { cta.textContent = t('barCta'); cta.href = inquiryUrl(p); cta.dataset.cta = 'inquiry'; }
@@ -248,6 +251,7 @@ document.addEventListener('click', e => {
   if (['next', 'inquiry_anyway'].includes(action)) { e.preventDefault(); goNext(); }
   else if (action === 'send') { e.preventDefault(); submitInquiry(); }
   if (e.target.id === 'editAnswers') go('cake');
+  if (e.target.closest('[data-act=emailme]')) emailMe();
   const rm = e.target.closest('[data-rm]'); if (rm) { photos.splice(+rm.dataset.rm, 1); renderThumbs(); }
 });
 
@@ -293,7 +297,8 @@ const tsWidgets = {}, tsQueue = []; let tsScriptAdded = false;
 function loadTurnstile(sel, set) {
   if (!D.inquiry.turnstileSiteKey || tsWidgets[sel] !== undefined) return;
   tsWidgets[sel] = null;
-  const draw = () => { tsWidgets[sel] = window.turnstile.render(sel, {sitekey: D.inquiry.turnstileSiteKey, callback: set, 'expired-callback': () => set('')}); };
+  const draw = () => { tsWidgets[sel] = window.turnstile.render(sel, {sitekey: D.inquiry.turnstileSiteKey, callback: set, 'expired-callback': () => set(''),
+    ...(sel === '#tsLead' ? {appearance: 'interaction-only'} : {})}); };   // the optional email box: only shows if a click is needed
   // (check .render: an element with id="turnstile" would also show up as window.turnstile)
   if (window.turnstile?.render) return draw();
   tsQueue.push(draw);
@@ -310,26 +315,29 @@ function showView(v) {
   render(); window.scrollTo(0, 0);
 }
 function go(v) { history.pushState({view: v}, ''); showView(v); }
-// "See my estimate": check the questions and email, save the email, then show the estimate
+// Bottom bar on the first page: check the questions, then the inquiry page
 function goNext() {
   document.querySelectorAll('.bad').forEach(x => x.classList.remove('bad'));
-  const email = $('#leadEmail').value.trim(), err = $('#leadErr'); err.hidden = true;
-  const need = [['role', !st.role], ['eventType', !st.eventType], ['date', !dateTouched], ['size', !st.size], ['styleBtn', st.style === null],
-    ['leadEmail', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)]].filter(x => x[1]).map(x => x[0]);
+  const need = [['eventType', !st.eventType], ['role', !st.role], ['date', !dateTouched], ['size', !st.size], ['styleBtn', st.style === null]].filter(x => x[1]).map(x => x[0]);
   if (need.length) {
     need.forEach(k => $('#' + k).classList.add('bad'));
     $('#' + need[0]).scrollIntoView({behavior: 'smooth', block: 'center'});
     $('#dateErr').hidden = !need.includes('date');
     return;
   }
-  if (email === leadEmail) return goDetails();   // came back to edit answers; email already saved
-  if (D.inquiry.turnstileSiteKey && !tsLeadToken) { err.textContent = t('verifyHuman') || t('missing'); err.hidden = false; $('#tsLead').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  goDetails();
+}
+// Optional "Email me this estimate": saves a Price Estimator Leads row (the Airtable automation emails the copy)
+function emailMe() {
+  const email = $('#leadEmail').value.trim(), err = $('#leadErr'); err.hidden = true; $('#leadOk').hidden = true;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('#leadEmail').classList.add('bad'); err.textContent = t('emailInvalid') || t('missing'); err.hidden = false; return; }
+  if (D.inquiry.turnstileSiteKey && !tsLeadToken) { err.textContent = t('verifyHuman') || t('missing'); err.hidden = false; return; }
   submitLead(email);
 }
 async function submitLead(email) {
-  const err = $('#leadErr');
-  const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), cta = $('#barCta');
-  cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true');
+  const err = $('#leadErr'), btn = $('#emailMeBtn');
+  const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
+  btn.disabled = true; btn.textContent = t('sending');
   try {
     const res = await fetch('/api/lead', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
       email, turnstile: tsLeadToken, clientType: role()?.clientType, eventType: st.eventType, eventOther: st.eventType === 'Other' ? val('eventOther') : '',
@@ -339,11 +347,14 @@ async function submitLead(email) {
     if (res.status === 403) throw new Error('spam');
     leadToken = out.lead || '';   // if saving failed on our side, they still see the estimate; the last page asks for the spam check instead
   } catch (e) {
-    if (String(e.message) === 'spam') { err.textContent = t('sendError'); err.hidden = false; resetTurnstile('#tsLead'); tsLeadToken = ''; render(); return; }
+    btn.disabled = false; btn.textContent = t('emailMeButton');
+    if (String(e.message) === 'spam') { err.textContent = t('sendError'); err.hidden = false; resetTurnstile('#tsLead'); tsLeadToken = ''; return; }
   }
   leadEmail = email; if (!val('email') || val('email') === leadEmail) $('#email').value = email;
+  btn.textContent = t('emailMeButton'); btn.disabled = true;   // one copy per visit
+  $('#leadOk').textContent = t('emailMeDone'); $('#leadOk').hidden = false;
   track('estimator_lead');
-  goDetails();
+  render();   // the Fillout link picks up their email
 }
 function goDetails() {
   go('details');
@@ -351,7 +362,7 @@ function goDetails() {
   track('estimator_details_view');
 }
 // Opening or tapping the date field counts as confirming it, so a real date that matches the suggested Saturday still works
-addEventListener('popstate', e => { const v = e.state?.view || 'cake'; showView(v === 'details' && !leadEmail ? 'cake' : v); });
+addEventListener('popstate', e => { showView(e.state?.view || 'cake'); });
 function renderSummary() {
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
   const dateLong = new Date(st.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
