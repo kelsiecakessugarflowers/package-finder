@@ -35,9 +35,6 @@ function premiumExamples(D, max = 6) {
   for (let i = 0; out.length < max && i < Math.max(a.length, b.length); i++) [a[i], b[i]].forEach(n => { if (n && !out.includes(n) && out.length < max) out.push(n); });
   return out;
 }
-// Example photos of a statement / supporting / filler flower (data.json "flowerExamples"); any missing photo just hides itself
-const flowerExamples = () => { const ex = D.flowerExamples || {}, keys = ['statement', 'supporting', 'filler'].filter(k => ex[k]);
-  return keys.length ? `<div class="examples">${keys.map(k => `<figure><a href="${esc(ex[k])}" target="_blank" rel="noopener"><img src="${esc(ex[k])}" alt="" loading="lazy" onerror="this.closest('figure').remove()"></a>${t('example_' + k) ? `<figcaption>${esc(t('example_' + k))}</figcaption>` : ''}</figure>`).join('')}</div>` : ''; };
 const countLine = (key, txt) => { const c = count(txt); return c ? t(key, c) : t(key + 'Text', {text: String(txt || '').trim()}); };
 
 // ---- Analytics: anonymous events only (no names, emails or dates) ----
@@ -98,7 +95,8 @@ function renderStatic() {
   // What's included: the proposal's photo cards (data.json "included")
   const inc = D.included || {}, altOf = u => decodeURIComponent(u.split('/').pop()).replace(/^[0-9a-f]{20,}_/, '').replace(/\.\w+$/, '').replace(/[_-]+/g, ' ');
   // One swipeable row of the proposal's photo cards (each has its caption on it); headings only if copy.json has them
-  const photos = [...(inc.expect || []), ...(inc.always || [])];
+  const fx = D.flowerExamples || {}, flowerPhotos = ['statement', 'supporting', 'filler'].map(k => fx[k]).filter(Boolean);
+  const photos = [...flowerPhotos, ...(inc.expect || []), ...(inc.always || [])];   // flower types first
   $('#includedBody').innerHTML = photos.length ? `<div class="gallery">${photos.map(u => `<img src="${esc(u)}" alt="${esc(altOf(u))}" loading="lazy">`).join('')}</div>` : '';
   $('#included').hidden = !photos.length;
   $('#t-cardIncluded').hidden = !t('cardIncluded');
@@ -190,7 +188,7 @@ function render() {
       <p class="muted" style="margin:2px 0 0">${esc(t('forYour', {cake}))}</p>
       <p class="price">${esc(priceText(price))}</p></div></div>
       ${guide.length ? `<dl class="guide">${guide.map(([k, v]) => `<dt>${esc(t(k))}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
-      ${incl.length ? `<p class="sub">${esc(t('includes'))}</p>${flowerExamples()}<ul class="inc">${incl.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${incl.length ? `<p class="sub">${esc(t('includes'))}</p><ul class="inc">${incl.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
       ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p><ul class="inc addons">${(D.addons || []).filter(shows).map(x => `<li>${esc(line(x))}${x.key === 'addonLuxe' && tierDetail.length ? tierDetail.map(d => `<small class="tierline">${esc(d)}</small>`).join('') : ''}</li>`).join('')}</ul>` : ''}
       ${others.length ? `<p class="sub">${esc(t(othersKey, {size: size1}))}</p>` + others.map(o => { const oi = (D.packageImages || {})[o.name];
         return `<button type="button" class="pkg" data-pkg="${esc(o.name)}">${oi ? `<img src="${esc(oi)}" alt="">` : ''}<span class="pkgtxt"><b>${esc(o.name)}</b>${o === sug ? ` <span class="tag star">${esc(t('tagRecommended'))}</span>` : ''}${o.tags?.length ? ' ' + tags(o) : ''}${o.bestFor ? `<small>${esc(o.bestFor)}</small>` : ''}</span><span class="pkgprice">${esc(priceText(priceFor(o)))}</span></button>`; }).join('') : ''}
