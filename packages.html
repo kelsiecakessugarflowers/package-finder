@@ -9,17 +9,30 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:transparent;color:var(--kc-text);font:15px/1.55 var(--kc-font-body)}
-.logo{display:block;height:48px;width:auto;margin:4px auto 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:4px}
+body.page{background:var(--kc-bg);padding:16px 12px 0}
+.logo{display:block;height:48px;width:auto;margin:4px auto 10px}
+h1{font-family:var(--kc-font-heading);font-weight:500;color:var(--kc-heading);font-size:30px;line-height:1.2;text-align:center;margin:6px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:4px;align-items:start;max-width:1100px;margin:0 auto}
 .card{background:var(--kc-card);border:1px solid var(--kc-line);display:flex;flex-direction:column}
 .card img{width:100%;aspect-ratio:40/23;object-fit:contain;display:block;background:var(--kc-white);border-bottom:1px solid var(--kc-line)}   /* package art is 2000x1150 with the name on it: never crop */
 .body{padding:16px;display:flex;flex-direction:column;flex:1}
-h3{font-family:var(--kc-font-heading);font-weight:500;color:var(--kc-heading);font-size:22px;margin:0 0 4px}
-.for{color:var(--kc-muted);font-size:14px;margin:0 0 10px}
-ul{margin:0 0 12px;padding-left:18px}
-li{margin:1px 0}
-.price{margin-top:auto;font-family:var(--kc-font-heading);color:var(--kc-heading);font-size:19px}
+h2{font-family:var(--kc-font-heading);font-weight:500;color:var(--kc-heading);font-size:22px;margin:0 0 4px}
+.for{font-size:14px;margin:0 0 10px;color:var(--kc-text)}
+.for b{color:var(--kc-muted);font-weight:600}
+ul.check{list-style:none;margin:0 0 12px;padding:0}
+ul.check li{position:relative;padding-left:24px;margin:3px 0}
+ul.check li::before{content:"";position:absolute;left:0;top:.3em;width:15px;height:15px;border-radius:50%;background:var(--kc-accent-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.3l2.6 2.5L12 5.4' fill='none' stroke='%236B4A5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px no-repeat}
+ul.plus li::before{content:"+";background:none;color:var(--kc-muted);font-weight:700;top:0;width:auto;height:auto}
+.price{font-family:var(--kc-font-heading);color:var(--kc-heading);font-size:20px;margin:2px 0 0}
 .price small{font-family:var(--kc-font-body);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--kc-muted);margin-right:6px}
+.toggle{margin:12px 0 0;align-self:flex-start;border:none;background:none;padding:0;font:inherit;font-size:14px;font-weight:600;color:var(--kc-accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.toggle::after{content:" ▾"}
+.card.open .toggle::after{content:" ▴"}
+.more{border-top:1px solid var(--kc-line);margin-top:12px;padding-top:12px;font-size:14px}
+.more .sub{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--kc-muted);margin:12px 0 4px}
+.more .sub:first-child{margin-top:0}
+.more p{margin:0}
+.more .go{display:block;text-align:center;margin-top:14px;padding:12px 16px;background:var(--kc-accent);color:var(--kc-accent-text);text-decoration:none;font-weight:600}
 .ctas{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 4px 4px}
 .ctas a{padding:14px 22px;text-decoration:none;font-weight:600;letter-spacing:.04em;border:1px solid var(--kc-accent)}
 .ctas .primary{background:var(--kc-accent);color:var(--kc-accent-text)}
@@ -28,22 +41,27 @@ li{margin:1px 0}
 .dots{display:none;justify-content:center;gap:6px;margin:2px 0 4px}
 .dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:var(--kc-line);cursor:pointer}
 .dots button.on{background:var(--kc-accent)}
+footer{text-align:center;padding:20px 16px 24px;color:var(--kc-muted);font-size:12px}
+footer a{color:var(--kc-muted)}
+[hidden]{display:none!important}
 /* Phones: one card at a time, swipe sideways (the next card peeks in), dots underneath */
 @media (max-width:640px){
+  h1{font-size:25px;margin-bottom:12px}
   .grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:86%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 7% 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .grid::-webkit-scrollbar{display:none}
   .card{scroll-snap-align:center}
   .body{padding:14px}
-  h3{font-size:20px}
+  h2{font-size:20px}
   .dots{display:flex}
   .ctas{flex-direction:column;align-items:stretch;margin:14px 12px 4px}
   .ctas a{text-align:center}
-  .logo{height:40px;margin-bottom:10px}
+  .logo{height:40px}
 }
 </style>
 </head>
 <body>
-<img class="logo" src="logo-alt.svg" alt="Sugar Flowers by Kelsie Cakes">
+<img class="logo" id="logo" src="logo-alt.svg" alt="Sugar Flowers by Kelsie Cakes" hidden>
+<h1 id="heading"></h1>
 <div class="grid" id="grid" aria-live="polite"></div>
 <div class="dots" id="dots" aria-hidden="true"></div>
 <div class="ctas">
@@ -51,6 +69,7 @@ li{margin:1px 0}
   <a class="secondary" id="inquire" target="_top" href="#"></a>
 </div>
 <p class="note" id="note"></p>
+<footer id="footer" hidden></footer>
 <script src="packages.js"></script>
 </body>
 </html>

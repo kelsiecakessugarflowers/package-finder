@@ -119,5 +119,10 @@
  "tierPremium": "Premier",
  "tierLuxe": "Luxe",
  "tierFlowers": "{tier}: {flowers}",
- "notePremiumFlowers": "Your budget leaves room for a few showstopping premier or luxe blooms, which are perfect for a {style} design."
+ "notePremiumFlowers": "Your budget leaves room for a few showstopping premier or luxe blooms, which are perfect for a {style} design.",
+ "embedHeading": "Our Packages Collection",
+ "embedMore": "More details",
+ "embedLess": "Fewer details",
+ "guideFits": "Fits",
+ "embedPackageCta": "Get a price estimate"
 }

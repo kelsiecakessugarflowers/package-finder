@@ -1,7 +1,7 @@
 // Pulls the live packages (public fields only) from Airtable into data.json.
 // Run from the "Sync packages from Airtable" button in the Actions tab.
 // Needs repo secret AIRTABLE_TOKEN (data.records:read on the Custom Orders base).
-// Only package names, prices, tiers, flower counts, guide lines (Best for, Vibe) and tags are written here. No costs or formulas.
+// Only package names, prices, tiers, flower counts, guide lines (Best for, Vibe, Fits) and tags are written here. No costs or formulas.
 import {readFile, writeFile} from 'node:fs/promises';
 
 const BASE = 'app93rZTtyXYVWYJr', PACKAGES = 'tblDlhafaXaGHWsmu';
@@ -40,6 +40,7 @@ const packages = (await all(true)).filter(r => r.fields[F.live]).map(r => ({
   greenery: r.fields[F.greenery] || '',
   ...(guideLine(r.fields[F.guide], 'Best for') ? {bestFor: guideLine(r.fields[F.guide], 'Best for')} : {}),
   ...(guideLine(r.fields[F.guide], 'Vibe') ? {vibe: guideLine(r.fields[F.guide], 'Vibe')} : {}),
+  ...(guideLine(r.fields[F.guide], 'Fits') ? {fits: guideLine(r.fields[F.guide], 'Fits').split(';').map(x => x.trim()).filter(Boolean)} : {}),
   tags: (r.fields[F.tags] || []).map(o => o.name || o),
 })).filter(p => p.name).sort((a, b) => a.price - b.price);
 

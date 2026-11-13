@@ -119,7 +119,13 @@
    "greenery": "a touch of greenery and filler",
    "bestFor": "A single tier cake, or a delicate accent on a larger tiered cake",
    "vibe": "Clean and unfussy — a few perfect blooms placed with intention",
-   "tags": []
+   "tags": [],
+   "fits": [
+    "One tier — a few accent flowers",
+    "One tier — scattered design",
+    "One tier — focal arrangement",
+    "Two tier — a few accent flowers"
+   ]
   },
   {
    "id": "rec5peH1R9mBD9OjA",
@@ -135,7 +141,15 @@
    "greenery": "5–7 filler/greenery pieces",
    "bestFor": "A small wedding cake, a single-tier showstopper, or a more minimal design on a tiered cake",
    "vibe": "Lush in miniature — garden-fresh and full without overwhelming a smaller cake",
-   "tags": []
+   "tags": [],
+   "fits": [
+    "One tier — maximum coverage",
+    "Two tier — scattered design",
+    "Two tier — focal arrangement",
+    "Three tier — a few accent flowers",
+    "Three tier — scattered design",
+    "Four tier — a few accent flowers"
+   ]
   },
   {
    "id": "recY9AzzlOTGoItSd",
@@ -151,7 +165,13 @@
    "greenery": "7–10 filler/greenery pieces",
    "bestFor": "A three to four tier cake",
    "vibe": "A classic wedding cake floral arrangement reimagined in sugar — romantic and layered",
-   "tags": []
+   "tags": [],
+   "fits": [
+    "Two tier — maximum coverage",
+    "Three tier — focal arrangement",
+    "Four tier — scattered design",
+    "Five or more tiers — a few accent flowers"
+   ]
   },
   {
    "id": "recak2NCPtcfHTAYV",
@@ -168,7 +188,12 @@
    "greenery": "10–14 filler/greenery pieces",
    "bestFor": "A cake with enough variety and volume to play with the design — from tumbling cascades to scattered clusters",
    "vibe": "Lots of volume, texture, and movement",
-   "tags": []
+   "tags": [],
+   "fits": [
+    "Three tier — maximum coverage",
+    "Four tier — focal arrangement",
+    "Five or more tiers — scattered design"
+   ]
   },
   {
    "id": "recEd9AzDKIOuG01H",
@@ -185,7 +210,11 @@
    "greenery": "~15–20 filler/greenery",
    "bestFor": "A large, four or more tier wedding cake",
    "vibe": "A maximalist design rich with detail",
-   "tags": []
+   "tags": [],
+   "fits": [
+    "Four tier — maximum coverage",
+    "Five or more tiers — focal arrangement"
+   ]
   },
   {
    "id": "rec0EfqMNRyJhkIDg",
@@ -202,7 +231,10 @@
    "greenery": "~20–28 filler/greenery",
    "bestFor": "A large, four or more tier wedding cake, or an editorial-scale design",
    "vibe": "An abundance of blooms for the most showstopping installation on your cake",
-   "tags": []
+   "tags": [],
+   "fits": [
+    "Five or more tiers — maximum coverage"
+   ]
   }
  ],
  "eventTypes": [
