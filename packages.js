@@ -27,6 +27,27 @@ const track = (event, data = {}) => { if (parent !== window) try { parent.postMe
 const report = () => parent !== window && parent.postMessage({kcEmbedHeight: document.documentElement.scrollHeight}, '*');
 new ResizeObserver(report).observe(document.body);
 
+// "Premium sugar flower varieties such as ...": a few names, alternating Luxe and Premium, sizes/open-closed dropped.
+// To hand-pick the names instead, list them in data.json "premiumExamples".
+function premiumExamples(D, max = 6) {
+  if (D.premiumExamples?.length) return D.premiumExamples.slice(0, max);
+  const base = n => String(n).replace(/\s*\(.*\)\s*$/, ''), a = (D.flowerTiers?.Luxe || []).map(base), b = (D.flowerTiers?.Premium || []).map(base), out = [];
+  for (let i = 0; out.length < max && i < Math.max(a.length, b.length); i++) [a[i], b[i]].forEach(n => { if (n && !out.includes(n) && out.length < max) out.push(n); });
+  return out;
+}
+// "One tier - a few accent flowers; One tier - scattered design" -> "One tier cakes with a few accent pieces or a scattered design"
+function fitLines(fits, t) {
+  const groups = new Map();
+  for (const f of fits || []) {
+    const [tier, how = ''] = String(f).split(/\s+[—–-]\s+/);
+    const key = /accent/i.test(how) ? 'accent' : /scatter/i.test(how) ? 'scattered' : /focal/i.test(how) ? 'focal' : /coverage/i.test(how) ? 'coverage' : '';
+    const phrase = key ? t('fitPlacement_' + key) : how.trim();
+    if (!groups.has(tier)) groups.set(tier, []);
+    if (phrase && !groups.get(tier).includes(phrase)) groups.get(tier).push(phrase);
+  }
+  const join = list => list.length < 2 ? list.join('') : list.slice(0, -1).join(', ') + ' ' + t('fitOr') + ' ' + list[list.length - 1];
+  return [...groups].map(([tier, list]) => t('fitLine', {tier: tier.replace(/tiers$/i, 'tier'), placements: join(list)}));
+}
 Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).then(([D, T]) => {
   const fill = (s, v) => String(s ?? '').replace(/\{(\w+)\}/g, (_, k) => v[k] ?? '');
   const t = (k, v = {}) => fill(T[k], v);
@@ -38,7 +59,7 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
   const shows = (x, p) => (!x.onlyFor || x.onlyFor.includes(role)) && !(x.hideFor || []).includes(role) && !(x.over && price(p) <= x.over);
   const line = (x, p) => ({includeStatement: () => countLine('includeStatement', p.statement), includeSupporting: () => countLine('includeSupporting', p.supporting),
     includeFiller: () => countLine('includeFiller', p.greenery)}[x.key] || (() => t(x.key)))();
-  const ft = D.flowerTiers || {}, tierLines = ['Premium', 'Luxe'].filter(k => ft[k]?.length).map(k => t('tierFlowers', {tier: t('tier' + k), flowers: ft[k].join(', ')}));
+  const ex = premiumExamples(D), tierLines = ex.length && t('premiumFlowers') ? [t('premiumFlowers', {flowers: ex.join(', ')})] : [];
   const list = (items, cls = 'check') => `<ul class="${cls}">${items.map(x => `<li>${x}</li>`).join('')}</ul>`;
 
   // Standalone page: logo on top and the footer; inside the Showit embed: neither
@@ -67,7 +88,7 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
         ${p.vibe ? `<p class="sub">${esc(t('guideVibe'))}</p><p>${esc(p.vibe)}</p>` : ''}
         ${incl.length ? `<p class="sub">${esc(t('includes'))}</p>${list(incl)}` : ''}
         ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p>${list(adds, 'check plus')}` : ''}
-        ${p.fits?.length ? `<p class="sub">${esc(t('guideFits'))}</p>${list(p.fits.map(esc))}` : ''}
+        ${p.fits?.length ? `<p class="sub">${esc(t('guideFits'))}</p>${list(fitLines(p.fits, t).map(esc))}` : ''}
         <a class="go" target="_top" ${inEstimator ? 'hidden' : ''} href="${esc(D.finderUrl + '?source=packages')}" data-pkg="${esc(p.name)}">${esc(t('embedPackageCta'))}</a>
       </div>
     </div></article>`;
