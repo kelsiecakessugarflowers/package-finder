@@ -66,7 +66,7 @@ The "Best for:" and "Vibe:" lines of each package's guide text, and its **Estima
 
 Shown above "Your design will include…" on the estimate and in each package's "More details".
 Upload to `photos/` with these exact names: `statement.jpg`, `supporting.jpg`, `filler.jpg`.
-Portrait (800 x 1200, like the style photos), JPG, under 300 KB; the current ones have their label on the image.
+Portrait 5:7 (700 x 980, like the proposal cards), JPG, under 300 KB; the current ones have their label on the image.
 Until a photo is there, it simply doesn't show. Optional captions under them: `example_statement`, `example_supporting`, `example_filler` in copy.json.
 
 ## Packages embed in Showit
