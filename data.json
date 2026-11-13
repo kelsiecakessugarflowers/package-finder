@@ -4,7 +4,7 @@
  "finderUrl": "index.html",
  "gtmId": "GTM-5ZMBM3M",
  "inquiry": {
-  "mode": "fillout",
+  "mode": "direct",
   "turnstileSiteKey": "0x4AAAAAAF-pNX8CVXv8MzKN",
   "maxPhotos": 5,
   "referralOptions": [
