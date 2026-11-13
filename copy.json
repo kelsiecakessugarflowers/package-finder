@@ -93,9 +93,9 @@
  "barNext": "Review your estimate",
  "labelLeadEmail": "Your Email",
  "emailNote": "We’ll send you a copy of this estimate to your email.",
- "cardIncluded": "What's included",
- "includedExpect": "What you can expect",
- "includedAlways": "Always included",
+ "cardIncluded": "",
+ "includedExpect": "",
+ "includedAlways": "",
  "summaryHeading": "About Your Design",
  "priceFormat": "{price}+",
  "includeStatement": "A stunning mix of {n} statement flower{s}",
@@ -130,5 +130,8 @@
  "fitPlacement_scattered": "a light scattering of flowers",
  "fitPlacement_focal": "a stand-out focal arrangement",
  "fitPlacement_coverage": "full, lush coverage",
- "dateNoteShop": "Oh no! Your {event} is less than 3 weeks away, which is too soon for a custom design."
+ "dateNoteShop": "Oh no! Your {event} is less than 3 weeks away, which is too soon for a custom design.",
+ "example_statement": "",
+ "example_supporting": "",
+ "example_filler": ""
 }

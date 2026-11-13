@@ -60,6 +60,9 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
   const line = (x, p) => ({includeStatement: () => countLine('includeStatement', p.statement), includeSupporting: () => countLine('includeSupporting', p.supporting),
     includeFiller: () => countLine('includeFiller', p.greenery)}[x.key] || (() => t(x.key)))();
   const ex = premiumExamples(D), tierLines = ex.length && t('premiumFlowers') ? [t('premiumFlowers', {flowers: ex.join(', ')})] : [];
+  // Example photos of a statement / supporting / filler flower (data.json "flowerExamples"); a missing photo hides itself
+  const fx = D.flowerExamples || {}, exKeys = ['statement', 'supporting', 'filler'].filter(k => fx[k]);
+  const examples = exKeys.length ? `<div class="examples">${exKeys.map(k => `<figure><a href="${esc(fx[k])}" target="_blank" rel="noopener"><img src="${esc(fx[k])}" alt="" loading="lazy" onerror="this.closest('figure').remove()"></a>${t('example_' + k) ? `<figcaption>${esc(t('example_' + k))}</figcaption>` : ''}</figure>`).join('')}</div>` : '';
   const list = (items, cls = 'check') => `<ul class="${cls}">${items.map(x => `<li>${x}</li>`).join('')}</ul>`;
 
   // Standalone page: logo on top and the footer; inside the Showit embed: neither
@@ -86,7 +89,7 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
       <button type="button" class="toggle" aria-expanded="false" aria-controls="more${i}" data-i="${i}">${esc(t('embedMore'))}</button>
       <div class="more" id="more${i}" hidden>
         ${p.vibe ? `<p class="sub">${esc(t('guideVibe'))}</p><p>${esc(p.vibe)}</p>` : ''}
-        ${incl.length ? `<p class="sub">${esc(t('includes'))}</p>${list(incl)}` : ''}
+        ${incl.length ? `<p class="sub">${esc(t('includes'))}</p>${examples}${list(incl)}` : ''}
         ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p>${list(adds, 'check plus')}` : ''}
         ${p.fits?.length ? `<p class="sub">${esc(t('guideFits'))}</p>${list(fitLines(p.fits, t).map(esc))}` : ''}
         <a class="go" target="_top" ${inEstimator ? 'hidden' : ''} href="${esc(D.finderUrl + '?source=packages')}" data-pkg="${esc(p.name)}">${esc(t('embedPackageCta'))}</a>

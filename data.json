@@ -323,5 +323,10 @@
    "safflower"
   ]
  },
- "callUrl": "https://kelsiecakes.com/call/"
+ "callUrl": "https://kelsiecakes.com/call/",
+ "flowerExamples": {
+  "statement": "photos/statement.jpg",
+  "supporting": "photos/supporting.jpg",
+  "filler": "photos/filler.jpg"
+ }
 }
