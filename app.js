@@ -53,15 +53,28 @@ function loadGtm(id) {
 }
 
 const role = () => D.roles.find(r => r.key === st.role);
+// Role wording per occasion (copy.json role_<key>_<occasion>, then role_<key>, then data.json label); Client Type stays the same
+const occSlug = () => String(st.eventType || '').toLowerCase().replace(/[^a-z]+/g, '');
+const roleLabel = r => r ? (st.eventType && t('role_' + r.key + '_' + occSlug())) || t('role_' + r.key) || r.label : '';
+function renderRoles() {
+  $('#role').innerHTML = `<option value="">${esc(t('choose'))}</option>` + D.roles.map(r => `<option value="${esc(r.key)}">${esc(roleLabel(r))}</option>`).join('');
+  $('#role').value = st.role;
+}
 const isPro = () => role()?.group === 'pro';
 const tiersNum = () => st.size ? parseInt(st.size) : 0;   // "6+ tiers" -> 6
 const priceFor = p => isPro() ? Math.round(p.price * (1 - D.proDiscount) / D.proRoundTo) * D.proRoundTo : p.price;
 const fits = () => D.packages.filter(p => (p.tiers || []).includes(tiersNum())).sort((a, b) => a.price - b.price);
+// Recommended package: the style picks where in the size's range to land; then the budget caps it
+// (the biggest package that fits the size AND their budget; if none does, the smallest one for the size)
 function suggested() {
   const f = fits(); if (!f.length) return null;
   const lean = st.style ? (D.styleLean[st.style] ?? 0.5) : 0;   // "Not sure yet" starts at the smallest fit
-  return f[Math.round(lean * (f.length - 1))];
+  let pick = f[Math.round(lean * (f.length - 1))];
+  const cap = budgetMax();
+  if (cap !== null && priceFor(pick) > cap) { const ok = f.filter(x => priceFor(x) <= cap); pick = ok.length ? ok[ok.length - 1] : f[0]; }
+  return pick;
 }
+const overBudgetForSize = () => { const cap = budgetMax(), f = fits(); return cap !== null && f.length && priceFor(f[0]) > cap; };
 function daysUntil() {
   if (!st.date) return null;
   const [y, m, d] = st.date.split('-').map(Number), today = new Date(); today.setHours(0, 0, 0, 0);
@@ -80,7 +93,7 @@ function renderStatic() {
   applyCopy();
   document.title = `${t('title')} | ${t('brand')}`;
   const opts = (list, val = x => x, lbl = x => x) => `<option value="">${esc(t('choose'))}</option>` + list.map(x => `<option value="${esc(val(x))}">${esc(lbl(x))}</option>`).join('');
-  $('#role').innerHTML = opts(D.roles, r => r.key, r => r.label);
+  renderRoles();
   $('#size').innerHTML = opts(D.tierOptions);
   $('#styleDlgTitle').textContent = t('labelStyle');
   $('#dateErr').textContent = t('confirmDate');
@@ -134,7 +147,8 @@ function render() {
   document.querySelectorAll('.tile').forEach(b => b.classList.toggle('on', st.style !== null && b.dataset.style === st.style));
 
   const el = $('#estimate'), cta = $('#barCta'), bar = $('#barPrice'), shop = shopReason(), n = daysUntil();
-  const f = fits(), sug = st.size && st.style !== null ? suggested() : null, p = sug && (f.find(x => x.name === st.pkg) || sug);
+  // The estimate appears once size, style and budget are answered (the budget changes the recommendation)
+  const f = fits(), sug = st.size && st.style !== null && st.budget ? suggested() : null, p = sug && (f.find(x => x.name === st.pkg) || sug);
   const notes = [];
   if (shop) notes.push(`<p class="note shop">${esc(t(shop === 'date' ? 'shopDate' : 'shopBudget'))}<br><a target="_blank" rel="noopener" href="${esc(D.shopUrl)}" data-cta="shop">${esc(t('barShop'))}</a></p>`);
   else if (n !== null && n >= 0 && n < D.leadTime.minimumWeeks * 7) notes.push(`<p class="note">${esc(t('noteShort', {minWeeks: D.leadTime.minimumWeeks}))}</p>`);
@@ -167,9 +181,8 @@ function render() {
     const size1 = st.size.replace(/s$/, '').replace(/^(\d) /, '$1-');   // "3 tiers" -> "3-tier", "6+ tiers" -> "6+ tier"
     const cake = `${size1} cake${st.style ? ' with a ' + ({Bundles: 'bundled'}[st.style] || st.style.toLowerCase()) + ' design' : ''}`;
     // If their budget is below this package, list the packages that fit the budget first and say so
-    const cap = budgetMax(), overBudget = cap !== null && priceFor(p) > cap;
-    const others = f.filter(x => x !== p).sort((a, b) => (overBudget ? (priceFor(a) > cap) - (priceFor(b) > cap) : 0) || a.price - b.price);
-    const othersKey = overBudget && others.some(o => priceFor(o) <= cap) ? 'othersHeadingBudget' : 'othersHeading';
+    const others = f.filter(x => x !== p).sort((a, b) => a.price - b.price), othersKey = 'othersHeading';
+    const budgetNote = overBudgetForSize() && t('noteOverBudget') ? `<p class="note">${esc(t('noteOverBudget', {size: size1, price: priceText(priceFor(f[0]))}))}</p>` : '';
     const img = (D.packageImages || {})[p.name], price = priceFor(p);
     const tags = q => (q.tags || []).map(x => `<span class="tag soft">${esc(x)}</span>`).join(' ');
     // "Your design will include..." and add-ons: lines in data.json, some only for certain roles or prices
@@ -188,6 +201,7 @@ function render() {
       <p class="pkgname">${esc(p.name)}</p>
       <p class="muted" style="margin:2px 0 0">${esc(t('forYour', {cake}))}</p>
       <p class="price">${esc(priceText(price))}</p></div></div>
+      ${budgetNote}
       ${guide.length ? `<dl class="guide">${guide.map(([k, v]) => `<dt>${esc(t(k))}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
       ${incl.length ? `<p class="sub">${esc(t('includes'))}</p><ul class="inc">${incl.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
       ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p><ul class="inc addons">${(D.addons || []).filter(shows).map(x => `<li>${esc(line(x))}${x.key === 'addonLuxe' && tierDetail.length ? tierDetail.map(d => `<small class="tierline">${esc(d)}</small>`).join('') : ''}</li>`).join('')}</ul>` : ''}
@@ -225,7 +239,7 @@ function trackResult() {
 }
 
 document.addEventListener('change', e => {
-  if (e.target.id === 'eventType') $('#eventOther').hidden = e.target.value !== 'Other';
+  if (e.target.id === 'eventType') { $('#eventOther').hidden = e.target.value !== 'Other'; st.eventType = e.target.value; renderRoles(); }
   const id = e.target.id; if (!['role', 'eventType', 'date', 'size', 'budget'].includes(id)) return;
   st[id] = e.target.value;
   if (id === 'date') { dateTouched = !!st.date; $('#dateErr').hidden = true; }
@@ -367,7 +381,7 @@ function renderSummary() {
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name);
   const dateLong = new Date(st.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
   const rows = [
-    ['sumRole', role()?.label], ['sumEvent', st.eventType === 'Other' ? val('eventOther') || 'Other' : st.eventType], ['sumDate', dateLong], ['sumSize', st.size],
+    ['sumRole', roleLabel(role())], ['sumEvent', st.eventType === 'Other' ? val('eventOther') || 'Other' : st.eventType], ['sumDate', dateLong], ['sumSize', st.size],
     ['sumStyle', `<img src="photos/${st.style ? slug(st.style) : 'not-sure-yet'}.jpg" alt="">${esc(st.style || t('styleNotSure'))}`, true],
     ['sumBudget', st.budget], ['sumPackage', pkg ? `${esc(pkg.name)} · ${esc(priceText(priceFor(pkg)))}${isPro() ? ' · ' + esc(t('tagPro')) : ''}` : '', true],
   ].filter(r => r[1]);
@@ -395,7 +409,7 @@ async function submitInquiry() {
   try {
     const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
       ...req, role: st.role, eventType: st.eventType, eventOther: st.eventType === 'Other' ? val('eventOther') : '', size: st.size, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
-      clientType: r.clientType, roleLabel: r.label, packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
+      clientType: r.clientType, roleLabel: roleLabel(r), packageId: pkg?.id || '', packageName: name, estimate: pkg ? priceFor(pkg) : 0,
       utmSource: new URLSearchParams(location.search).get('utm_source') || '', allergen: true, lead: leadToken,
       ...(isPro() ? {bizLink: val('bizLink'), bizCity: val('bizCity'), bizState: val('bizState'),
         resale: val('bizState') === 'FL' ? (document.querySelector('[name=resale]:checked')?.value || '') : '',
@@ -425,7 +439,7 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
   if (D.roles.some(r => r.key === f)) { st.role = f; $('#role').value = f; }
   // The quiz (and any link) can also fill in the occasion and budget: ?occasion=Wedding&budget=$500-$1,000
   const q = new URLSearchParams(location.search), occ = q.get('occasion'), bud = q.get('budget');
-  if (D.eventTypes.includes(occ)) { st.eventType = occ; $('#eventType').value = occ; }
+  if (D.eventTypes.includes(occ)) { st.eventType = occ; $('#eventType').value = occ; renderRoles(); }
   if (D.budgets.includes(bud)) { st.budget = bud; $('#budget').value = bud; }
   history.replaceState({view: 'cake'}, ''); showView('cake'); track('estimator_view');
   loadTurnstile('#tsLead', tok => { tsLeadToken = tok; });
