@@ -114,6 +114,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .bar .big small{display:block;font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar a{background:var(--accent);color:var(--kc-white);text-decoration:none;font-weight:600;padding:12px 16px;white-space:nowrap}
 [hidden]{display:none!important}
+.note.small{font-size:13px;padding:8px 10px;margin:8px 0 0}
 /* All packages (the packages embed) in a pop-up, so their answers aren't lost */
 .pkgdlg{width:min(1100px,96vw);height:min(88vh,1000px);display:none;flex-direction:column}
 .pkgdlg[open]{display:flex}
@@ -143,6 +144,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
     <input type="date" id="date">
     <p class="err" id="dateErr" hidden></p>
     <p class="hint" id="hintDate"></p>
+    <div id="dateNote" aria-live="polite"></div>
     <label for="size" id="t-labelSize"></label>
     <select id="size"></select>
     <p class="hint" id="hintSize"></p>
