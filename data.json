@@ -245,17 +245,17 @@
  ],
  "included": {
   "expect": [
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad926327d1a1a83dbad3ba3_botanical_details.jpg",
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad9263a7d1a1a83dbad3db1_color_palette_matching.jpg",
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad926457d1a1a83dbad3e98_true_to_life_detial.jpg",
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad9265a7d1a1a83dbad418b_design_sketches.jpg",
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fd4a855d1b997bb1a71d_handpainted_details.png"
+   "photos/included/botanical-details.jpg",
+   "photos/included/color-palette-matching.jpg",
+   "photos/included/true-to-life-color-and-detail.jpg",
+   "photos/included/design-sketches.jpg",
+   "photos/included/detailed-design-guide.jpg"
   ],
   "always": [
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fcc1855d1b997bb191a9_careful_packaging.jpg",
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fcc17d1a1a83dba659fd_timely_insured_delivery.jpg",
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad926657d1a1a83dbad4261_detail_instructions.jpg",
-   "https://assets.dubsado.com/61551232293d2a725d37eb38/6ad8fcc17d1a1a83dba659fb_assitance_from_kelsie.jpg"
+   "photos/included/careful-packaging.jpg",
+   "photos/included/timely-insured-delivery.jpg",
+   "photos/included/detailed-instructions.jpg",
+   "photos/included/assistance-from-kelsie.jpg"
   ]
  },
  "includes": [

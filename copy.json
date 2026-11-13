@@ -134,5 +134,8 @@
  "example_statement": "",
  "example_supporting": "",
  "example_filler": "",
- "sharedHeading": "Every package includes"
+ "sharedHeading": "Every package includes",
+ "emailMeButton": "Email me this estimate",
+ "emailMeDone": "Sent! Check your inbox for a copy of your estimate.",
+ "emailInvalid": "Please enter a valid email address."
 }
