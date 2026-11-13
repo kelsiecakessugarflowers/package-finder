@@ -137,7 +137,16 @@ function render() {
   else if (n !== null && n >= 0 && n < D.leadTime.minimumWeeks * 7) notes.push(`<p class="note">${esc(t('noteShort', {minWeeks: D.leadTime.minimumWeeks}))}</p>`);
   else if (n !== null && n >= 0 && n < D.leadTime.rushWeeks * 7) notes.push(`<p class="note">${esc(t('noteRush', {rushWeeks: D.leadTime.rushWeeks}))}</p>`);
 
-  $('#cakeNotes').innerHTML = notes.join('');
+  // Right under the date (phones would otherwise only see it after scrolling): a short version of the date note.
+  // The full note stays at the bottom of the card and on the estimate.
+  const shortWin = n !== null && n >= 0 && n < D.leadTime.minimumWeeks * 7, rushWin = n !== null && n >= 0 && n < D.leadTime.rushWeeks * 7;
+  const dn = shop === 'date' && D.leadTime && n !== null && n < D.leadTime.shopUnderDays
+    ? `<p class="note shop small">${esc(t('dateNoteShop'))} <a target="_blank" rel="noopener" href="${esc(D.shopUrl)}" data-cta="shop">${esc(t('barShop'))}</a></p>`
+    : !shop && shortWin ? `<p class="note small">${esc(t('noteShort', {minWeeks: D.leadTime.minimumWeeks}))}</p>`
+    : !shop && rushWin ? `<p class="note small">${esc(t('noteRush', {rushWeeks: D.leadTime.rushWeeks}))}</p>` : '';
+  $('#dateNote').innerHTML = dn;
+  // Bottom of the card: the full shop note (date or budget); short/rush notes already sit under the date
+  $('#cakeNotes').innerHTML = shop ? notes.join('') : '';
   // Little notes under the questions; numbers come from the packages so they stay in step with Airtable
   const all = [...D.packages].sort((a, b) => a.price - b.price), cheapestFit = f[0];
   const hv = {minPrice: all.length ? money(priceFor(all[0])) : '', sizeMinPrice: cheapestFit ? money(priceFor(cheapestFit)) : '',
