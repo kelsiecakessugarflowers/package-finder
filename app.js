@@ -136,6 +136,7 @@ function render() {
     minWeeks: D.leadTime.minimumWeeks, rushWeeks: D.leadTime.rushWeeks};
   ['Role', 'EventType', 'Date', 'Size', 'Style', 'Budget'].forEach(k => { $('#hint' + k).textContent = t('hint' + k, hv); });
   $('#retainerNote').textContent = t('noteRetainer');
+  if (!$('#allPk1') && t('seeAllPackages')) $('#hintBudget').insertAdjacentHTML('afterend', `<a href="#" class="allpk" id="allPk1" data-act="packages">${esc(t('seeAllPackages'))}</a>`);
 
   if (!p) {
     el.innerHTML = `<p class="muted" style="margin:0">${esc(t('estimateEmpty'))}</p>` + notes.join('');
@@ -171,6 +172,7 @@ function render() {
       ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p><ul class="inc addons">${(D.addons || []).filter(shows).map(x => `<li>${esc(line(x))}${x.key === 'addonLuxe' && tierDetail.length ? tierDetail.map(d => `<small class="tierline">${esc(d)}</small>`).join('') : ''}</li>`).join('')}</ul>` : ''}
       ${others.length ? `<p class="sub">${esc(t(othersKey, {size: size1}))}</p>` + others.map(o => { const oi = (D.packageImages || {})[o.name];
         return `<button type="button" class="pkg" data-pkg="${esc(o.name)}">${oi ? `<img src="${esc(oi)}" alt="">` : ''}<span class="pkgtxt"><b>${esc(o.name)}</b>${o.tags?.length ? ' ' + tags(o) : ''}${o.bestFor ? `<small>${esc(o.bestFor)}</small>` : ''}</span><span class="pkgprice">${esc(priceText(priceFor(o)))}</span></button>`; }).join('') : ''}
+      ${t('seeAllPackages') ? `<a href="#" class="allpk" data-act="packages">${esc(t('seeAllPackages'))}</a>` : ''}
       ${notes.join('')}
       ${premiumNote}
       ${direct ? '' : `<p class="note">${esc(t('noteRetainer'))}</p>`}
@@ -211,6 +213,12 @@ document.addEventListener('change', e => {
 document.addEventListener('click', e => {
   const tile = e.target.closest('.tile'), pkg = e.target.closest('.pkg'), link = e.target.closest('[data-cta]');
   if (e.target.closest('#styleBtn')) $('#styleDlg').showModal();
+  if (e.target.closest('[data-act=packages]')) {   // the packages embed, without its own buttons (they'd leave this page)
+    e.preventDefault(); const f = $('#pkgFrame'), src = 'packages.html?in=estimator' + (isPro() ? '&for=pro' : '');
+    if (f.getAttribute('src') !== src) f.src = src;
+    $('#pkgDlgTitle').textContent = t('embedHeading'); $('#pkgDlg').showModal(); track('estimator_packages_view');
+  }
+  if (e.target.id === 'pkgClose' || e.target.id === 'pkgDlg') $('#pkgDlg').close();
   if (e.target.id === 'styleClose' || e.target.id === 'styleDlg') $('#styleDlg').close();   // close button or tap outside
   if (tile) { st.style = tile.dataset.style; st.pkg = ''; $('#styleDlg').close(); $('#styleBtn').classList.remove('bad');
     track('estimator_change', {field: 'style', value: st.style || 'not sure'}); render(); trackResult(); }

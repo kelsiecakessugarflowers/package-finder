@@ -114,6 +114,11 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .bar .big small{display:block;font-size:12px;font-weight:400;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar a{background:var(--accent);color:var(--kc-white);text-decoration:none;font-weight:600;padding:12px 16px;white-space:nowrap}
 [hidden]{display:none!important}
+/* All packages (the packages embed) in a pop-up, so their answers aren't lost */
+.pkgdlg{width:min(1100px,96vw);height:min(88vh,1000px);display:none;flex-direction:column}
+.pkgdlg[open]{display:flex}
+.pkgdlg iframe{flex:1;width:100%;border:0;background:var(--bg)}
+.allpk{display:inline-block;margin-top:6px;font-size:14px;font-weight:600;color:var(--accent)}
 @media (min-width:700px){.bar{justify-content:center;gap:28px}.bar .big{flex:0 0 auto;text-align:right}}
 .bar a[aria-disabled=true]{background:var(--line);color:var(--muted);pointer-events:none}
 </style>
@@ -207,6 +212,10 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
  </div>
 </main>
 <footer id="footer"></footer>
+<dialog id="pkgDlg" aria-labelledby="pkgDlgTitle" class="pkgdlg">
+  <div class="dlghead"><span id="pkgDlgTitle"></span><button type="button" id="pkgClose" aria-label="Close">×</button></div>
+  <iframe id="pkgFrame" title="Sugar flower packages" loading="lazy"></iframe>
+</dialog>
 <dialog id="styleDlg" aria-labelledby="styleDlgTitle">
   <div class="dlghead"><span id="styleDlgTitle"></span><button type="button" id="styleClose" aria-label="Close">×</button></div>
   <div class="tiles" id="tiles"></div>
