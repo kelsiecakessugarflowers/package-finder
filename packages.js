@@ -77,8 +77,6 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
 
   document.getElementById('grid').innerHTML = D.packages.map((p, i) => {
     const desc = p.bestFor ? `<b>${esc(t('guideBestFor'))}:</b> ${esc(p.bestFor)}` : esc(p.description || p.suitableFor);
-    const incl = (D.includes || []).filter(x => shows(x, p)).map(x => line(x, p)).filter(Boolean).map(esc);
-    const adds = (D.addons || []).filter(x => shows(x, p)).map(x => esc(line(x, p)) + (x.key === 'addonLuxe' && tierLines.length ? tierLines.map(l => `<br><small>${esc(l)}</small>`).join('') : ''));
     return `<article class="card">
     ${img[p.name] ? `<img src="${esc(img[p.name])}" alt="${esc(p.name)} sugar flower package" loading="lazy">` : ''}
     <div class="body">
@@ -89,13 +87,23 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
       <button type="button" class="toggle" aria-expanded="false" aria-controls="more${i}" data-i="${i}">${esc(t('embedMore'))}</button>
       <div class="more" id="more${i}" hidden>
         ${p.vibe ? `<p class="sub">${esc(t('guideVibe'))}</p><p>${esc(p.vibe)}</p>` : ''}
-        ${incl.length ? `<p class="sub">${esc(t('includes'))}</p>${examples}${list(incl)}` : ''}
-        ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p>${list(adds, 'check plus')}` : ''}
         ${p.fits?.length ? `<p class="sub">${esc(t('guideFits'))}</p>${list(fitLines(p.fits, t).map(esc))}` : ''}
         <a class="go" target="_top" ${inEstimator ? 'hidden' : ''} href="${esc(D.finderUrl + '?source=packages')}" data-pkg="${esc(p.name)}">${esc(t('embedPackageCta'))}</a>
       </div>
     </div></article>`;
   }).join('');
+
+  // Under the carousel: what every package includes (flower type photos, the shared include lines, add-ons)
+  const perPackage = ['includeStatement', 'includeSupporting', 'includeFiller'];
+  const sharedIncl = (D.includes || []).filter(x => !perPackage.includes(x.key) && shows(x, {price: 0}))
+    .map(x => t(x.key).replace(/^Plus,\s*(\w)/, (_, c) => c.toUpperCase())).filter(Boolean).map(esc);   // "Plus, ..." reads oddly on its own
+  // (price-dependent add-ons, like white glove, stay off this general list)
+  const sharedAdds = (D.addons || []).filter(x => !x.over && shows(x, {price: 0})).map(x => esc(t(x.key)) + (x.key === 'addonLuxe' && tierLines.length ? tierLines.map(l => `<br><small>${esc(l)}</small>`).join('') : ''));
+  const shared = document.getElementById('shared');
+  shared.innerHTML = `${t('sharedHeading') ? `<h2>${esc(t('sharedHeading'))}</h2>` : ''}${examples}
+    ${sharedIncl.length ? list(sharedIncl) : ''}
+    ${sharedAdds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p>${list(sharedAdds, 'check plus')}` : ''}`;
+  shared.hidden = !examples && !sharedIncl.length && !sharedAdds.length;
 
   // "More details" opens the package's extra info right in its card
   document.getElementById('grid').addEventListener('click', e => {
