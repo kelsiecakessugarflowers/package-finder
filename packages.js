@@ -11,6 +11,7 @@ function aim(t, noun) {
 }
 const pro = new URLSearchParams(location.search).get('for') === 'pro';
 const framed = window !== window.parent;
+const inEstimator = new URLSearchParams(location.search).get('in') === 'estimator';   // shown in the estimator's pop-up
 // Same "Your design will include..." wording as the estimator: "2-3" -> 2-3, "0-1" -> up to 1, "Dozens of..." -> dozens of
 function count(txt) {
   const x = String(txt || '');
@@ -47,7 +48,8 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
     f.innerHTML = `© ${new Date().getFullYear()} ${esc(D.legal.owner)} · <a href="${esc(D.legal.termsUrl)}" target="_top">${esc(t('footerTerms'))}</a> · <a href="${esc(D.legal.privacyUrl)}" target="_top">${esc(t('footerPrivacy'))}</a>`;
   }
   document.getElementById('heading').textContent = t('embedHeading');
-  document.getElementById('heading').hidden = !t('embedHeading');
+  document.getElementById('heading').hidden = !t('embedHeading') || inEstimator;   // the pop-up has its own title
+  if (inEstimator) { document.querySelector('.ctas').hidden = true; document.body.classList.add('inest'); }
 
   document.getElementById('grid').innerHTML = D.packages.map((p, i) => {
     const desc = p.bestFor ? `<b>${esc(t('guideBestFor'))}:</b> ${esc(p.bestFor)}` : esc(p.description || p.suitableFor);
@@ -66,7 +68,7 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
         ${incl.length ? `<p class="sub">${esc(t('includes'))}</p>${list(incl)}` : ''}
         ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p>${list(adds, 'check plus')}` : ''}
         ${p.fits?.length ? `<p class="sub">${esc(t('guideFits'))}</p>${list(p.fits.map(esc))}` : ''}
-        <a class="go" target="_top" href="${esc(D.finderUrl + '?source=packages')}" data-pkg="${esc(p.name)}">${esc(t('embedPackageCta'))}</a>
+        <a class="go" target="_top" ${inEstimator ? 'hidden' : ''} href="${esc(D.finderUrl + '?source=packages')}" data-pkg="${esc(p.name)}">${esc(t('embedPackageCta'))}</a>
       </div>
     </div></article>`;
   }).join('');
