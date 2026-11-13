@@ -27,6 +27,14 @@ function count(txt) {
   if (one) return {n: about + one[1], s: +one[1] === 1 ? '' : 's'};
   return null;
 }
+// "Premium sugar flower varieties such as ...": a few names, alternating Luxe and Premium, sizes/open-closed dropped.
+// To hand-pick the names instead, list them in data.json "premiumExamples".
+function premiumExamples(D, max = 6) {
+  if (D.premiumExamples?.length) return D.premiumExamples.slice(0, max);
+  const base = n => String(n).replace(/\s*\(.*\)\s*$/, ''), a = (D.flowerTiers?.Luxe || []).map(base), b = (D.flowerTiers?.Premium || []).map(base), out = [];
+  for (let i = 0; out.length < max && i < Math.max(a.length, b.length); i++) [a[i], b[i]].forEach(n => { if (n && !out.includes(n) && out.length < max) out.push(n); });
+  return out;
+}
 const countLine = (key, txt) => { const c = count(txt); return c ? t(key, c) : t(key + 'Text', {text: String(txt || '').trim()}); };
 
 // ---- Analytics: anonymous events only (no names, emails or dates) ----
@@ -157,8 +165,7 @@ function render() {
     const incl = (D.includes || []).filter(shows).map(line).filter(Boolean), adds = (D.addons || []).filter(shows).map(line).filter(Boolean);
     const guide = [['guideBestFor', p.bestFor], ['guideVibe', p.vibe]].filter(g => g[1]);
     // Premier / Luxe flowers (Airtable "Premium Tier"), named so people know what they are
-    const ft = D.flowerTiers || {}, tierLine = k => ft[k]?.length ? t('tierFlowers', {tier: t('tier' + k), flowers: ft[k].join(', ')}) : '';
-    const tierDetail = ['Premium', 'Luxe'].map(tierLine).filter(Boolean);
+    const ex = premiumExamples(D), tierDetail = ex.length && t('premiumFlowers') ? [t('premiumFlowers', {flowers: ex.join(', ')})] : [];
     // A simple style with budget to spare: suggest premier/luxe blooms
     const bmin = budgetMin(), premiumNote = (D.premiumStyles || []).includes(st.style) && bmin !== null && bmin > price && tierDetail.length
       ? `<div class="note premium"><p>${esc(t('notePremiumFlowers', {style: st.style.toLowerCase()}))}</p>${tierDetail.map(x => `<p class="tierline">${esc(x)}</p>`).join('')}</div>` : '';
