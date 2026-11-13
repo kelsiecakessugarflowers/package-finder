@@ -117,12 +117,11 @@ Promise.all(['data.json', 'copy.json'].map(f => fetch(f).then(r => r.json()))).t
 
   document.getElementById('finder').href = D.finderUrl;
   document.getElementById('finder').textContent = T.embedEstimatorButton;
-  // The estimator is also the inquiry form, so one button is enough; a second one only shows if embedInquiryButton has text
+  // Second button: book a call (data.json callUrl); hidden if embedInquiryButton is blank
   document.getElementById('inquire').textContent = T.embedInquiryButton || '';
-  document.getElementById('inquire').hidden = !T.embedInquiryButton;
-  // Inquiries go through the estimator too (it saves the lead, then sends them on to the inquiry form)
-  document.getElementById('inquire').href = D.finderUrl + '?source=packages';
-  document.getElementById('inquire').onclick = () => track('packages_cta', {action: 'inquiry'});
+  document.getElementById('inquire').hidden = !T.embedInquiryButton || !D.callUrl;
+  document.getElementById('inquire').href = D.callUrl || '#';
+  document.getElementById('inquire').onclick = () => track('packages_cta', {action: 'call'});
   document.getElementById('finder').onclick = () => track('packages_cta', {action: 'estimator'});
   document.getElementById('note').textContent = fill(T.embedNote, {minWeeks: D.leadTime.minimumWeeks, rushWeeks: D.leadTime.rushWeeks});
   report();
