@@ -153,6 +153,7 @@ function render() {
     minWeeks: D.leadTime.minimumWeeks, rushWeeks: D.leadTime.rushWeeks};
   ['Role', 'EventType', 'Date', 'Size', 'Style', 'Budget'].forEach(k => { $('#hint' + k).textContent = t('hint' + k, hv); });
   $('#retainerNote').textContent = t('noteRetainer');
+  if (!$('#submitBtn').disabled) $('#submitBtn').textContent = t('barSend');   // a submit button at the end of the form too
   if (!$('#allPk1') && t('seeAllPackages')) $('#hintBudget').insertAdjacentHTML('afterend', `<a href="#" class="allpk" id="allPk1" data-act="packages">${esc(t('seeAllPackages'))}</a>`);
 
   if (!p) {
@@ -187,7 +188,7 @@ function render() {
       ${incl.length ? `<p class="sub">${esc(t('includes'))}</p><ul class="inc">${incl.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
       ${adds.length ? `<p class="sub">${esc(t('addonsHeading'))}</p><ul class="inc addons">${(D.addons || []).filter(shows).map(x => `<li>${esc(line(x))}${x.key === 'addonLuxe' && tierDetail.length ? tierDetail.map(d => `<small class="tierline">${esc(d)}</small>`).join('') : ''}</li>`).join('')}</ul>` : ''}
       ${others.length ? `<p class="sub">${esc(t(othersKey, {size: size1}))}</p>` + others.map(o => { const oi = (D.packageImages || {})[o.name];
-        return `<button type="button" class="pkg" data-pkg="${esc(o.name)}">${oi ? `<img src="${esc(oi)}" alt="">` : ''}<span class="pkgtxt"><b>${esc(o.name)}</b>${o.tags?.length ? ' ' + tags(o) : ''}${o.bestFor ? `<small>${esc(o.bestFor)}</small>` : ''}</span><span class="pkgprice">${esc(priceText(priceFor(o)))}</span></button>`; }).join('') : ''}
+        return `<button type="button" class="pkg" data-pkg="${esc(o.name)}">${oi ? `<img src="${esc(oi)}" alt="">` : ''}<span class="pkgtxt"><b>${esc(o.name)}</b>${o === sug ? ` <span class="tag star">${esc(t('tagRecommended'))}</span>` : ''}${o.tags?.length ? ' ' + tags(o) : ''}${o.bestFor ? `<small>${esc(o.bestFor)}</small>` : ''}</span><span class="pkgprice">${esc(priceText(priceFor(o)))}</span></button>`; }).join('') : ''}
       ${t('seeAllPackages') ? `<a href="#" class="allpk" data-act="packages">${esc(t('seeAllPackages'))}</a>` : ''}
       ${notes.join('')}
       ${premiumNote}
@@ -376,6 +377,7 @@ async function submitInquiry() {
   if (D.inquiry.turnstileSiteKey && !leadToken && !tsToken) { err.textContent = t('verifyHuman') || t('missing'); err.hidden = false; $('#tsInquiry').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
   const name = $('.pkgname')?.textContent || '', pkg = D.packages.find(x => x.name === name), r = role();
   const cta = $('#barCta'); cta.textContent = t('sending'); cta.setAttribute('aria-disabled', 'true'); err.hidden = true;
+  const sb = $('#submitBtn'); sb.textContent = t('sending'); sb.disabled = true;
   try {
     const res = await fetch('/api/inquiry', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
       ...req, role: st.role, eventType: st.eventType, eventOther: st.eventType === 'Other' ? val('eventOther') : '', size: st.size, eventDate: st.date, pronouns: val('pronouns'), vision: val('vision'), style: st.style || '', budget: st.budget, palette: val('palette'),
@@ -393,7 +395,7 @@ async function submitInquiry() {
     $('main').innerHTML = `<section class="thanks"><h2>${esc(t('thanksHeading'))}</h2><p>${esc(t('thanksText'))}</p><p>${esc(t('thanksSignoff'))}</p></section>`;
     document.querySelector('.bar').remove(); document.body.style.paddingBottom = '0'; window.scrollTo(0, 0);
   } catch (e2) {
-    err.textContent = t('sendError'); err.hidden = false; render();
+    err.textContent = t('sendError'); err.hidden = false; render(); sb.textContent = t('barSend'); sb.disabled = false;
     resetTurnstile('#tsInquiry'); tsToken = '';
   }
 }
